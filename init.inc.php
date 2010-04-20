@@ -5,15 +5,13 @@ if (PHP_VERSION < '5.3')
 	die('Unable to initialize, your PHP version must be 5.3 or higher. You currently have: '. PHP_VERSION);
 	*/
 
-define('PATH_CODE', dirname(__FILE__) .'/');
+define('PATH_SHRED', dirname(__FILE__) .'/');
+define('PATH_CODE', dirname(PATH_SHRED) .'/');
 
-define('PATH_LIBS', PATH_CODE .'libs/');
-define('PATH_API', PATH_LIBS .'api/');
+define('PATH_LIBS', PATH_SHRED .'libs/');
 define('PATH_DB', PATH_LIBS .'db/');
-define('PATH_SERVER', PATH_CODE .'server/');
-define('PATH_MANAGER', PATH_CODE .'manager/');
-define('PATH_CLIENT', PATH_CODE .'client/');
 define('PATH_CONFIG', PATH_CODE .'config/');
+define('PATH_VENDORS', PATH_CODE .'vendors/');
 
 define('PATH_APP', dirname($_SERVER['SCRIPT_FILENAME']) .'/');
 $dir = dirname($_SERVER['SCRIPT_FILENAME']);

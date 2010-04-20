@@ -3,12 +3,11 @@
 require_once PATH_LIBS .'URL.class.php';
 require_once PATH_LIBS .'AbstractController.class.php';
 
-/** @class ACMDispatcher
+/** @class Dispatcher
  *
- * This class is the entry point for the Abstract Content Management REST API
- * Server, it can output either XML or JSON, whatever the user prefers
+ * This class is the entry point for SHRED
  */
-class ACMDispatcher {
+class Dispatcher {
 
 	/**
 	 * Constructor, main program entry point
