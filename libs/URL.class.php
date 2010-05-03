@@ -23,7 +23,7 @@ class URL {
 	 *
 	 * @throws Exception on bad arguments
 	 */
-	public function __construct($args) {
+	public function __construct($args = null) {
 		if ($args) {
 			if (is_string($args))
 				$this->parseURL($args);
@@ -33,6 +33,12 @@ class URL {
 				*/
 			else
 				throw new Exception("Error parsing URL: ". var_export($args));
+		}
+		else {
+			$this->action = null;
+			$this->pagination = null;
+			$this->params = array();
+			$this->named_params = $_GET;
 		}
 	}
 

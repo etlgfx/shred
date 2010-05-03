@@ -6,7 +6,7 @@ class SiteConfig {
 	private $url;
 
 	public function __construct(URL $url) {
-		$this->data = require PATH_MANAGER .'config/__site.conf.php';
+		$this->data = require PATH_APP .'config/__site.conf.php';
 
 		$this->url = $url;
 		$page = $url->getAction();
@@ -30,7 +30,10 @@ class SiteConfig {
 	 * @returns bool
 	 */
 	public function pageExists($page = null) {
-		return $page && isset($this->data['pages'][$page]);
+		if (!$page)
+			$page = $this->page;
+
+		return isset($this->data['pages'][$page]);
 	}
 
 	/**

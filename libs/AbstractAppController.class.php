@@ -61,20 +61,7 @@ abstract class AbstractAppController extends AbstractController {
 	 * @throws Exception on error
 	 */
 	public function render() {
-		$this->config->addStyle('base.css');
-		$error = Error::inst();
-
-		// TODO modify config to grab all variables at once
-		$this->set('site', $this->config->getSite());
-		$this->set('page', $this->config->getPage());
-		$this->set('menu', $this->config->getMenu());
-		$this->set('styles', $this->config->getStyles());
-
-		$this->set('server_url', SERVER_URL);
-		$this->set('server_gfx', SERVER_GFX);
-		$this->set('server_css', SERVER_CSS);
-
-		$this->smarty->assign($this->data_container->getVars());
+		$this->setupAppData();
 		
 		try {
 			$this->smarty->display($this->url->getAction() .'/'. $this->method .'.tpl');
@@ -84,9 +71,44 @@ abstract class AbstractAppController extends AbstractController {
 		}
 	}
 
-	public function error() {
-		//TODO
-		die('render 404 page or something: '. $this->url);
+	public function error($state) {
+		$template = 'generic';
+
+		switch ($state) {
+			case Dispatcher::STATE_AUTH:
+				header('HTTP/1.1 403 Forbidden');
+				$this->redirect(new URL($this->defaultAction()));
+				$template = '403';
+				break;
+
+			case Dispatcher::STATE_EXEC:
+			case Dispatcher::STATE_INIT:
+				header('HTTP/1.1 404 Not Found');
+				$template = '404';
+				break;
+		}
+
+		$this->setupAppData();
+
+		$this->smarty->display('_error/'. $template .'.tpl');
+	}
+
+	protected function setupAppData() {
+		$this->config->addStyle('base.css');
+		$error = Error::inst();
+
+		// TODO modify config to grab all variables at once
+		$this->set('site', $this->config->getSite());
+		$this->set('page', $this->config->getPage());
+		$this->set('menu', $this->config->getMenu());
+		$this->set('styles', $this->config->getStyles());
+		$this->set('errors', $error->getUserErrors());
+
+		$this->set('server_url', SERVER_URL);
+		$this->set('server_gfx', SERVER_GFX);
+		$this->set('server_css', SERVER_CSS);
+
+		$this->smarty->assign($this->data_container->getVars());
 	}
 
 	/**

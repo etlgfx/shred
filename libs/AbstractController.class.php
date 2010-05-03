@@ -16,7 +16,7 @@ abstract class AbstractController {
 	abstract public function authorize();
 	abstract public function execute();
 	abstract public function render();
-	abstract public function error();
+	abstract public function error($state);
 
 	/**
 	 * Factory method to return the appropriate controller class to execute the

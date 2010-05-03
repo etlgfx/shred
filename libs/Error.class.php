@@ -6,23 +6,29 @@
  * Singleton Error class, this is the be all end all of error handling for the framework
  */
 class Error {
-	const APP_ERROR       = 0x01;
-	const APP_WARNING     = 0x02;
-	const APP_NOTICE      = 0x04;
-	const APP_ERROR_GROUP = 0x0F;
+	/* TODO test the new bitmask values!!! */
+	const APP_ERROR       = 0x101;
+	const APP_WARNING     = 0x102;
+	const APP_NOTICE      = 0x104;
+	const APP_ERROR_GROUP = 0x1FF;
 
-	const USER_ERROR       = 0x10; //user errors (didn't fill out form field etc.)
-	const USER_WARNING     = 0x20; //
-	const USER_NOTICE      = 0x40; //positive feedback messages
-	const USER_ERROR_GROUP = 0xF0;
+	const USER_ERROR       = 0x201; //user errors (didn't fill out form field etc.)
+	const USER_WARNING     = 0x202; //
+	const USER_NOTICE      = 0x204; //positive feedback messages
+	const USER_ERROR_GROUP = 0x2FF;
 
-	const ERROR_TYPE_GENERIC = 0x0100;
-	const ERROR_TYPE_DB      = 0x0200;
-	const ERROR_TYPE_MOD     = 0x0400; //model / module
-	const ERROR_TYPE_VIEW    = 0x0800;
-	const ERROR_TYPE_CTRL    = 0x1000; //controller
-	const ERROR_TYPE_PERM    = 0x2000; //permissions
-	const ERROR_TYPE_GROUP   = 0xFFFFFF00;
+	const LVL_ERROR   = 0x01;
+	const LVL_WARNING = 0x02;
+	const LVL_NOTICE  = 0x04;
+	const LVL_SUCCESS = 0x08;
+
+	const ERROR_TYPE_GENERIC = 0x01000;
+	const ERROR_TYPE_DB      = 0x02000;
+	const ERROR_TYPE_MOD     = 0x04000; //model / module
+	const ERROR_TYPE_VIEW    = 0x08000;
+	const ERROR_TYPE_CTRL    = 0x10000; //controller
+	const ERROR_TYPE_PERM    = 0x20000; //permissions
+	const ERROR_TYPE_GROUP   = 0xFFFFF000;
 
 	const I_MSG  = 0x01;
 	const I_TYPE = 0x02;
