@@ -90,7 +90,12 @@ abstract class AbstractAppController extends AbstractController {
 
 		$this->setupAppData();
 
-		$this->smarty->display('_error/'. $template .'.tpl');
+		try {
+			$this->smarty->display('_error/'. $template .'.tpl');
+		}
+		catch (Exception $e) {
+			echo $e->getMessage();
+		}
 	}
 
 	protected function setupAppData() {
