@@ -29,7 +29,7 @@ class Dispatcher {
 			$controller = AbstractController::factory($url);
 		}
 		catch (Exception $e) {
-			Error::raise('Page Not Found', Error::APP_ERROR, Error::ERROR_TYPE_CTRL);
+			Error::raise('Page Not Found: '. $url, Error::APP_ERROR, Error::ERROR_TYPE_CTRL);
 			$continue = false;
 		}
 

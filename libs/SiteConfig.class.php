@@ -160,6 +160,16 @@ class SiteConfig {
 		return $this->data['styles'];
 	}
 
+	public function getConfigData() {
+		return array(
+			'site' => $this->getSite(),
+			'page' => $this->getPage(),
+			'menu' => $this->getMenu(),
+			'styles' => $this->getStyles(),
+		);
+
+	}
+
 }
 
 ?>

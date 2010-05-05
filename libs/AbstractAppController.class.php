@@ -77,7 +77,7 @@ abstract class AbstractAppController extends AbstractController {
 		switch ($state) {
 			case Dispatcher::STATE_AUTH:
 				header('HTTP/1.1 403 Forbidden');
-				$this->redirect(new URL($this->defaultAction()));
+				//$this->redirect(new URL($this->defaultAction()));
 				$template = '403';
 				break;
 
@@ -102,12 +102,8 @@ abstract class AbstractAppController extends AbstractController {
 		$this->config->addStyle('base.css');
 		$error = Error::inst();
 
-		// TODO modify config to grab all variables at once
-		$this->set('site', $this->config->getSite());
-		$this->set('page', $this->config->getPage());
-		$this->set('menu', $this->config->getMenu());
-		$this->set('styles', $this->config->getStyles());
-		$this->set('errors', $error->getUserErrors());
+		$this->set('_siteconfig', $this->config->getConfigData());
+		$this->set('_messages', $error->getUserErrors());
 
 		$this->set('server_url', SERVER_URL);
 		$this->set('server_gfx', SERVER_GFX);
