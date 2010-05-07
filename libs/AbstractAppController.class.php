@@ -108,6 +108,7 @@ abstract class AbstractAppController extends AbstractController {
 		$this->set('_siteconfig', $this->config->getConfigData());
 		$this->set('_messages', $error->getUserErrors());
 
+		$this->set('request_uri', REQUEST_URI);
 		$this->set('server_url', SERVER_URL);
 		$this->set('server_gfx', SERVER_GFX);
 		$this->set('server_css', SERVER_CSS);

@@ -23,10 +23,10 @@ class URL {
 	 *
 	 * @throws Exception on bad arguments
 	 */
-	public function __construct($args = null) {
+	public function __construct($args = null, array $named_params = null) {
 		if ($args) {
 			if (is_string($args))
-				$this->parseURL($args);
+				$this->parseURL($args, $named_params);
 			/*
 			else if (is_array($args))
 				$this->arrayToURL($args);
@@ -38,7 +38,7 @@ class URL {
 			$this->action = null;
 			$this->pagination = null;
 			$this->params = array();
-			$this->named_params = $_GET;
+			$this->named_params = $named_params;
 		}
 	}
 
@@ -48,11 +48,11 @@ class URL {
 	 *
 	 * @param $url string URL to parse
 	 */
-	public function parseURL($url) {
+	public function parseURL($url, array $named_params = null) {
 		$this->action = null;
 		$this->pagination = null;
 		$this->params = array();
-		$this->named_params = $_GET;
+		$this->named_params = $named_params;
 
 		if (strpos($url, SERVER_URL) === 0)
 			$url = substr($url, strlen(SERVER_URL));
@@ -111,12 +111,12 @@ class URL {
 		if (isset($this->action))
 			$url .= $this->action;
 		
-		if (isset($this->params))
+		if (isset($this->params) && $this->params)
 			$url .= '/'. implode('/', $this->params);
 
-		if (isset($this->named_params)) {
+		if (isset($this->named_params) && $this->named_params) {
 			foreach ($this->named_params as $k => $v)
-				$url .= '/'. $k .':'. $v;
+				$url .= '/'. $k .':'. urlencode($v);
 		}
 
 		if (isset($this->pagination))

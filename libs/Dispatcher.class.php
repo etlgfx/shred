@@ -20,7 +20,7 @@ class Dispatcher {
 	 * parse URL, get a controller, authorize, execute, render to stdout
 	 */
 	public function __construct() {
-		$url = new URL(REQUEST_URI);
+		$url = new URL(REQUEST_URI, $_GET);
 		$state = self::STATE_INIT;
 		$controller = null;
 		$continue = true;
