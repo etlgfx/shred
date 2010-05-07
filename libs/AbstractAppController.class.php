@@ -14,6 +14,7 @@ abstract class AbstractAppController extends AbstractController {
 	protected $url;
 	protected $smarty;
 	protected $data_container;
+	protected $ajax;
 
 	public function __construct(URL $url) {
 		$this->url = $url;
@@ -23,14 +24,16 @@ abstract class AbstractAppController extends AbstractController {
 			$this->method = 'index';
 
 		$this->config = new SiteConfig($url);
-		$this->smarty = new Smarty();
 		$this->data_container = new DataContainer();
 
-		$this->smarty->template_dir = PATH_APP .'views/';
-		$this->smarty->compile_dir = PATH_APP .'tmp/smarty_compile/';
-		$this->smarty->cache_dir = PATH_APP .'tmp/smarty_cache/';
-		$this->smarty->config_dir = PATH_APP .'config/';
-		$this->smarty->plugins_dir []= PATH_APP .'vendors/smarty_plugins/';
+		if (!$this->config->isAjax()) {
+			$this->smarty = new Smarty();
+			$this->smarty->template_dir = PATH_APP .'views/';
+			$this->smarty->compile_dir = PATH_APP .'tmp/smarty_compile/';
+			$this->smarty->cache_dir = PATH_APP .'tmp/smarty_cache/';
+			$this->smarty->config_dir = PATH_APP .'config/';
+			$this->smarty->plugins_dir []= PATH_APP .'vendors/smarty_plugins/';
+		}
 	}
 
 	/**

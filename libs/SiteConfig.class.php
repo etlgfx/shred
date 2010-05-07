@@ -107,9 +107,24 @@ class SiteConfig {
 		if (!$page)
 			$page = $this->page;
 
-		return $this->pageExists() && (!isset($this->data['pages'][$page]['require_login'])
+		return $this->pageExists($page) && (!isset($this->data['pages'][$page]['require_login'])
 			|| $this->data['pages'][$page]['require_login']);
 	}
+
+	/**
+	 * return whether the request should be treated as an ajax request
+	 *
+	 * @param $page string or null, if null use the internal page property
+	 *
+	 * @returns bool
+	 */
+	public function isAjax($page = null) {
+		if (!$page)
+			$page = $this->page;
+
+		return $this->pageExists($page) && isset($this->data['pages'][$page]['ajax']);
+	}
+
 
 	/**
 	 * this method allows for easy variable substitution and caching of
