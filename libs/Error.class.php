@@ -10,11 +10,13 @@ class Error {
 	const APP_ERROR       = 0x101;
 	const APP_WARNING     = 0x102;
 	const APP_NOTICE      = 0x104;
+	const APP_SUCCESS     = 0x108;
 	const APP_ERROR_GROUP = 0x1FF;
 
 	const USER_ERROR       = 0x201; //user errors (didn't fill out form field etc.)
 	const USER_WARNING     = 0x202; //
 	const USER_NOTICE      = 0x204; //positive feedback messages
+	const USER_SUCCESS     = 0x208; //positive feedback messages
 	const USER_ERROR_GROUP = 0x2FF;
 
 	const LVL_ERROR   = 0x01;
