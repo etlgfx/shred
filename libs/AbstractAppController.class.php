@@ -16,6 +16,7 @@ abstract class AbstractAppController extends AbstractController {
 	protected $data_container;
 	protected $ajax;
 
+
 	public function __construct(URL $url) {
 		$this->url = $url;
 		$this->method = $this->url->getParam(0);
@@ -27,6 +28,7 @@ abstract class AbstractAppController extends AbstractController {
 		$this->data_container = new DataContainer();
 
 		if (!$this->config->isAjax()) {
+			$this->ajax = false;
 			$this->smarty = new Smarty();
 			$this->smarty->template_dir = PATH_APP .'views/';
 			$this->smarty->compile_dir = PATH_APP .'tmp/smarty_compile/';
@@ -34,7 +36,10 @@ abstract class AbstractAppController extends AbstractController {
 			$this->smarty->config_dir = PATH_APP .'config/';
 			$this->smarty->plugins_dir []= PATH_APP .'vendors/smarty_plugins/';
 		}
+		else
+			$this->ajax = true;
 	}
+
 
 	/**
 	 * not so fancy routing so AbstractController::factory can more
@@ -43,6 +48,15 @@ abstract class AbstractAppController extends AbstractController {
 	public static function routing(URL $url) {
 		return 'default';
 	}
+
+
+	/**
+	 * @returns string
+	 */
+	protected static function defaultAction() {
+		return self::DEFAULT_ACTION;
+	}
+
 
 	/**
 	 * Find the requested method using the current URL object and run it
@@ -58,6 +72,7 @@ abstract class AbstractAppController extends AbstractController {
 			throw new Exception("Undefined method requested: ". $this->method);
 	}
 
+
 	/**
 	 * Render the page through smarty
 	 *
@@ -66,14 +81,39 @@ abstract class AbstractAppController extends AbstractController {
 	public function render() {
 		$this->setupAppData();
 		
-		try {
-			$this->smarty->display($this->url->getAction() .'/'. $this->method .'.tpl');
+		$template = $this->getTemplate();
+
+		if ($this->isAjax()) {
+			try {
+				die(json_encode(array(
+							'content' => $this->smarty->fetch($template),
+							'messages' => Error::inst()->getUserErrors(),
+				)));
+			}
+			catch (Exception $e) {
+				die(json_encode(array(
+							'messages' => $e->getMessage()
+				)));
+			}
 		}
-		catch (Exception $e) {
-			echo $e->getMessage();
+		else {
+			try {
+				$this->smarty->display($template);
+			}
+			catch (Exception $e) {
+				echo $e->getMessage();
+			}
 		}
 	}
 
+
+	/**
+	 * Render an error page if possible, if not just spit out a plain text error
+	 *
+	 * @param $state int - Dispatcher state, auth / exec / init
+	 *
+	 * @see Dispatcher
+	 */
 	public function error($state) {
 		$template = 'generic';
 
@@ -101,12 +141,18 @@ abstract class AbstractAppController extends AbstractController {
 		}
 	}
 
+
+	/**
+	 * Retrieve all necessary data from site config, errors, and data container
+	 * and send them to smarty
+	 */
 	protected function setupAppData() {
 		$this->config->addStyle('base.css');
-		$error = Error::inst();
 
+		//TODO consider not storing these values in data container, but sending
+		//them straight to smarty
 		$this->set('_siteconfig', $this->config->getConfigData());
-		$this->set('_messages', $error->getUserErrors());
+		$this->set('_messages', Error::inst()->getUserErrors());
 
 		$this->set('request_uri', REQUEST_URI);
 		$this->set('server_url', SERVER_URL);
@@ -115,6 +161,7 @@ abstract class AbstractAppController extends AbstractController {
 
 		$this->smarty->assign($this->data_container->getVars());
 	}
+
 
 	/**
 	 * destroy the user session
@@ -126,8 +173,10 @@ abstract class AbstractAppController extends AbstractController {
 		session_destroy();
 	}
 
+
 	/**
-	 * redirect to the URL
+	 * Redirect to the passed URL, if the current request is in AJAX mode the
+	 * Location header will TODO
 	 *
 	 * @param $url URL object to redirect to
 	 */
@@ -138,30 +187,81 @@ abstract class AbstractAppController extends AbstractController {
 		header('Location: '. $url);
 	}
 
+
 	/**
 	 * sets template variables
+	 *
+	 * @param $key string name of template variable to set
+	 * @param $value mixed
+	 *
+	 * @see DataContainer
 	 */
 	public function set($key, $value = null) {
 		$this->data_container->set($key, $value);
 	}
 
+
 	/**
-	 * shorthand for assigning template names
-	 * TODO verify that this doesn't overwrite other values inside the template array in template vars
+	 * Assign a new template to the current request, this method ensures you're
+	 * using an existing template file or not.
+	 *
+	 * You can pass a full relative path to the template file with or without
+	 * .tpl extension; or you can pass the name of a template within the current
+	 * action (e.g. current action is users, pass in 'index', to request the
+	 * template 'users/index.tpl')
+	 *
+	 * @param $template string template name
+	 *
+	 * @returns bool true if file found and successfully assigned
 	 */
-	public function setTemplate($area, $template) {
-		$this->data_container->set('template.'. $area, $template);
+	public function setTemplate($template) {
+		if (file_exists($this->smarty->template_dir . $template))
+			$this->data_container->set('template', $template);
+		else if (file_exists($this->smarty->template_dir . $template .'.tpl'))
+			$this->data_container->set('template', $template .'.tpl');
+		else if (file_exists($this->smarty->template_dir . $this->url->getAction() .'/'. $template .'.tpl'))
+			$this->data_container->set('template',  $this->url->getAction() .'/'. $template .'.tpl');
+		else
+			return false;
+
+		return true;
 	}
+
+
+	/**
+	 * get the current page's template
+	 *
+	 * @returns string - relative path to template directory
+	 */
+	public function getTemplate() {
+		$template = $this->data_container->get('template');
+
+		if (!$template)
+			$template = $this->url->getAction() .'/'. $this->method .'.tpl';
+
+		return $template;
+	}
+
 
 	/**
 	 * sets template variables
+	 *
+	 * @param $key string - name of variable
+	 * @param $value mixed
+	 *
+	 * @see DataContainer.append()
+	 *
+	 * @returns void
 	 */
 	public function append($key, $value) {
 		return $this->data_container->append($key, $value);
 	}
 
+
 	/**
 	 * return whether the given key is set or not in the template vars
+	 *
+	 * @param $key string - name of variable to check
 	 *
 	 * @returns boolean
 	 */
@@ -169,12 +269,25 @@ abstract class AbstractAppController extends AbstractController {
 		return $this->data_container->is_set($key);
 	}
 
+
 	/**
-	 * @returns string
+	 * Set the current request into AJAX mode
 	 */
-	protected static function defaultAction() {
-		return self::DEFAULT_ACTION;
+	protected function setAjax() {
+		$this->ajax = true;
 	}
+
+
+	/**
+	 * Return whether the current request should be handled / rendered as an
+	 * AJAX request (JSON)
+	 *
+	 * @retuns boolean
+	 */
+	protected function isAjax() {
+		return $this->ajax;
+	}
+
 }
 
 ?>

@@ -111,6 +111,7 @@ class SiteConfig {
 			|| $this->data['pages'][$page]['require_login']);
 	}
 
+
 	/**
 	 * return whether the request should be treated as an ajax request
 	 *
