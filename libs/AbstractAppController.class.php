@@ -120,7 +120,7 @@ abstract class AbstractAppController extends AbstractController {
 		switch ($state) {
 			case Dispatcher::STATE_AUTH:
 				header('HTTP/1.1 403 Forbidden');
-				//$this->redirect(new URL($this->defaultAction()));
+				$this->redirect(new URL($this->defaultAction()), 1);
 				$template = '403';
 				break;
 
@@ -179,12 +179,17 @@ abstract class AbstractAppController extends AbstractController {
 	 * Location header will TODO
 	 *
 	 * @param $url URL object to redirect to
+	 * @param $timeout int - number of seconds to wait, this will cause the
+	 *     header to be a refresh header, instead of a location one
 	 */
-	public function redirect(URL $url) {
+	public function redirect(URL $url, $timeout = null) {
 		if ($this->url == $url)
 			return;
 
-		header('Location: '. $url);
+		if (is_int($timeout))
+			header('Refresh: '. $timeout .'; url='. $url);
+		else
+			header('Location: '. $url);
 	}
 
 
