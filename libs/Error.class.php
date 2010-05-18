@@ -24,12 +24,12 @@ class Error {
 	const LVL_NOTICE  = 0x04;
 	const LVL_SUCCESS = 0x08;
 
-	const ERROR_TYPE_GENERIC = 0x01000;
-	const ERROR_TYPE_DB      = 0x02000;
-	const ERROR_TYPE_MOD     = 0x04000; //model / module
-	const ERROR_TYPE_VIEW    = 0x08000;
-	const ERROR_TYPE_CTRL    = 0x10000; //controller
-	const ERROR_TYPE_PERM    = 0x20000; //permissions
+	const ERROR_TYPE_GENERIC = 0x00001000;
+	const ERROR_TYPE_DB      = 0x00002000;
+	const ERROR_TYPE_MOD     = 0x00004000; //model / module
+	const ERROR_TYPE_VIEW    = 0x00008000;
+	const ERROR_TYPE_CTRL    = 0x00010000; //controller
+	const ERROR_TYPE_PERM    = 0x00020000; //permissions
 	const ERROR_TYPE_GROUP   = 0xFFFFF000;
 
 	const I_MSG  = 0x01;
@@ -145,11 +145,37 @@ class Error {
 	}
 
 	/**
+	 */
+	public function getUserErrorsArray() {
+		$errors = array('success' => array(), 'error' => array());
+
+		foreach ($this->errors as $k => $error) {
+			$index = 'error';
+			if ($error[self::I_LVL] & self::LVL_SUCCESS)
+				$index = 'success';
+
+			$errors[$index] []= array(
+				'message' => $error[self::I_MSG],
+				'type' => self::getErrorType($error[self::I_MSG]),
+				'level' => self::getErrorLevel($error[self::I_LVL]),
+				'index' => $k,
+			);
+		}
+
+		if (!$errors['success'])
+			unset($errors['success']);
+		if (!$errors['errors'])
+			unset($errors['errors']);
+
+		return $errors;
+	}
+
+	/**
 	 * grab only user level errors for message boxes to the user
 	 *
 	 * @return array 
 	 */
-	public function getUserErrors() {
+	protected function getUserErrors() {
 		$errors = array();
 
 		foreach ($this->errors as $k => $error)
@@ -228,6 +254,9 @@ class Error {
 			case self::USER_NOTICE:
 			case self::APP_NOTICE:
 				return 'notice';
+			case self::USER_SUCCESS:
+			case self::APP_SUCCESS:
+				return 'success';
 			default:
 				return 'unknown';
 		}

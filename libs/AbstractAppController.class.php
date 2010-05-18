@@ -84,15 +84,27 @@ abstract class AbstractAppController extends AbstractController {
 		$template = $this->getTemplate();
 
 		if ($this->isAjax()) {
+			header('Content-type: text/javascript');
+
 			try {
 				die(json_encode(array(
 							'content' => $this->smarty->fetch($template),
-							'messages' => Error::inst()->getUserErrors(),
+							'_messages' => Error::inst()->getUserErrorsArray(),
+							'_siteconfig' => array(
+								'site' => $this->config->getSite(),
+								'page' => $this->config->getPage(),
+							),
 				)));
 			}
 			catch (Exception $e) {
+				Error::raise($e->getMessage(), Error::APP_ERROR);
+
 				die(json_encode(array(
-							'messages' => $e->getMessage()
+							'_messages' => Error::inst()->getUserErrorsArray(),
+							'_siteconfig' => array(
+								'site' => $this->config->getSite(),
+								'page' => $this->config->getPage(),
+							),
 				)));
 			}
 		}
@@ -147,19 +159,15 @@ abstract class AbstractAppController extends AbstractController {
 	 * and send them to smarty
 	 */
 	protected function setupAppData() {
-		$this->config->addStyle('base.css');
-
-		//TODO consider not storing these values in data container, but sending
-		//them straight to smarty
-		$this->set('_siteconfig', $this->config->getConfigData());
-		$this->set('_messages', Error::inst()->getUserErrors());
-
-		$this->set('request_uri', REQUEST_URI);
-		$this->set('server_url', SERVER_URL);
-		$this->set('server_gfx', SERVER_GFX);
-		$this->set('server_css', SERVER_CSS);
-
 		$this->smarty->assign($this->data_container->getVars());
+
+		$this->smarty->assign('_siteconfig', $this->config->getConfigData());
+		$this->smarty->assign('_messages', Error::inst()->getUserErrorsArray());
+
+		$this->smarty->assign('request_uri', REQUEST_URI);
+		$this->smarty->assign('server_url', SERVER_URL);
+		$this->smarty->assign('server_gfx', SERVER_GFX);
+		$this->smarty->assign('server_css', SERVER_CSS);
 	}
 
 

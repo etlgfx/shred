@@ -20,7 +20,11 @@ class SiteConfig {
 
 		if (!isset($this->data['styles']))
 			$this->data['styles'] = array();
+
+		if (!isset($this->data['scripts']))
+			$this->data['scripts'] = array();
 	}
+
 
 	/**
 	 * Find out if the page exists
@@ -36,6 +40,7 @@ class SiteConfig {
 		return isset($this->data['pages'][$page]);
 	}
 
+
 	/**
 	 * Return site meta data configuration section
 	 *
@@ -44,6 +49,7 @@ class SiteConfig {
 	public function getSite() {
 		return $this->data['site'];
 	}
+
 
 	/**
 	 * Return page configuration section
@@ -58,6 +64,7 @@ class SiteConfig {
 
 		return $this->pageExists($page) ? $this->data['pages'][$page] : null;
 	}
+
 
 	/**
 	 * Return the menu
@@ -95,6 +102,7 @@ class SiteConfig {
 
 		return $menu;
 	}
+
 
 	/**
 	 * return whether the requested page requires login
@@ -154,11 +162,11 @@ class SiteConfig {
 
 				require_once $path;
 
-				$css = ob_get_contents();
+				$contents = ob_get_contents();
 
 				ob_end_clean();
 
-				if (file_put_contents($cache_path, $css) === false)
+				if (file_put_contents($cache_path, $contents) === false)
 					throw new Exception("Could not write CSS cache file to: ". PATH_CSS . SUFFIX_CACHE);
 			}
 
@@ -170,18 +178,70 @@ class SiteConfig {
 		return true;
 	}
 
+
 	/**
+	 * @returns array of css files locations
 	 */
 	public function getStyles() {
 		return $this->data['styles'];
 	}
 
+
+	public function addScript($script, $interpret = false) {
+		$path = PATH_JS . $script;
+
+		if (file_exists($path)) {
+
+			if ($interpret === true) {
+				$url = substr(SERVER_URL, 3 + strpos(SERVER_URL, '://'));
+				$url = str_replace(array('/', ':', ';', '-'), '_', $url);
+				$url = trim($url, '_');
+
+				$cache = $url .'.'. str_replace(array('/', ':', ';', '-'), '_', $script);
+				$cache_path = PATH_JS . SUFFIX_CACHE . $cache;
+
+				if (!file_exists($cache_path) || filemtime($path) > filemtime($cache_path)) {
+					ob_start();
+
+					require_once $path;
+
+					$contents = ob_get_contents();
+
+					ob_end_clean();
+
+					if (file_put_contents($cache_path, $contents) === false)
+						throw new Exception("Could not write JS cache file to: ". PATH_JS . SUFFIX_CACHE);
+				}
+
+				$this->data['scripts'] []= SERVER_JS . SUFFIX_CACHE . $cache;
+			}
+			else
+				$this->data['scripts'] []= SERVER_JS . $script;
+		}
+		else
+			return false;
+
+		return true;
+	}
+
+
+	public function getScripts() {
+		return $this->data['scripts'];
+	}
+
+
+	/**
+	 * return an array of all config data required to render the page
+	 *
+	 * @returns array
+	 */
 	public function getConfigData() {
 		return array(
-			'site' => $this->getSite(),
+			'site' => $this->data['site'],
 			'page' => $this->getPage(),
 			'menu' => $this->getMenu(),
-			'styles' => $this->getStyles(),
+			'styles' => $this->data['styles'],
+			'scripts' => $this->data['scripts'],
 		);
 
 	}
