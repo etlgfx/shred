@@ -107,6 +107,7 @@ class URL {
 	 */
 	public function __toString() {
 		$url = SERVER_URL;
+		$get = array();
 
 		if (isset($this->action))
 			$url .= $this->action;
@@ -115,12 +116,19 @@ class URL {
 			$url .= '/'. implode('/', $this->params);
 
 		if (isset($this->named_params) && $this->named_params) {
-			foreach ($this->named_params as $k => $v)
-				$url .= '/'. $k .':'. urlencode($v);
+			foreach ($this->named_params as $k => $v) {
+				if (strpos($v, '/') === false)
+					$url .= '/'. $k .':'. urlencode($v);
+				else
+					$get[$k] = $v;
+			}
 		}
 
 		if (isset($this->pagination))
 			$url .= '/page:'. $this->pagination['page'] .'/count:'. $this->pagination['count'];
+
+		if ($get)
+			$url .= '?'. http_build_query($get);
 
 		return $url;
 	}

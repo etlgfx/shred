@@ -132,7 +132,7 @@ abstract class AbstractAppController extends AbstractController {
 		switch ($state) {
 			case Dispatcher::STATE_AUTH:
 				header('HTTP/1.1 403 Forbidden');
-				$this->redirect(new URL($this->defaultAction()), 1);
+				$this->redirect(new URL($this->defaultAction(), array('request_uri' => $this->url->__toString())), 1);
 				$template = '403';
 				break;
 

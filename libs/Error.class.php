@@ -164,8 +164,8 @@ class Error {
 
 		if (!$errors['success'])
 			unset($errors['success']);
-		if (!$errors['errors'])
-			unset($errors['errors']);
+		if (!$errors['error'])
+			unset($errors['error']);
 
 		return $errors;
 	}
