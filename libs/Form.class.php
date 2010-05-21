@@ -131,6 +131,8 @@ class Form {
 				break;
 
 			case self::TYPE_IMAGE:
+				if ($value['error'] || $value['size'] == 0)
+					return false;
 				break;
 
 				/*
@@ -356,6 +358,7 @@ class Form {
 			$this->fields[$this->current_page] = array();
 
 		$this->field_map[$key] = $this->current_page;
+		$this->required_fields[$key] = $key;
 
 		$this->fields[$this->current_page][$key] = array(
 				self::TYPE => self::TYPE_HIDDEN,
@@ -401,6 +404,9 @@ class Form {
 	public function addSelect($key, $validation_values, $required = true) {
 		if (!isset($this->fields[$this->current_page]))
 			$this->fields[$this->current_page] = array();
+
+		if ($required)
+			$this->required_fields[$key] = $key;
 
 		$this->field_map[$key] = $this->current_page;
 

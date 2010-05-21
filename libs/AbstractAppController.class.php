@@ -184,7 +184,7 @@ abstract class AbstractAppController extends AbstractController {
 
 	/**
 	 * Redirect to the passed URL, if the current request is in AJAX mode the
-	 * Location header will TODO
+	 * Location header will TODO ????
 	 *
 	 * @param $url URL object to redirect to
 	 * @param $timeout int - number of seconds to wait, this will cause the
