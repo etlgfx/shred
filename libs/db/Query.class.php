@@ -27,6 +27,14 @@ class Query {
 
 		for ($i = 1; $i < count($this->parts); $i += 2)
 			$this->parts[$i] = intval(substr($this->parts[$i], 2));
+
+		$args = func_get_args();
+
+		if (count($args) > 1) {
+			array_shift($args);
+
+			call_user_func_array(array($this, 'addArgument'), $args);
+		}
 	}
 
 	/**
