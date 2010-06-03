@@ -43,7 +43,7 @@ class Dispatcher {
 				}
 			}
 			catch (Exception $e) {
-				Error::raise('Exception caught when Authenticating', Error::APP_ERROR, Error::ERROR_TYPE_CTRL);
+				Error::raise($e, Error::APP_ERROR, Error::ERROR_TYPE_CTRL);
 				$continue = false;
 			}
 		}
@@ -55,7 +55,9 @@ class Dispatcher {
 				$controller->execute();
 			}
 			catch (Exception $e) {
-				Error::raise('Failed to execute: '. $e->getMessage(), Error::APP_ERROR, Error::ERROR_TYPE_CTRL);
+				//TODO raise a user friendly message as well?
+				//Error::raise($e->getMessage(), Error::APP_ERROR, Error::ERROR_TYPE_CTRL);
+				Error::raise($e, Error::APP_ERROR, Error::ERROR_TYPE_CTRL);
 				$continue = false;
 			}
 		}
@@ -66,7 +68,7 @@ class Dispatcher {
 				$controller->render();
 			}
 			catch (Exception $e) {
-				Error::raise('Failed to render: '. get_class($e) .'; '. $e, Error::APP_ERROR, Error::ERROR_TYPE_CTRL);
+				Error::raise($e, Error::APP_ERROR, Error::ERROR_TYPE_CTRL);
 
 				header('content-type: text/plain;');
 				echo Error::inst();

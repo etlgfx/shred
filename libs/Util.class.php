@@ -85,6 +85,46 @@ class Util {
 	public static function generateHash() {
 		return self::encodePassword(microtime(true) . rand(0, 65535) . self::SALT);
 	}
+
+	/**
+	 * attempts to return the default file extension for the given mime type
+	 * TODO convert this to an associative array probably, be easier code
+	 *
+	 * @param $mime string
+	 *
+	 * @returns string e.g. ".jpg"
+	 */
+	public static function mimeToExtension($mime) {
+		switch ($mime) {
+			case 'image/jpeg':
+				return '.jpg';
+
+			case 'image/png':
+				return '.png';
+
+			case 'image/gif':
+				return '.gif';
+
+			case 'image/tiff':
+				return '.tiff';
+
+			case 'audio/ogg':
+			case 'audio/vorbis':
+				return '.ogg';
+
+			case 'audio/mpeg':
+				return '.mp3';
+
+			case 'image/x-icon':
+				return '.ico';
+
+			case 'application/pdf':
+				return '.pdf';
+
+			default:
+				return null;
+		}
+	}
 }
 
 ?>

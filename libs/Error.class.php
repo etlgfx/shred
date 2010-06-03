@@ -78,7 +78,7 @@ class Error {
 	public static function raise($message, $level = self::APP_WARNING, $type = self::ERROR_TYPE_GENERIC) {
 		$inst = self::inst();
 
-		$inst->errors []= array(self::I_MSG => $message, self::I_LVL => $level, self::I_TYPE => $type);
+		$inst->errors []= array(self::I_MSG => $message instanceof Exception ? $message->getMessage() : $message, self::I_LVL => $level, self::I_TYPE => $type);
 
 		if ($level & self::USER_ERROR_GROUP)
 			$inst->user_errors = true;
@@ -99,8 +99,14 @@ class Error {
 					break;
 			}
 
-			$trace = debug_backtrace(false);
-			$message = $message .'; '. $trace[1]['class'] .'::'. $trace[1]['function'] .' - '. $trace[0]['file'] .'@'. $trace[0]['line'];
+			if ($message instanceof Exception) {
+				$trace = $message->getTrace();
+				$message = $message->getMessage() .'; '. $trace[0]['class'] . $trace[0]['type'] . $trace[0]['function'] .' - '. $message->getFile() .'@'. $message->getLine();
+			}
+			else {
+				$trace = debug_backtrace(false);
+				$message = $message .'; '. $trace[1]['class'] .'::'. $trace[1]['function'] .' - '. $trace[0]['file'] .'@'. $trace[0]['line'];
+			}
 
 			$file = $inst->phplog;
 			if (isset(self::$logs[$type]))

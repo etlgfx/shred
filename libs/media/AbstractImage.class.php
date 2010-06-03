@@ -10,6 +10,7 @@ abstract class AbstractImage {
 	protected $filesize;
 	protected $aspect;
 	protected $image_open;
+	protected $mime;
 
 	/**
 	 * Priority based set of Image handling class suffixes, the factory method
@@ -27,7 +28,7 @@ abstract class AbstractImage {
 	 * init properties to null
 	 */
 	public function __construct() {
-		$this->width = $this->height = $this->filename = $this->aspect = $this->image_open = null;
+		$this->width = $this->height = $this->filename = $this->aspect = $this->image_open = $this->filesize = $this->mime = null;
 	}
 
 	/**
@@ -126,12 +127,28 @@ abstract class AbstractImage {
 			$this->filename = $filename;
 			$this->image_open = true;
 			$this->aspect = $this->width / $this->height;
+
+			$this->mime = $this->extractMimeType();
 			return true;
 		}
 		else {
 			Error::raise('Can\'t open file: '. $filename .'; file does not exist');
 			return false;
 		}
+	}
+
+	/**
+	 * Use the Fileinfo standard PHP 5.3 library to extract mime type from the
+	 * file
+	 *
+	 * @returns string
+	 */
+	protected function extractMimeType() {
+		$f = finfo_open(FILEINFO_MIME_TYPE);
+		$mime = finfo_file($f, $this->filename);
+		finfo_close($f);
+
+		return $mime;
 	}
 
 	/**
@@ -381,5 +398,12 @@ abstract class AbstractImage {
 	 */
 	public function getFilename() {
 		return $this->filename ? $this->filename : null;
+	}
+
+	/**
+	 * @returns string - null if no image open
+	 */
+	public function getMimeType() {
+		return $this->mime ? $this->mime : null;
 	}
 }
