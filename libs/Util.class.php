@@ -125,6 +125,64 @@ class Util {
 				return null;
 		}
 	}
+
+	/**
+	 * convert a string like "bla_stuff" to "BlaStuff" to be used as a class
+	 * name
+	 *
+	 * @param $string string
+	 *
+	 * @throw Exception on invalid parameter
+	 *
+	 * @returns string
+	 */
+	public static function toClassName($string) {
+		if (!is_string($string))
+			throw new Exception('Invalid parameter passed string: '. $string);
+
+		$class = '';
+		
+		foreach (explode('_', $string) as $part)
+			$class .= ucfirst(strtolower($part));
+
+		return $class;
+	}
+
+	/**
+	 * convert a string like "_bla_stuff" to "_blaStuff" to be used as a method
+	 * name
+	 *
+	 * @param $string string
+	 *
+	 * @throw Exception on invalid parameter
+	 *
+	 * @returns string
+	 */
+	public static function toMethodName($string) {
+		if (!is_string($string))
+			throw new Exception('Invalid parameter passed string: '. $string);
+
+		$method = '';
+		
+		$first = true;
+
+		foreach (explode('_', $string) as $part) {
+			if ($part) {
+				$part = strtolower($part);
+
+				if ($first) {
+					$method .= $part;
+					$first = false;
+				}
+				else
+					$method .= ucfirst($part);
+			}
+			else if (!$part && $first && $method != '_')
+				$method .= '_';
+		}
+
+		return $method;
+	}
 }
 
 ?>

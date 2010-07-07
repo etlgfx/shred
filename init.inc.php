@@ -13,10 +13,12 @@ define('PATH_DB', PATH_LIBS .'db/');
 define('PATH_CONFIG', PATH_CODE .'config/');
 define('PATH_VENDORS', PATH_CODE .'vendors/');
 
-define('PATH_APP', dirname($_SERVER['SCRIPT_FILENAME']) .'/');
-$dir = dirname($_SERVER['SCRIPT_FILENAME']);
-define('APP_NAME', substr($dir, strrpos($dir, '/') + 1));
-unset($dir);
+if (!isset($argv)) {
+	define('PATH_APP', dirname($_SERVER['SCRIPT_FILENAME']) .'/');
+	$dir = dirname($_SERVER['SCRIPT_FILENAME']);
+	define('APP_NAME', substr($dir, strrpos($dir, '/') + 1));
+	unset($dir);
+}
 
 if (isset($_SERVER['HTTP_CLIENT_IP']) && $_SERVER['HTTP_CLIENT_IP']) {
 	define('CLIENT_IP', $_SERVER['HTTP_CLIENT_IP']);
@@ -24,8 +26,11 @@ if (isset($_SERVER['HTTP_CLIENT_IP']) && $_SERVER['HTTP_CLIENT_IP']) {
 else if (isset($_SERVER['HTTP_X_FORWARDED_FOR']) && $_SERVER['HTTP_X_FORWARDED_FOR']) {
 	define('CLIENT_IP', $_SERVER['HTTP_X_FORWARDED_FOR']);
 }
-else {
+else if (isset($_SERVER['REMOTE_ADDR'])) {
 	define('CLIENT_IP', $_SERVER['REMOTE_ADDR']);
+}
+else {
+	define('CLIENT_IP', null);
 }
 
 if (isset($_SERVER['SERVER_NAME'])) {
@@ -35,8 +40,8 @@ if (isset($_SERVER['SERVER_NAME'])) {
 }
 else {
 	define('SERVER_PATH', PATH_CODE);
-	define('SERVER_URL', PATH_CODE);
-	define('REQUEST_URI', PATH_CODE); //TODO this won't work for command line
+	//define('SERVER_URL', PATH_CODE);
+	//define('REQUEST_URI', PATH_CODE); //TODO this won't work for command line
 }
 
 define('RE_EMAIL', '#^[a-z][-a-z0-9\.]*[a-z0-9]@([a-z][-a-z0-9\.]*[a-z0-9]\.)+[a-z]+$#i');
