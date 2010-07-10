@@ -7,6 +7,7 @@ class StreamTokenizer {
 	private $literals = array('"', '`', "'");
 	private $escape = '\\';
 	private $comments = array('--', '#', array('/*', '*/'));
+	private $stream = null;
 
 	private $literal_callback;
 	private $comment_callback;
@@ -24,6 +25,8 @@ class StreamTokenizer {
 	}
 
 	public function tokenize(Stream $stream) {
+		$this->stream = $stream;
+
 		$mode = self::MODE_NORMAL;
 
 		$line = 1;
@@ -40,55 +43,65 @@ class StreamTokenizer {
 				$char = 0;
 			}
 
-			echo $line .'-'. $char .': '. $c . PHP_EOL;
-
 			switch ($mode) {
 				case self::MODE_COMMENT:
 					if (is_array($token)) {
+						if ($token == $this->matchToken($this->comments, $c, false)) {
+							call_user_func($this->comment_callback, $token[0] . $str . $token[1]);
+
+							$mode = self::MODE_NORMAL;
+							$token = null;
+							$str = '';
+
+							continue 2;
+						}
 					}
 					else if ($c == "\n") {
-						echo 'comment: '. $line .':'. $char .' ';
-						call_user_func($this->comment_callback, $str . $c);
+						call_user_func($this->comment_callback, $token . $str . $c);
+
 						$mode = self::MODE_NORMAL;
 						$token = null;
 						$str = '';
-						echo PHP_EOL;
-						continue;
+
+						continue 2;
 					}
 					break;
+
 				case self::MODE_LITERAL:
 					/*if escape else*/
 					if ($c == $token) {
-						echo 'literal: '. $line .':'. $char .' ';
-						call_user_func($this->literal_callback, $str . $c);
+						call_user_func($this->literal_callback, $token . $str . $c);
+
 						$mode = self::MODE_NORMAL;
 						$token = null;
 						$str = '';
-						echo PHP_EOL;
-						continue;
+
+						continue 2;
 					}
 					break;
+
 				case self::MODE_ESCAPE:
 					break;
+
 				default:
 					if (in_array($c, $this->literals)) {
-						echo 'text: '. $line .':'. $char .' ';
-						$token = $c;
+						call_user_func($this->text_callback, $str);
+
 						$mode = self::MODE_LITERAL;
-						call_user_func($this->text_callback, $str);
-						$str = '';
-						echo PHP_EOL;
-						continue;
-					}
-					else if (in_array($c, $this->comments)) {
-						echo 'text: '. $line .':'. $char .' ';
 						$token = $c;
-						$mode = self::MODE_COMMENT;
-						call_user_func($this->text_callback, $str);
 						$str = '';
-						echo PHP_EOL;
-						continue;
+
+						continue 2;
 					}
+					else if ($token = $this->matchToken($this->comments, $c, true)) {
+						call_user_func($this->text_callback, $str);
+
+						$mode = self::MODE_COMMENT;
+						$str = '';
+
+						continue 2;
+					}
+
 					//else if
 			}
 
@@ -96,6 +109,7 @@ class StreamTokenizer {
 		}
 
 		//return $str;
+		$this->stream = null;
 	}
 
 	public function commentCallback(array $callback) {
@@ -114,6 +128,45 @@ class StreamTokenizer {
 		echo $str;
 	}
 
+	private function matchToken($tokens, $c, $open = true) {
+		$token_index = $open == true ? 0 : 1;
+		$match = null;
+
+		foreach ($tokens as $token) {
+
+			if ($c == $token) {
+				return $token;
+			}
+			else if (is_string($token) && strlen($token) > 1 && $c == $token[0]) {
+				$match = $token;
+			}
+			else if (is_array($token)) {
+				if ($c == $token[$token_index]) {
+					return $token;
+				}
+				else if (strlen($token[$token_index]) > 1 && $c == $token[$token_index][0]) {
+					$match = $token[$token_index];
+				}
+			}
+
+			if ($match) {
+				$str = $c;
+
+				$l = strlen($match) - 1;
+
+				for ($i = 0; $i < $l; $i++) {
+					$str .= $this->stream->getChar();
+				}
+
+				if ($str == $match)
+					return $token;
+				else
+					$this->stream->rewind($l);
+			}
+		}
+
+		return null;
+	}
 }
 
 ?>
