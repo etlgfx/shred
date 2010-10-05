@@ -1,7 +1,6 @@
 <?php
 
 require_once PATH_DB .'Query.class.php';
-require_once PATH_DB .'DBConf.class.php';
 
 /** @class DB
  *
@@ -25,9 +24,11 @@ abstract class DB {
 		if (isset($dbs[$db_name]))
 			return $dbs[$db_name];
 
-		$descriptor = DBConf::getDescriptor($db_name);
-		if ($descriptor instanceof DBDescriptor) {
-			$driver_class = 'DB'. $descriptor->getDriver();
+		$descriptor = Config::get('db.'. $db_name);
+
+		if (is_array($descriptor)) {
+
+			$driver_class = 'DB'. $descriptor['driver'];
 			$driver_path = PATH_DB . $driver_class .'.class.php';
 
 			if (file_exists($driver_path)) {
@@ -35,7 +36,7 @@ abstract class DB {
 				require_once $driver_path;
 
 				if (class_exists($driver_class))
-					$return = new $driver_class($descriptor->getConnection(), $descriptor->getDatabase());
+					$dbs[$db_name] = $return = new $driver_class($descriptor, $descriptor['database']);
 			}
 		}
 

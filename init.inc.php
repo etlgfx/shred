@@ -44,12 +44,17 @@ else {
 	//define('REQUEST_URI', PATH_CODE); //TODO this won't work for command line
 }
 
-define('RE_EMAIL', '#^[a-z][-a-z0-9\.]*[a-z0-9]@([a-z][-a-z0-9\.]*[a-z0-9]\.)+[a-z]+$#i');
-define('RE_URL', '#^(http|ftp|https|svn)://([a-z][-a-z0-9\.]*[a-z0-9]\.)+[a-z]+#i');
-
-require_once PATH_LIBS .'Conf.class.php';
-require_once PATH_DB .'DB.class.php';
+require_once PATH_LIBS .'Config.class.php';
 require_once PATH_CONFIG .'global.conf.php';
-require_once PATH_CONFIG .'dev.conf.php';
+//require_once PATH_DB .'DB.class.php';
+
+switch (isset($_SERVER['ENV']) ? $_SERVER['ENV'] : null) {
+	case 'production':
+		require_once PATH_CONFIG .'production.conf.php';
+		break;
+
+	default: 
+		require_once PATH_CONFIG .'dev.conf.php';
+}
 
 ?>

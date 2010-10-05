@@ -6,13 +6,13 @@
  * The DataContainer class is meant as a simple PHP template variable store
  */
 class DataContainer {
-	private $template_vars;
+	private $vars;
 
 	/**
 	 * constructor
 	 */
 	public function __construct() {
-		$this->template_vars = array();
+		$this->vars = array();
 	}
 
 	/**
@@ -36,7 +36,7 @@ class DataContainer {
 	 */
 	public function set($key, $value = null) {
 		if ($value === null && is_array($key))
-			$this->template_vars = array_merge($this->template_vars, $key);
+			$this->vars = array_merge($this->vars, $key);
 		else {
 			$obj =& $this->getReference($key, true);
 			$obj = $value;
@@ -79,7 +79,7 @@ class DataContainer {
 	 * @returns array 
 	 */
 	public function getVars() {
-		return $this->template_vars;
+		return $this->vars;
 	}
 
 	/**
@@ -111,7 +111,8 @@ class DataContainer {
 			return null;
 
 		$null = null;
-		$obj =& $this->template_vars;
+
+		$obj =& $this->vars;
 		foreach ($key as $k) {
 			if (isset($obj[$k]))
 				$obj =& $obj[$k];

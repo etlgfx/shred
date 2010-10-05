@@ -75,18 +75,18 @@ class ShellParams {
 		else if (is_string($value)) {
 			switch (strtolower($value)) {
 				case 'true':
-				case 'T':
+				case 't':
 				case 'on':
 				case 'yes':
-				case 'enable':
-				case 'with':
+				//case 'enable':
+				//case 'with':
 					return true;
 				case 'false':
-				case 'F':
+				case 'f':
 				case 'off':
 				case 'no':
-				case 'disable':
-				case 'without':
+				//case 'disable':
+				//case 'without':
 					return false;
 				default:
 					return null;
@@ -128,7 +128,23 @@ class ShellParams {
 						continue;
 					}
 					else {
-						$this->options[substr($value, 2)] = true;
+						$value = substr($value, 2);
+						if (strpos($value, '-')) {
+							list($switch, $key) = explode('-', $value, 2);
+
+							switch (strtolower($switch)) {
+								case 'with':
+								case 'enable':
+									$this->options[$key] = true;
+									continue 2;
+								case 'without':
+								case 'disable':
+									$this->options[$key] = false;
+									continue 2;
+							}
+						}
+
+						$this->options[$value] = true;
 						continue;
 					}
 				}

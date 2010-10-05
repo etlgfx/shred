@@ -6,6 +6,7 @@ require_once PATH_LIBS .'ShellParams.class.php';
 abstract class Shell {
 	protected $required = array();
 	protected $switches = array();
+	protected $params;
 
 	/**
 	 * Default constructor
@@ -20,7 +21,7 @@ abstract class Shell {
 	 * @throws Exception if method not found
 	 */
 	public function execute() {
-		$method = $this->params->getArgument(1);
+		$method = Util::toMethodName($this->params->getArgument(1));
 
 		if (!$method)
 			call_user_func_array(array($this, '_default'), $this->params->getArguments());

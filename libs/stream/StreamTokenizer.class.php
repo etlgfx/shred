@@ -9,20 +9,12 @@ class StreamTokenizer {
 	private $comments = array('--', '#', array('/*', '*/'));
 	private $stream = null;
 
-	private $literal_callback;
-	private $comment_callback;
-	private $text_callback;
-
 	const MODE_COMMENT = 0x01;
 	const MODE_LITERAL = 0x02;
 	const MODE_ESCAPE  = 0x04;
 	const MODE_NORMAL  = 0x00;
 
-	public function __construct() {
-		$this->comment_callback = array($this, 'defaultCallback');
-		$this->text_callback = array($this, 'defaultCallback');
-		$this->literal_callback = array($this, 'defaultCallback');
-	}
+	public function __construct() { }
 
 	public function tokenize(Stream $stream) {
 		$this->stream = $stream;
@@ -33,6 +25,8 @@ class StreamTokenizer {
 		$char = 0;
 		$str = '';
 		$token = null;
+
+		$return_tokens = array();
 
 		while ($stream->inStream()) {
 			$c = $stream->getChar();
@@ -47,7 +41,7 @@ class StreamTokenizer {
 				case self::MODE_COMMENT:
 					if (is_array($token)) {
 						if ($token == $this->matchToken($this->comments, $c, false)) {
-							call_user_func($this->comment_callback, $token[0] . $str . $token[1]);
+							$return_tokens []= array('type' => 'comment', 'value' => $token[0] . $str . $token[1]);
 
 							$mode = self::MODE_NORMAL;
 							$token = null;
@@ -57,7 +51,7 @@ class StreamTokenizer {
 						}
 					}
 					else if ($c == "\n") {
-						call_user_func($this->comment_callback, $token . $str . $c);
+						$return_tokens []= array('type' => 'comment', 'value' => $token . $str . $c);
 
 						$mode = self::MODE_NORMAL;
 						$token = null;
@@ -70,7 +64,7 @@ class StreamTokenizer {
 				case self::MODE_LITERAL:
 					/*if escape else*/
 					if ($c == $token) {
-						call_user_func($this->literal_callback, $token . $str . $c);
+						$return_tokens []= array('type' => 'literal', 'value' => $token . $str . $c);
 
 						$mode = self::MODE_NORMAL;
 						$token = null;
@@ -85,7 +79,7 @@ class StreamTokenizer {
 
 				default:
 					if (in_array($c, $this->literals)) {
-						call_user_func($this->text_callback, $str);
+						$return_tokens []= array('type' => 'text', 'value' => $str);
 
 						$mode = self::MODE_LITERAL;
 						$token = $c;
@@ -94,7 +88,7 @@ class StreamTokenizer {
 						continue 2;
 					}
 					else if ($token = $this->matchToken($this->comments, $c, true)) {
-						call_user_func($this->text_callback, $str);
+						$return_tokens []= array('type' => 'text', 'value' => $str);
 
 						$mode = self::MODE_COMMENT;
 						$str = '';
@@ -110,22 +104,8 @@ class StreamTokenizer {
 
 		//return $str;
 		$this->stream = null;
-	}
 
-	public function commentCallback(array $callback) {
-		$this->comment_callback = $callback;
-	}
-
-	public function textCallback(array $callback) {
-		$this->text_callback = $callback;
-	}
-
-	public function literalCallback(array $callback) {
-		$this->literal_callback = $callback;
-	}
-
-	public function defaultCallback($str) {
-		echo $str;
+		return $return_tokens;
 	}
 
 	private function matchToken($tokens, $c, $open = true) {

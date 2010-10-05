@@ -160,7 +160,7 @@ class Util {
 	 */
 	public static function toMethodName($string) {
 		if (!is_string($string))
-			throw new Exception('Invalid parameter passed string: '. $string);
+			return null;
 
 		$method = '';
 		

@@ -12,11 +12,11 @@ final class DBmysqli extends DB {
 	 * @param $default_db string default database name
 	 */
 	public function __construct(array $connection, $default_db = null) {
-		$this->server   = $connection[DBDescriptor::SERVER];
-		$this->port     = $connection[DBDescriptor::PORT];
-		$this->username = $connection[DBDescriptor::USERNAME];
-		$this->password = $connection[DBDescriptor::PASSWORD];
-		$this->socket   = $connection[DBDescriptor::SOCKET];
+		$this->server   = isset($connection['host']) ? $connection['host'] : null;
+		$this->port     = isset($connection['port']) ? $connection['port'] : null;
+		$this->username = isset($connection['username']) ? $connection['username'] : null;
+		$this->password = isset($connection['password']) ? $connection['password'] : null;
+		$this->socket   = isset($connection['socket']) ? $connection['socket'] : null;
 
 		$this->default_db = $default_db;
 		$this->current_db = null;
