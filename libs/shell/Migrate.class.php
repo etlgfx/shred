@@ -156,7 +156,7 @@ class Migrate extends Shell {
 	}
 
 	private function getCurrentVersion() {
-		$db = DB::factory('master');
+		$db = DB::factory(Config::get('migrations.default_db'));
 
 		if (!$db->query(new Query('SHOW CREATE TABLE '. $this->table))) {
 			$db->query(
