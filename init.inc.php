@@ -18,6 +18,9 @@ if (!isset($argv)) {
 	$dir = dirname($_SERVER['SCRIPT_FILENAME']);
 	define('APP_NAME', substr($dir, strrpos($dir, '/') + 1));
 	unset($dir);
+
+	define('APP_CONFIG', PATH_APP .'config/'. APP_NAME .'.conf.php');
+    define('PATH_APP_TMP', PATH_APP .'tmp/');
 }
 
 if (isset($_SERVER['HTTP_CLIENT_IP']) && $_SERVER['HTTP_CLIENT_IP']) {
@@ -45,8 +48,13 @@ else {
 }
 
 require_once PATH_LIBS .'Config.class.php';
+require_once PATH_LIBS .'Util.class.php';
+require_once PATH_LIBS .'Error.class.php';
 require_once PATH_CONFIG .'global.conf.php';
-//require_once PATH_DB .'DB.class.php';
+
+if (defined('APP_CONFIG')) {
+    require_once APP_CONFIG;
+}
 
 switch (isset($_SERVER['ENV']) ? $_SERVER['ENV'] : null) {
 	case 'production':

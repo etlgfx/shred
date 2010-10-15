@@ -3,28 +3,34 @@
 require_once PATH_LIBS .'AbstractController.class.php';
 require_once PATH_LIBS .'Error.class.php';
 require_once PATH_LIBS .'DataContainer.class.php';
-
 require_once PATH_LIBS .'SiteConfig.class.php';
+
 require_once PATH_VENDORS .'smarty/Smarty.class.php';
 
 abstract class AbstractAppController extends AbstractController {
-	const DEFAULT_ACTION = 'login';
-
-	protected $method;
-	protected $url;
+	protected $request;
 	protected $smarty;
 	protected $data_container;
 	protected $ajax;
 
 
-	public function __construct(URL $url) {
-		$this->url = $url;
-		$this->method = $this->url->getParam(0);
+    /**
+     * Setup the current controller instance with all the defaults. SiteConfig,
+     * DataContainer, Smarty
+     *
+     * @param $request
+     */
+	public function __construct(Request $request) {
+        parent::__construct($request);
 
-		if (!$this->method)
+		$this->method = $this->request->getAction();
+
+
+		if (!$this->method) {
 			$this->method = 'index';
+        }
 
-		$this->config = new SiteConfig($url);
+		$this->config = new SiteConfig($request);
 		$this->data_container = new DataContainer();
 
 		if (!$this->config->isAjax()) {
@@ -36,25 +42,9 @@ abstract class AbstractAppController extends AbstractController {
 			$this->smarty->config_dir = PATH_APP .'config/';
 			$this->smarty->plugins_dir []= PATH_APP .'vendors/smarty_plugins/';
 		}
-		else
+		else {
 			$this->ajax = true;
-	}
-
-
-	/**
-	 * not so fancy routing so AbstractController::factory can more
-	 * intelligently decide what concrete controller to load
-	 */
-	public static function routing(URL $url) {
-		return 'default';
-	}
-
-
-	/**
-	 * @returns string
-	 */
-	protected static function defaultAction() {
-		return self::DEFAULT_ACTION;
+        }
 	}
 
 
@@ -66,10 +56,12 @@ abstract class AbstractAppController extends AbstractController {
 	 * @returns mixed, whatever the method returns
 	 */
 	public function execute() {
-		if (method_exists($this, $this->method))
-			return call_user_func_array(array($this, $this->method), $this->url->getParams(1));
-		else
+		if (method_exists($this, $this->method)) {
+			return call_user_func_array(array($this, $this->method), $this->request->getParams());
+        }
+		else {
 			throw new Exception("Undefined method requested: ". $this->method);
+        }
 	}
 
 
@@ -132,7 +124,7 @@ abstract class AbstractAppController extends AbstractController {
 		switch ($state) {
 			case Dispatcher::STATE_AUTH:
 				header('HTTP/1.1 403 Forbidden');
-				$this->redirect(new URL($this->defaultAction(), array('request_uri' => $this->url->__toString())), 1);
+				$this->redirect(new URL(Config::get('site_config.default_page'), array('request_uri' => $this->request->getUrl->__toString())), 1);
 				$template = '403';
 				break;
 
@@ -191,7 +183,7 @@ abstract class AbstractAppController extends AbstractController {
 	 *     header to be a refresh header, instead of a location one
 	 */
 	public function redirect(URL $url, $timeout = null) {
-		if ($this->url == $url)
+		if ($this->request->getUrl() == $url) //TODO hacky, consider changing the interface to the current URL?
 			return;
 
 		if (is_int($timeout))
@@ -232,8 +224,8 @@ abstract class AbstractAppController extends AbstractController {
 			$this->data_container->set('template', $template);
 		else if (file_exists($this->smarty->template_dir . $template .'.tpl'))
 			$this->data_container->set('template', $template .'.tpl');
-		else if (file_exists($this->smarty->template_dir . $this->url->getAction() .'/'. $template .'.tpl'))
-			$this->data_container->set('template',  $this->url->getAction() .'/'. $template .'.tpl');
+		else if (file_exists($this->smarty->template_dir . $this->request->getController() .'/'. $template .'.tpl'))
+			$this->data_container->set('template',  $this->request->getController() .'/'. $template .'.tpl');
 		else
 			return false;
 
@@ -250,7 +242,7 @@ abstract class AbstractAppController extends AbstractController {
 		$template = $this->data_container->get('template');
 
 		if (!$template)
-			$template = $this->url->getAction() .'/'. $this->method .'.tpl';
+			$template = $this->request->getController() .'/'. $this->method .'.tpl';
 
 		return $template;
 	}

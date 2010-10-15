@@ -6,10 +6,10 @@
  * lists and parameter retrieval
  */
 class URL {
-	private $action;
-	private $pagination;
-	private $params;
-	private $named_params;
+	protected $action;
+	protected $pagination;
+	protected $params;
+	protected $named_params;
 
 	const K_PAGE = 'page';
 	const K_COUNT = 'count';

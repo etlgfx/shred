@@ -1,6 +1,7 @@
 <?php
 
-require_once PATH_LIBS .'URL.class.php';
+require_once PATH_LIBS .'Request.class.php';
+require_once PATH_LIBS .'Router.class.php';
 require_once PATH_LIBS .'AbstractController.class.php';
 
 /** @class Dispatcher
@@ -20,16 +21,18 @@ class Dispatcher {
 	 * parse URL, get a controller, authorize, execute, render to stdout
 	 */
 	public function __construct() {
-		$url = new URL(REQUEST_URI, $_GET);
+        $router = new Router();
+        $request = $router->route();
+
 		$state = self::STATE_INIT;
 		$controller = null;
 		$continue = true;
 
 		try {
-			$controller = AbstractController::factory($url);
+			$controller = AbstractController::factory($request);
 		}
 		catch (Exception $e) {
-			Error::raise('Page Not Found: '. $url, Error::APP_ERROR, Error::ERROR_TYPE_CTRL);
+			Error::raise('Page Not Found: '. $request .'; '. $e->getMessage(), Error::APP_ERROR, Error::ERROR_TYPE_CTRL);
 			$continue = false;
 		}
 
@@ -75,10 +78,9 @@ class Dispatcher {
 			}
 		}
 		else {
-
 			if (!$controller) { //ALL ELSE FAILED grab the generic Error Controller and call the error method on that
 				require_once PATH_LIBS .'ErrorAppController.class.php';
-				$controller = new ErrorAppController(new URL(null));
+				$controller = new ErrorAppController(new Request('get'));
 			}
 
 			$controller->error($state);

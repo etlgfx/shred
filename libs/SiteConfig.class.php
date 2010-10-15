@@ -1,29 +1,55 @@
 <?php
 
+require_once PATH_LIBS .'URL.class.php';
+require_once PATH_LIBS .'Request.class.php';
+
+/**
+ * @class SiteConfig stores top level site configuration options, like which
+ * pages are available, which style sheets to include, which scripts to include.
+ *
+ * Currently it is not very fine grained, only going down the the controller
+ * level, finer grained control is available by implementing checks in
+ * individual controller methods.
+ */
 class SiteConfig {
 	private $data;
 	private $page;
-	private $url;
 
-	public function __construct(URL $url) {
-		$this->data = require PATH_APP .'config/__site.conf.php';
+    /**
+     * @param $request this is the current request, currently we only use this
+     * to get the controller name i.e. page name used to server the page
+     */
+	public function __construct(Request $request) {
+		$this->data = Config::get('site_config');
 
-		$this->url = $url;
-		$page = $url->getAction();
+		$page = $request->getController();
 
-		if ($this->pageExists($page))
+		if ($this->pageExists($page)) {
 			$this->page = $page;
-		else if ($page)
+        }
+		else if ($page) {
 			throw new Exception('Page does not exist: '. $page);
-		else
+        }
+		else {
 			$this->page = $this->data['default_page'];
+        }
 
-		if (!isset($this->data['styles']))
+		if (!isset($this->data['styles'])) {
 			$this->data['styles'] = array();
+        }
+        else if (is_array($this->data['styles'])) {
+            $s = $this->data['styles'];
+            $this->data['styles'] = array();
 
-		if (!isset($this->data['scripts']))
-			$this->data['scripts'] = array();
-	}
+            foreach ($s as $style) {
+                $this->addStyle($style);
+            }
+        }
+
+        if (!isset($this->data['scripts'])) {
+            $this->data['scripts'] = array();
+        }
+    }
 
 
 	/**
@@ -148,6 +174,9 @@ class SiteConfig {
 	public function addStyle($stylesheet) {
 		$path = PATH_CSS . $stylesheet;
 
+        if (isset($this->data['styles'][$stylesheet])) {
+            return true;
+        }
 		if (file_exists($path)) {
 
 			$url = substr(SERVER_URL, 3 + strpos(SERVER_URL, '://'));
@@ -166,14 +195,16 @@ class SiteConfig {
 
 				ob_end_clean();
 
-				if (file_put_contents($cache_path, $contents) === false)
+				if (file_put_contents($cache_path, $contents) === false) {
 					throw new Exception("Could not write CSS cache file to: ". PATH_CSS . SUFFIX_CACHE);
+                }
 			}
 
-			$this->data['styles'] []= SERVER_CSS . SUFFIX_CACHE . $cache;
+			$this->data['styles'][$stylesheet] = SERVER_CSS . SUFFIX_CACHE . $cache;
 		}
-		else
+		else {
 			return false;
+        }
 
 		return true;
 	}
@@ -187,10 +218,17 @@ class SiteConfig {
 	}
 
 
+    /**
+     * TODO refactor this with addStyle() because there's a lot of duplicate
+     * code here
+     */
 	public function addScript($script, $interpret = false) {
 		$path = PATH_JS . $script;
 
-		if (file_exists($path)) {
+        if (isset($this->data['scripts'][$script])) {
+            return true;
+        }
+        else if (file_exists($path)) {
 
 			if ($interpret === true) {
 				$url = substr(SERVER_URL, 3 + strpos(SERVER_URL, '://'));
@@ -209,17 +247,20 @@ class SiteConfig {
 
 					ob_end_clean();
 
-					if (file_put_contents($cache_path, $contents) === false)
+					if (file_put_contents($cache_path, $contents) === false) {
 						throw new Exception("Could not write JS cache file to: ". PATH_JS . SUFFIX_CACHE);
+                    }
 				}
 
-				$this->data['scripts'] []= SERVER_JS . SUFFIX_CACHE . $cache;
+				$this->data['scripts'][$script] = SERVER_JS . SUFFIX_CACHE . $cache;
 			}
-			else
-				$this->data['scripts'] []= SERVER_JS . $script;
+			else {
+				$this->data['scripts'][$script] = SERVER_JS . $script;
+            }
 		}
-		else
+		else {
 			return false;
+        }
 
 		return true;
 	}

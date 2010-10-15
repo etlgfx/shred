@@ -1,5 +1,7 @@
 <?php
 
+require_once PATH_LIBS .'AbstractAppController.class.php';
+
 class ErrorAppController extends AbstractAppController {
 
 	/**
