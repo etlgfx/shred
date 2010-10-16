@@ -1,8 +1,7 @@
 <?php
 
-require_once PATH_DB .'Query.class.php';
-
-/** @class DB
+/**
+ * @class DB
  *
  * Abstract class defining a common interface for database drivers
  */
@@ -16,32 +15,35 @@ abstract class DB {
 	 * @returns DB implemented subclass
 	 */
 	public static function & factory($db_name) {
+		global $g_config;
+
 		static $dbs = array();
 
 		$return = null;
 
 		//ensure one db object per db server
-		if (isset($dbs[$db_name]))
+		if (isset($dbs[$db_name])) {
 			return $dbs[$db_name];
+		}
 
-		$descriptor = Config::get('db.'. $db_name);
-
+		$descriptor = isset($g_config['db'][$db_name]) ? $g_config['db'][$db_name] : null;
 		if (is_array($descriptor)) {
-
-			$driver_class = 'DB'. $descriptor['driver'];
+			$driver_class = 'DB'. strtolower($descriptor['driver']);
 			$driver_path = PATH_DB . $driver_class .'.class.php';
 
 			if (file_exists($driver_path)) {
 
 				require_once $driver_path;
 
-				if (class_exists($driver_class))
-					$dbs[$db_name] = $return = new $driver_class($descriptor, $descriptor['database']);
+				if (class_exists($driver_class)) {
+					$return = new $driver_class($descriptor);
+				}
 			}
 		}
 
-		if (!$return || !$return instanceof DB)
+		if (!$return || !$return instanceof DB) {
 			throw new Exception('Unable to instantiate DB object for - '. $db_name .': '. var_export($descriptor, true));
+		}
 
 		return $return;
 	}
@@ -103,8 +105,9 @@ abstract class DB {
 			$res->free();
 		}
 
-		if ($fancy_array)
+		if ($fancy_array) {
 			$ret = $this->deepResult($ret);
+		}
 
 		return $ret;
 	}
@@ -129,8 +132,9 @@ abstract class DB {
 			//$res->getFields();
 			$ret = array();
 			while ($row = $res->nextAssoc()) {
-				if ($fancy_array)
+				if ($fancy_array) {
 					$row = $this->deepResult($row);
+				}
 
 				$ret []= $row;
 			}
@@ -171,8 +175,9 @@ abstract class DB {
 			list($table, $column) = explode('.', $k, 2);
 
 			if ($column) {
-				if (!isset($newkeys[$table]))
+				if (!isset($newkeys[$table])) {
 					$newkeys[$table] = array();
+				}
 
 				$newkeys[$table][$column] = $v;
 
@@ -183,6 +188,16 @@ abstract class DB {
 		return $row + $newkeys;
 	}
 
+	/**
+	 * @param $filename string to execute as multiquery
+	 *
+	 * @returns bool
+	 */
+	abstract public function multiQuery($filename);
+
+	/**
+	 */
+	abstract public function error();
 }
 
 /** @class DBResult

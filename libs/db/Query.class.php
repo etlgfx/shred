@@ -25,8 +25,9 @@ class Query {
 		$this->args = array();
 		$this->parts = preg_split('/(\$\$\d+)/', $query, -1, PREG_SPLIT_DELIM_CAPTURE); 
 
-		for ($i = 1; $i < count($this->parts); $i += 2)
+		for ($i = 1; $i < count($this->parts); $i += 2) {
 			$this->parts[$i] = intval(substr($this->parts[$i], 2));
+		}
 
 		$args = func_get_args();
 
@@ -58,20 +59,23 @@ class Query {
 
 		switch ($count) {
 			case 0:
-				throw new Exception('Invalid parameters, you must supply argumnts');
+				throw new Exception('Invalid parameters, you must supply arguments');
 
 			case 1:
 				if (!is_array($args[0])) {
 					$this->args []= $args[0];
 					break;
 				}
-				else
+				else {
 					$args = $args[0]; //no break stmt here, continue to default label
+				}
 
 			default:
-				foreach ($args as $k => $v)
-					if (is_int($k))
+				foreach ($args as $k => $v) {
+					if (is_int($k)) {
 						$this->args[$k] = $v;
+					}
+				}
 				break;
 		}
 
@@ -92,9 +96,10 @@ class Query {
 		$args = array();
 
 		for ($i = 1; $i < $len; $i += 2) {
+
 			$arg = $parts[$i];
-			if (!isset($this->args[$arg])) {
-				//TODO error no arg defined for $arg
+
+			if (!array_key_exists($arg, $this->args)) {
 				return null;
 			}
 			else {

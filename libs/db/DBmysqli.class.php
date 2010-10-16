@@ -1,24 +1,32 @@
 <?php
 
-require_once PATH_DB .'DB.class.php';
-
 final class DBmysqli extends DB {
 	private $db;
+	private $server;
+	private $port = 3306;
+	private $socket = null;
+	private $username;
+	private $password;
 	private $current_db;
-	private $server, $port, $username, $password;
 
 	/**
 	 * @param $connection array of connection parameters
 	 * @param $default_db string default database name
 	 */
-	public function __construct(array $connection, $default_db = null) {
-		$this->server   = isset($connection['host']) ? $connection['host'] : null;
-		$this->port     = isset($connection['port']) ? $connection['port'] : null;
-		$this->username = isset($connection['username']) ? $connection['username'] : null;
-		$this->password = isset($connection['password']) ? $connection['password'] : null;
-		$this->socket   = isset($connection['socket']) ? $connection['socket'] : null;
+	public function __construct(array $connection) {
+		$this->server   = $connection['server'];
+		$this->username = $connection['username'];
+		$this->password = $connection['password'];
 
-		$this->default_db = $default_db;
+		if (isset($connection['socket'])) {
+			$this->socket = $connection['socket'];
+		}
+
+		if (isset($connection['port'])) {
+			$this->port = $connection['port'];
+		}
+
+		$this->default_db = isset($connection['db']) ? $connection['db'] : null;
 		$this->current_db = null;
 
 		$this->db = null;
@@ -30,12 +38,14 @@ final class DBmysqli extends DB {
 	 * @return boolean
 	 */
 	public function connect() {
-		if (!$this->db)
-			$this->db = new mysqli($this->server, $this->username, $this->password, $this->default_db, $this->port ? $this->port : 3306, $this->socket);
+		if (!$this->db) {
+			$this->db = new mysqli($this->server, $this->username, $this->password, $this->default_db, $this->port, $this->socket);
+		}
 
 		if ($this->db instanceof MySQLi) {
-			if ($this->db->connect_error)
+			if ($this->db->connect_error) {
 				throw new Exception("MySQLi Connection Error (". $this->db->connect_errno ."): ". $this->db->connect_error);
+			}
 
 			$this->current_db = $this->default_db;
 		}
@@ -51,8 +61,9 @@ final class DBmysqli extends DB {
 	 * @return boolean
 	 */
 	public function selectDB($dbname) {
-		if (!$this->db && !$this->connect())
+		if (!$this->db && !$this->connect()) {
 			return false;
+		}
 
 		if ($dbname !== $this->current_db) {
 			if ($this->db->select_db($dbname)) {
@@ -63,16 +74,18 @@ final class DBmysqli extends DB {
 				return false;
 			}
 		}
-		else
+		else {
 			return true;
+		}
 	}
 
 	/**
 	 * close the DB connection
 	 */
 	public function close() {
-		if (!$this->db)
+		if (!$this->db) {
 			return;
+		}
 
 		$this->db->close();
 		$this->db = null;
@@ -88,26 +101,32 @@ final class DBmysqli extends DB {
 	public function query(Query $q) {
 		$res = false;
 
-		if (!$this->db)
+		if (!$this->db) {
 			$this->connect();
+		}
 
 		$query = $q->getQuery($this);
+
 		$res = $this->db->query($query);
 
-		if (is_bool($res))
+		if (is_bool($res)) {
 			return $res;
-		else if (is_object($res))
+		}
+		else if (is_object($res)) {
 			return new DBResultMysqli($res);
-		else
+		}
+		else {
 			return false;
+		}
 	}
 
 	/**
 	 * @returns int
 	 */
 	public function affectedRows() {
-		if (!$this->db)
+		if (!$this->db) {
 			return false;
+		}
 
 		return $this->db->affected_rows;
 	}
@@ -116,8 +135,9 @@ final class DBmysqli extends DB {
 	 * @returns int
 	 */
 	public function insertID() {
-		if (!$this->db)
+		if (!$this->db) {
 			return false;
+		}
 
 		return $this->db->insert_id;
 	}
@@ -135,14 +155,41 @@ final class DBmysqli extends DB {
 			return addslashes($string);
 		}
 	}
+
+	/**
+	 * @param $filename string to execute as multiquery
+	 *
+	 * @returns bool
+	 */
+	public function multiQuery($filename) {
+		if (!file_exists($filename)) {
+			return false;
+		}
+
+		if (!$this->db) {
+			$this->connect();
+		}
+
+		return $this->db->multi_query(file_get_contents($filename));
+	}
+
+	public function error() {
+		if (!$this->db) {
+			return null;
+		}
+
+		return array('error_code' => $this->db->errno, 'error' => $this->db->error);
+	}
 }
 
 final class DBResultMysqli implements DBResult {
 	private $res;
 
 	public function __construct(MySQLi_Result $res) {
-		if (!$res)
+		if (!$res) {
+			//TODO
 			throw new Exception('');
+		}
 
 		$this->res = $res;
 	}
