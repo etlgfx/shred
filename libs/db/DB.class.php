@@ -1,7 +1,8 @@
 <?php
 
-/**
- * @class DB
+require_once PATH_DB .'Query.class.php';
+
+/** @class DB
  *
  * Abstract class defining a common interface for database drivers
  */
@@ -15,8 +16,6 @@ abstract class DB {
 	 * @returns DB implemented subclass
 	 */
 	public static function & factory($db_name) {
-		global $g_config;
-
 		static $dbs = array();
 
 		$return = null;
@@ -26,9 +25,8 @@ abstract class DB {
 			return $dbs[$db_name];
 		}
 
-		$descriptor = isset($g_config['db'][$db_name]) ? $g_config['db'][$db_name] : null;
-		if (is_array($descriptor)) {
-			$driver_class = 'DB'. strtolower($descriptor['driver']);
+		if (Config::is_set('db.'. $db_name .'.driver')) {
+			$driver_class = 'DB'. strtolower(Config::get('db.'. $db_name .'.driver'));
 			$driver_path = PATH_DB . $driver_class .'.class.php';
 
 			if (file_exists($driver_path)) {
@@ -36,7 +34,14 @@ abstract class DB {
 				require_once $driver_path;
 
 				if (class_exists($driver_class)) {
-					$return = new $driver_class($descriptor);
+					$dbs[$db_name] = $return = new $driver_class(
+						Config::get('db.'. $db_name .'.server'),
+						Config::get('db.'. $db_name .'.username'),
+						Config::get('db.'. $db_name .'.password'),
+						Config::get('db.'. $db_name .'.database'),
+						Config::get('db.'. $db_name .'.port'),
+						Config::get('db.'. $db_name .'.socket')
+					);
 				}
 			}
 		}
@@ -52,7 +57,7 @@ abstract class DB {
 	 * @param $connection array of connection parameters
 	 * @param $default_db string default database name
 	 */
-	abstract public function __construct(array $connection, $default_db = null);
+	abstract public function __construct($server, $username, $password, $database, $port, $socket);
 
 	/**
 	 * connect to the DB specified in construction by the db factory

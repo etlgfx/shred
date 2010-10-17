@@ -70,4 +70,17 @@ class Config {
 	public static function append($key, $value) {
 		self::instance()->data_container->append($key, $value);
 	}
+
+	/**
+	 * return whether the given key is set or not in the template vars
+	 *
+	 * @see DataContainer.is_set()
+	 *
+	 * @param $key string path to the requested data variable
+	 *
+	 * @returns boolean
+	 */
+	public static function is_set($key) {
+		return self::instance()->data_container->is_set($key);
+	}
 }
