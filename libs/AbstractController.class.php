@@ -29,8 +29,6 @@ abstract class AbstractController {
 	 * @returns AbstractServerController subclass on success
 	 */
 	public static function factory(Request $request) {
-		$controller = null;
-
 		$class = Util::toClassName($request->getController()) .'Controller';
 		$path = PATH_APP .'controllers/'. $class .'.class.php';
 
