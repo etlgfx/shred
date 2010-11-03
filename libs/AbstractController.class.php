@@ -4,8 +4,6 @@ require_once PATH_LIBS .'Request.class.php';
 require_once PATH_LIBS .'Util.class.php';
 
 abstract class AbstractController {
-	const DEFAULT_ACTION = 'index';
-
 	/**
 	 * @param $request Request object of the current request
 	 */
@@ -40,13 +38,6 @@ abstract class AbstractController {
         else {
             throw new Exception('Controller not found: '. $class);
         }
-	}
-
-	/**
-	 * @returns string
-	 */
-	protected static function defaultAction() {
-		return self::DEFAULT_ACTION;
 	}
 }
 

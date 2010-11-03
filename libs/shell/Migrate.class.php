@@ -280,6 +280,18 @@ class Migrate extends Shell {
 			echo $e;
 		}
 	}
+
+    /**
+     * The Help shell uses this to display some usage information
+     *
+     * @returns array('name', 'description')
+     */
+    public function description() {
+        return array(
+            'Migrations Shell',
+            'Manages Database Migration Versions',
+        );
+    }
 }
 
 ?>
