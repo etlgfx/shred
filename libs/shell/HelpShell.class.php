@@ -1,10 +1,10 @@
 <?php
 
 /**
- * @class Help
+ * @class HelpShell
  * Help shell retrieves a list of available shells
  */
-class Help extends Shell {
+class HelpShell extends Shell {
 
 	/**
 	 * The default shell method to perform
@@ -20,7 +20,7 @@ class Help extends Shell {
 			$d = dir($dir);
 
 			while ($entry = $d->read()) {
-				if (preg_match('/^(.*)\.class\.php$/', $entry, $matches)) {
+				if (preg_match('/^(.*)Shell\.class\.php$/', $entry, $matches)) {
 					list($name, $description) = Shell::factory($matches[1])->description();
 
 					printf("	%-16s %-20s %s\n", strtolower($matches[1]), $name, $description);

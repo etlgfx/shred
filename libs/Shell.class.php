@@ -32,7 +32,7 @@ abstract class Shell {
 	}
 
 	public static function factory($shell_name) {
-		$class = Util::toClassName($shell_name);
+		$class = Util::toClassName($shell_name) .'Shell';
 		
 		if (file_exists(PATH_CODE .'shell/'. $class .'.class.php'))
 			require_once PATH_CODE .'shell/'. $class .'.class.php';
