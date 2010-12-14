@@ -2,6 +2,7 @@
 
 /**
  * @class HelpShell
+ *
  * Help shell retrieves a list of available shells
  */
 class HelpShell extends Shell {

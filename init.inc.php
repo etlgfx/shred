@@ -13,7 +13,7 @@ define('PATH_DB', PATH_LIBS .'db/');
 define('PATH_CONFIG', PATH_CODE .'config/');
 define('PATH_VENDORS', PATH_CODE .'vendors/');
 
-if (!isset($argv)) {
+if (!defined('APP_CONFIG') && !isset($argv)) {
 	define('PATH_APP', dirname($_SERVER['SCRIPT_FILENAME']) .'/');
 	$dir = dirname($_SERVER['SCRIPT_FILENAME']);
 	define('APP_NAME', substr($dir, strrpos($dir, '/') + 1));
@@ -52,7 +52,7 @@ require_once PATH_LIBS .'Util.class.php';
 require_once PATH_LIBS .'Error.class.php';
 require_once PATH_CONFIG .'global.conf.php';
 
-if (defined('APP_CONFIG')) {
+if (defined('APP_CONFIG') && APP_CONFIG) {
     require_once APP_CONFIG;
 }
 
