@@ -58,6 +58,8 @@ class AbstractModelTest extends PHPUnit_Framework_TestCase {
             $expected->__toString()
         );
     }
+
+    //public function test
 }
 
 ?>

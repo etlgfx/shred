@@ -1,7 +1,7 @@
 <?php
 
 require_once PATH_LIBS .'AbstractController.class.php';
-require_once PATH_LIBS .'Error.class.php';
+require_once PATH_LIBS .'Log.class.php';
 require_once PATH_LIBS .'DataContainer.class.php';
 require_once PATH_LIBS .'SiteConfig.class.php';
 
@@ -81,7 +81,7 @@ abstract class AbstractAppController extends AbstractController {
 			try {
 				die(json_encode(array(
 							'content' => $this->smarty->fetch($template),
-							'_messages' => Error::inst()->getUserErrorsArray(),
+							'_messages' => Log::inst()->getUserErrorsArray(),
 							'_siteconfig' => array(
 								'site' => $this->config->getSite(),
 								'page' => $this->config->getPage(),
@@ -89,10 +89,10 @@ abstract class AbstractAppController extends AbstractController {
 				)));
 			}
 			catch (Exception $e) {
-				Error::raise($e->getMessage(), Error::APP_ERROR);
+				Log::raise($e->getMessage(), Log::APP_ERROR);
 
 				die(json_encode(array(
-							'_messages' => Error::inst()->getUserErrorsArray(),
+							'_messages' => Log::inst()->getUserErrorsArray(),
 							'_siteconfig' => array(
 								'site' => $this->config->getSite(),
 								'page' => $this->config->getPage(),
@@ -154,7 +154,7 @@ abstract class AbstractAppController extends AbstractController {
 		$this->smarty->assign($this->data_container->getVars());
 
 		$this->smarty->assign('_siteconfig', $this->config->getConfigData());
-		$this->smarty->assign('_messages', Error::inst()->getUserErrorsArray());
+		$this->smarty->assign('_messages', Log::inst()->getUserErrorsArray());
 
 		$this->smarty->assign('request_uri', REQUEST_URI);
 		$this->smarty->assign('server_url', SERVER_URL);

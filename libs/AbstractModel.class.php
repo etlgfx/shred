@@ -1,6 +1,7 @@
 <?php
 
 require_once PATH_LIBS .'Validator.class.php';
+require_once PATH_LIBS .'ModelFilter.class.php';
 require_once PATH_DB .'DB.class.php';
 require_once PATH_DB .'Query.class.php';
 
@@ -8,6 +9,7 @@ abstract class AbstractModel {
 
 	protected $_validator;
 	protected $_table;
+    protected $_fields;
 
     /**
      * Constructor ensures that table name and validator object have been
@@ -23,6 +25,8 @@ abstract class AbstractModel {
         if (!$this->_validator instanceof Validator) {
             throw new Exception('No validator object configured');
         }
+
+        $this->_fields = $this->_validator->fields();
     }
 
 	/**
@@ -222,16 +226,47 @@ abstract class AbstractModel {
     }
     */
 
-    public function create($data) {
+    /**
+     */
+    public function create(array $data = null) {
+        if (!$this->_validator->validate($data)) {
+            throw new Exception('Invalid data');
+        }
+
+        $str = 'INSERT INTO '. $this->_table .' SET ';
+
+        $items = array();
+        $values = array();
+        $i = 0;
+
+        foreach ($this->_fields as $key) {
+            if (!isset($data[$key])) {
+                continue;
+            }
+
+            $items[$i] = $key .' = $$'. $i;
+            $values[$i++] = $data[$key];
+        }
+
+        $query = new Query($str . implode(', ', $items), $values);
+
+        $db = DB::factory('master');
+        if (!$db->query($query)) {
+            throw new Exception('error '. var_export($db->error(), true));
+        }
+        else {
+            //$this->id = $db->insertId();
+            echo 'yea';
+        }
     }
 
-    public function read(/* ModelFilter */ $filter) {
+    public function read(ModelFilter $filter = null) {
     }
 
-    public function update() {
+    public function update(ModelFilter $filter = null, array $data = null) {
     }
 
-    public function delete() {
+    public function delete(ModelFilter $filter = null) {
     }
 }
 

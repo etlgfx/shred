@@ -58,7 +58,7 @@ class ImageGD extends AbstractImage {
 			return true;
 		}
 		else {
-			Error::raiseError('error opening image file: '. $filename);
+			Log::raiseError('error opening image file: '. $filename);
 			return false;
 		}
 	}

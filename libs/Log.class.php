@@ -1,11 +1,11 @@
 <?php
 
 /**
- * @class Error
+ * @class Log
  *
- * Singleton Error class, this is the be all end all of error handling for the framework
+ * Singleton Log class, this is the be all end all of error handling for the framework
  */
-class Error {
+class Log {
 	/* TODO test the new bitmask values!!! */
 	const APP_ERROR       = 0x101;
 	const APP_WARNING     = 0x102;
@@ -41,8 +41,8 @@ class Error {
 	private $user_errors;
 
 	private static $logs = array(
-			self::ERROR_TYPE_DB => 'db.log'
-			);
+		self::ERROR_TYPE_DB => 'db.log'
+	);
 
 	/**
 	 * @return Error Singleton instance 
@@ -51,7 +51,7 @@ class Error {
 		static $instance = null;
 
 		if ($instance === null)
-			$instance = new Error();
+			$instance = new Log();
 
 		return $instance;
 	}

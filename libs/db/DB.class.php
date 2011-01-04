@@ -165,7 +165,7 @@ abstract class DB {
 	/**
 	 * @returns int
 	 */
-	abstract public function insertID();
+	abstract public function insertId();
 
 	/**
 	 * @param $row array

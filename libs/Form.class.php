@@ -177,10 +177,10 @@ class Form {
 				if (method_exists($this, $func))
 					return call_user_func(array($this, $func), $value);
 				else
-					Error::raiseError('Bad validation function passed: '. var_export($func, true));
+					Log::raiseError('Bad validation function passed: '. var_export($func, true));
 			}
 			else
-				Error::raiseError('Bad validation function passed: '. var_export($v, true));
+				Log::raiseError('Bad validation function passed: '. var_export($v, true));
 		}
 
 		return true;
@@ -449,7 +449,7 @@ class Form {
 			$display = $this->fields[$page][$key][self::DISPLAY];
 		}
 		else {
-			Error::raiseError(__CLASS__ .'::'. __FUNCTION .' - Key not found in form: '. $key);
+			Log::raiseError(__CLASS__ .'::'. __FUNCTION .' - Key not found in form: '. $key);
 			return 'Please correct the field';
 		}
 

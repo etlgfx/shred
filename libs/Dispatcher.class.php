@@ -32,7 +32,7 @@ class Dispatcher {
 			$controller = AbstractController::factory($request);
 		}
 		catch (Exception $e) {
-			Error::raise('Page Not Found: '. $request .'; '. $e->getMessage(), Error::APP_ERROR, Error::ERROR_TYPE_CTRL);
+			Log::raise('Page Not Found: '. $request .'; '. $e->getMessage(), Log::APP_ERROR, Log::ERROR_TYPE_CTRL);
 			$continue = false;
 		}
 
@@ -41,12 +41,12 @@ class Dispatcher {
 
 			try {
 				if (!$controller->authorize()) {
-					Error::raise('Error Authenticating', Error::USER_ERROR, Error::ERROR_TYPE_CTRL);
+					Log::raise('Error Authenticating', Log::USER_ERROR, Log::ERROR_TYPE_CTRL);
 					$continue = false;
 				}
 			}
 			catch (Exception $e) {
-				Error::raise($e, Error::APP_ERROR, Error::ERROR_TYPE_CTRL);
+				Log::raise($e, Log::APP_ERROR, Log::ERROR_TYPE_CTRL);
 				$continue = false;
 			}
 		}
@@ -59,8 +59,8 @@ class Dispatcher {
 			}
 			catch (Exception $e) {
 				//TODO raise a user friendly message as well?
-				//Error::raise($e->getMessage(), Error::APP_ERROR, Error::ERROR_TYPE_CTRL);
-				Error::raise($e, Error::APP_ERROR, Error::ERROR_TYPE_CTRL);
+				//Log::raise($e->getMessage(), Log::APP_ERROR, Log::ERROR_TYPE_CTRL);
+				Log::raise($e, Log::APP_ERROR, Log::ERROR_TYPE_CTRL);
 				$continue = false;
 			}
 		}
@@ -71,10 +71,10 @@ class Dispatcher {
 				$controller->render();
 			}
 			catch (Exception $e) {
-				Error::raise($e, Error::APP_ERROR, Error::ERROR_TYPE_CTRL);
+				Log::raise($e, Log::APP_ERROR, Log::ERROR_TYPE_CTRL);
 
 				header('content-type: text/plain;');
-				echo Error::inst();
+				echo Log::inst();
 			}
 		}
 		else {

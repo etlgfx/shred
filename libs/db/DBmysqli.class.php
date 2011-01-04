@@ -134,7 +134,7 @@ final class DBmysqli extends DB {
 	/**
 	 * @returns int
 	 */
-	public function insertID() {
+	public function insertId() {
 		if (!$this->db) {
 			return false;
 		}

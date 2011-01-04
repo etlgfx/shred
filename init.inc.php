@@ -49,7 +49,7 @@ else {
 
 require_once PATH_LIBS .'Config.class.php';
 require_once PATH_LIBS .'Util.class.php';
-require_once PATH_LIBS .'Error.class.php';
+require_once PATH_LIBS .'Log.class.php';
 require_once PATH_CONFIG .'global.conf.php';
 
 if (defined('APP_CONFIG') && APP_CONFIG) {

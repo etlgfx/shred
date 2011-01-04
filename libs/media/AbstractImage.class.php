@@ -132,7 +132,7 @@ abstract class AbstractImage {
 			return true;
 		}
 		else {
-			Error::raise('Can\'t open file: '. $filename .'; file does not exist');
+			Log::raise('Can\'t open file: '. $filename .'; file does not exist');
 			return false;
 		}
 	}

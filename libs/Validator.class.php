@@ -1,9 +1,12 @@
 <?php
 
+require_once PATH_LIBS .'Log.class.php';
+
 class Validator {
 
 	protected $required;
 	protected $rules;
+    protected $fields;
 
 	public function __construct(array $required_fields, array $rules) {
 		$this->required = $required_fields ? $required_fields : array();
@@ -22,6 +25,12 @@ class Validator {
 
 			$this->rules[$k] = $v;
 		}
+
+        $this->fields = array();
+
+        foreach (array_keys(array_merge(array_flip($required_fields), $rules)) as $field) {
+            $this->fields[$field] = $field;
+        }
 	}
 
 	/**
@@ -29,7 +38,11 @@ class Validator {
 	 *
 	 * @returns bool - true on success
 	 */
-	public function validate(array $data) {
+	public function validate(array $data = null) {
+        if ($data === null) {
+            $data = array();
+        }
+
 		$return = true;
 
 		$errors = array();
@@ -252,6 +265,15 @@ class Validator {
 
 		return true;
 	}
+
+    /**
+     * return the total list of fields this validator object is aware of
+     *
+     * @returns array
+     */
+    public function fields() {
+        return $this->fields;
+    }
 }
 
 ?>
