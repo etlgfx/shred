@@ -77,6 +77,14 @@ class ModelFilter {
 
         return $sql;
     }
+
+    /**
+     * @returns boolean - whether or not the current filter is intended to only
+     * return a single result
+     */
+    public function isSingle() {
+        return $this->limit && $this->limit[0] === 1;
+    }
 }
 
 ?>

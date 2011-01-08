@@ -9,25 +9,25 @@ abstract class AbstractModel {
 
 	protected $_validator;
 	protected $_table;
-    protected $_fields;
+	protected $_fields;
 
-    /**
-     * Constructor ensures that table name and validator object have been
-     * defined.
-     *
-     * @throws Exception
-     */
-    public function __construct() {
-        if (!$this->_table) {
-            throw new Exception('Table name not configured');
-        }
+	/**
+	 * Constructor ensures that table name and validator object have been
+	 * defined.
+	 *
+	 * @throws Exception
+	 */
+	public function __construct() {
+		if (!$this->_table) {
+			throw new Exception('Table name not configured');
+		}
 
-        if (!$this->_validator instanceof Validator) {
-            throw new Exception('No validator object configured');
-        }
+		if (!$this->_validator instanceof Validator) {
+			throw new Exception('No validator object configured');
+		}
 
-        $this->_fields = $this->_validator->fields();
-    }
+		$this->_fields = $this->_validator->fields();
+	}
 
 	/**
 	 * Convert the internal data to arrays
@@ -35,7 +35,7 @@ abstract class AbstractModel {
 	 * @returns array
 	 */
 	public function toArray() {
-        $res = array();
+		$res = array();
 
 		foreach ($this as $k => $v) {
 			if ($k[0] == '_') {
@@ -70,18 +70,18 @@ abstract class AbstractModel {
 		return $res;
 	}
 
-    /**
-     * generic method for performing an insert query
-     *
-     * @throws Exception
-     *
-     * @param $fields array
-     * @param $data array
-     *
-     * @returns int; inserted integer id
-     */
-    protected function queryInsert($fields, $data) {
-    }
+	/**
+	 * generic method for performing an insert query
+	 *
+	 * @throws Exception
+	 *
+	 * @param $fields array
+	 * @param $data array
+	 *
+	 * @returns int; inserted integer id
+	protected function queryInsert($fields, $data) {
+	}
+	 */
 
 	/**
 	 * generic method for performing a single row update query
@@ -93,39 +93,39 @@ abstract class AbstractModel {
 	 * @param $id int
 	 *
 	 * @returns bool
-	 */
 	protected function queryUpdate($fields, $data, $id) {
 		$fields = array_flip($fields);
 
 		$query = array();
 		$args = array();
-        $max_index = 0;
+		$max_index = 0;
 
-        foreach ($data as $key => $value) {
-            if (isset($fields[$key])) {
+		foreach ($data as $key => $value) {
+			if (isset($fields[$key])) {
 
-                $index = $fields[$key];
+				$index = $fields[$key];
 
-                $query []= $key .' = $$'. $index;
-                $args[$index] = $value;
+				$query []= $key .' = $$'. $index;
+				$args[$index] = $value;
 
-                if ($index > $max_index) {
-                    $max_index = $index;
-                }
-            }
-        }
+				if ($index > $max_index) {
+					$max_index = $index;
+				}
+			}
+		}
 
-        if (count($query) == 0) {
-            return null;
-        }
+		if (count($query) == 0) {
+			return null;
+		}
 
-        $max_index++;
-        $args[$max_index] = $id;
+		$max_index++;
+		$args[$max_index] = $id;
 
-        $query = new Query('UPDATE '. $this->_table .' SET '. implode(', ', $query) .' WHERE id = $$'. $max_index);
+		$query = new Query('UPDATE '. $this->_table .' SET '. implode(', ', $query) .' WHERE id = $$'. $max_index);
 
-        return $query->addArgument($args);
+		return $query->addArgument($args);
 	}
+	 */
 
 	/**
 	 * Get multiple records.
@@ -201,72 +201,152 @@ abstract class AbstractModel {
 		return $result;
 	}
 
-    /*
-    private function arrayToWhere(array $where) {
-        $operators = array('!=', '=', '+', '-', '/', '*', '<', '<=', '>', '>=', 'AND', 'OR', 'XOR', '!');
+	/**
+     * CRUD Create a new record, using the $data passed in
+     *
+     * @param $data
+     *
+     * @throws Exception
+     *
+	 */
+	public function create(array $data = null) {
+		if (!$this->_validator->validate($data)) {
+			throw new Exception('Invalid data');
+		}
 
-        $where = array('=' => array('col' => 'column_name', 'val'));
-        //$where = array('column_name' => 'val');
+		$str = 'INSERT INTO '. $this->_table .' SET ';
 
-        //$where = array('AND' => array('=' => array('col' => 'column_name', 'val'), '=' => array('col' => 'column_name2', 'val2')));
-        //$where = array('column_name' => 'val', 'column_name2' => 'val2');
+		$items = array();
+		$values = array();
+		$i = 0;
 
-        $str = '';
+		foreach ($this->_fields as $key) {
+			if (!isset($data[$key])) {
+				continue;
+			}
 
-        foreach ($where as $k => $v) {
-            if (in_array($k, $operators) && is_array($v)) {
-                if (count($v) == 1 && $k == '!') {
-                    $str = $k . $this->arrayToWhere($v)
-                }
-                else if (count($v) == 2) {
-                    $str = $this->arrayToWhere($v)
-                }
-            }
-        }
-    }
-    */
+			$items[$i] = $key .' = $$'. $i;
+			$values[$i++] = $data[$key];
+		}
 
-    /**
-     */
-    public function create(array $data = null) {
+		$query = new Query($str . implode(', ', $items), $values);
+
+		$db = DB::factory('master');
+
+		if (!$db->query($query)) {
+			throw new Exception(var_export($db->error(), true));
+		}
+		else {
+            $this->setFromArray($data);
+
+			$this->id = $db->insertId();
+		}
+
+		return $this; //TODO should this be this or a boolean?
+	}
+
+	public function read(ModelFilter $filter = null) {
+		if (!$filter) {
+
+			$filter = new ModelFilter();
+
+			if (isset($this->id)) {
+				$filter->filter('id', $this->id);
+			}
+		}
+
+		$db = DB::factory('master');
+
+		if ($filter->isSingle()) {
+			$row = $db->selectOne(new Query('SELECT * FROM '. $this->_table . $filter->toSql()));
+
+            return $this->setFromArray($row);
+		}
+		else {
+			$res = $db->query(new Query('SELECT * FROM '. $this->_table . $filter->toSql()));
+
+			$ret = array();
+			$class = get_class($this);
+
+			while ($row = $res->nextAssoc()) {
+				$obj = new $class();
+                $ret []= $obj->setFromArray($row);
+			}
+		}
+
+		return $ret;
+	}
+
+	public function update(array $data = null, ModelFilter $filter = null) {
+		if ((!$filter && !isset($this->id)) || !$data) {
+            return false;
+		}
+
         if (!$this->_validator->validate($data)) {
             throw new Exception('Invalid data');
         }
 
-        $str = 'INSERT INTO '. $this->_table .' SET ';
+        $query = array();
+        $args = array();
+        $index = 0;
 
-        $items = array();
-        $values = array();
-        $i = 0;
+        foreach ($data as $key => $value) {
+            if (isset($this->_fields[$key])) {
+                $query []= $key .' = $$'. $index;
+                $args[$index] = $value;
 
-        foreach ($this->_fields as $key) {
-            if (!isset($data[$key])) {
+                $index++;
+            }
+        }
+
+		$db = DB::factory('master');
+
+        $query = 'UPDATE '. $this->_table .' SET '. implode(', ', $query);
+
+        if ($filter) {
+            echo 'return null';
+            return;
+            //TODO not impl
+			$db->query(new Query($query . $filter->toSql()));
+        }
+        else {
+            $index++;
+
+            $args[$index] = $this->id;
+			$db->query(new Query($query .' WHERE id = $$'. $index, $args));
+        }
+
+        $this->setFromArray($data);
+
+        return true;
+	}
+
+	public function delete(ModelFilter $filter = null) {
+		$db = DB::factory('master');
+
+		if (!$filter) {
+
+			if (isset($this->id)) {
+				$db->query(new Query('DELETE FROM '. $this->_table .' WHERE id = $$0 LIMIT 1', $this->id));
+			}
+		}
+		else {
+			$db->query(new Query('DELETE FROM '. $this->_table .' WHERE '. $filter->toSql()));
+		}
+	}
+
+    protected function setFromArray(array $data) {
+        foreach ($data as $k => $v) {
+            if ($k[0] == '_') {
                 continue;
             }
 
-            $items[$i] = $key .' = $$'. $i;
-            $values[$i++] = $data[$key];
+            if (isset($this->_fields[$k])) {
+                $this->{$k} = $v;
+            }
         }
 
-        $query = new Query($str . implode(', ', $items), $values);
-
-        $db = DB::factory('master');
-        if (!$db->query($query)) {
-            throw new Exception('error '. var_export($db->error(), true));
-        }
-        else {
-            //$this->id = $db->insertId();
-            echo 'yea';
-        }
-    }
-
-    public function read(ModelFilter $filter = null) {
-    }
-
-    public function update(ModelFilter $filter = null, array $data = null) {
-    }
-
-    public function delete(ModelFilter $filter = null) {
+        return $this;
     }
 }
 
