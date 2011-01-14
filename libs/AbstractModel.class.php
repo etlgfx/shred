@@ -19,11 +19,11 @@ abstract class AbstractModel {
 	 */
 	public function __construct() {
 		if (!$this->_table) {
-			throw new Exception('Table name not configured');
+			throw new BadMethodCallException('Table name not configured');
 		}
 
 		if (!$this->_validator instanceof Validator) {
-			throw new Exception('No validator object configured');
+			throw new BadMethodCallException('No validator object configured');
 		}
 
 		$this->_fields = $this->_validator->fields();
@@ -69,63 +69,6 @@ abstract class AbstractModel {
 
 		return $res;
 	}
-
-	/**
-	 * generic method for performing an insert query
-	 *
-	 * @throws Exception
-	 *
-	 * @param $fields array
-	 * @param $data array
-	 *
-	 * @returns int; inserted integer id
-	protected function queryInsert($fields, $data) {
-	}
-	 */
-
-	/**
-	 * generic method for performing a single row update query
-	 *
-	 * @throws Exception
-	 *
-	 * @param $fields array
-	 * @param $data array
-	 * @param $id int
-	 *
-	 * @returns bool
-	protected function queryUpdate($fields, $data, $id) {
-		$fields = array_flip($fields);
-
-		$query = array();
-		$args = array();
-		$max_index = 0;
-
-		foreach ($data as $key => $value) {
-			if (isset($fields[$key])) {
-
-				$index = $fields[$key];
-
-				$query []= $key .' = $$'. $index;
-				$args[$index] = $value;
-
-				if ($index > $max_index) {
-					$max_index = $index;
-				}
-			}
-		}
-
-		if (count($query) == 0) {
-			return null;
-		}
-
-		$max_index++;
-		$args[$max_index] = $id;
-
-		$query = new Query('UPDATE '. $this->_table .' SET '. implode(', ', $query) .' WHERE id = $$'. $max_index);
-
-		return $query->addArgument($args);
-	}
-	 */
 
 	/**
 	 * Get multiple records.
@@ -211,7 +154,7 @@ abstract class AbstractModel {
 	 */
 	public function create(array $data = null) {
 		if (!$this->_validator->validate($data)) {
-			throw new Exception('Invalid data');
+			throw new InvalidArgumentException('Invalid data');
 		}
 
 		$str = 'INSERT INTO '. $this->_table .' SET ';
@@ -234,7 +177,7 @@ abstract class AbstractModel {
 		$db = DB::factory('master');
 
 		if (!$db->query($query)) {
-			throw new Exception(var_export($db->error(), true));
+			throw new RuntimeException(var_export($db->error(), true));
 		}
 		else {
             $this->setFromArray($data);
@@ -283,7 +226,7 @@ abstract class AbstractModel {
 		}
 
         if (!$this->_validator->validate($data)) {
-            throw new Exception('Invalid data');
+            throw new RuntimeException('Invalid data');
         }
 
         $query = array();

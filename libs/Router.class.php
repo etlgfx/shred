@@ -97,6 +97,10 @@ class Router {
 
 		$return = array();
 
+        if (!$routes) {
+            return $return;
+        }
+
 		$i = 0;
 		foreach ($routes as $route => $actions) {
 			//echo $route . PHP_EOL;

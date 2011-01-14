@@ -20,8 +20,11 @@ class Dispatcher {
 	 *
 	 * parse URL, get a controller, authorize, execute, render to stdout
 	 */
-	public function __construct() {
-        $router = new Router();
+	public function __construct(Router $router = null) {
+        if ($router === null) {
+            $router = new Router();
+        }
+
         $request = $router->route();
 
 		$state = self::STATE_INIT;
