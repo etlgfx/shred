@@ -37,7 +37,7 @@ class Config {
 	/**
 	 * Retrieve config options
 	 *
-	 * @see DataContainer::get()
+	 * @see DataContainer.get()
 	 *
 	 * @param $key
      *
@@ -50,7 +50,7 @@ class Config {
 	/**
 	 * Set config options
 	 *
-	 * @see DataContainer::set()
+	 * @see DataContainer.set()
 	 *
 	 * @param $key string path to the requested data variable
 	 * @param $value mixed value of variable to set
@@ -62,7 +62,7 @@ class Config {
 	/**
 	 * Append config options
 	 *
-	 * @see DataContainer::append()
+	 * @see DataContainer.append()
 	 *
 	 * @param $key string path to the requested data variable
 	 * @param $value mixed value of variable to set

@@ -8,7 +8,14 @@
 class UnitTestShell extends Shell {
 
     public function _default() {
-        passthru("phpunit --colors --verbose ". PATH_SHRED .'tests/');
+        $command = "phpunit --colors --verbose ". PATH_SHRED .'tests/';
+
+        $t = $this->params->getOption('t');
+        if ($t) {
+            $command .= " ". $t;
+        }
+
+        passthru($command);
     }
 
     /**

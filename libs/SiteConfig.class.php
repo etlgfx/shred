@@ -18,20 +18,15 @@ class SiteConfig {
     /**
      * @param $request this is the current request, currently we only use this
      * to get the controller name i.e. page name used to server the page
+     * @param $config; this is the site config
      */
-	public function __construct(Request $request) {
-		$this->data = Config::get('site_config');
+	public function __construct(Request $request, array $config = null) {
+		$this->data = $config;
 
 		$page = $request->getController();
 
 		if ($this->pageExists($page)) {
 			$this->page = $page;
-        }
-		else if ($page) {
-			throw new Exception('Page does not exist: '. $page);
-        }
-		else {
-			$this->page = $this->data['default_page'];
         }
 
 		if (!isset($this->data['styles'])) {

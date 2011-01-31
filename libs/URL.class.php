@@ -1,5 +1,7 @@
 <?php
 
+//TODO most parameter methods here are subject for deprecation?
+
 /** @class URL
  *
  * This URL object offers a simple interface for URL translation into argument

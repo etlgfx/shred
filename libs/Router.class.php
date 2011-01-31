@@ -13,7 +13,10 @@ class Router {
         }
         else {
             $this->routes = $this->compile();
-            file_put_contents(PATH_APP_TMP .'routes.conf.compiled.php', '<?php return '. var_export($this->routes, true) .'; ?>');
+
+            if (is_writable(PATH_APP_TMP) && is_dir(PATH_APP_TMP)) {
+                file_put_contents(PATH_APP_TMP .'routes.conf.compiled.php', '<?php return '. var_export($this->routes, true) .'; ?>');
+            }
         }
     }
 
@@ -23,7 +26,14 @@ class Router {
      * @returns string
      */
     public function getUri() {
-        return substr(REQUEST_URI, strlen(SERVER_URL));
+		$uri = substr(REQUEST_URI, strlen(SERVER_URL));
+
+		if (($p = strpos($uri, '?')) === false) {
+			return $uri;
+		}
+		else {
+			return substr($uri, 0, $p);
+		}
     }
 
     /**
@@ -61,14 +71,17 @@ class Router {
     private function defaultRoute() {
         $parts = explode('/', $this->uri);
 
-
         $request = new Request($this->method);
 
         if (isset($parts[0]) && $parts[0]) {
             $request->setController($parts[0]);
         }
         else {
-            $request->setController(Config::get('site_config.default_page') ? Config::get('site_config.default_page') : 'default');
+            $request->setController(
+				Config::get('router.default')
+				? Config::get('router.default')
+				: 'default'
+			);
 
             return $request;
         }
@@ -93,7 +106,7 @@ class Router {
      * @returns array
      */
 	public function compile() {
-		$routes = Config::get('routes'); //require_once 'routes.conf.php';
+		$routes = Config::get('router.routes'); //require_once 'routes.conf.php';
 
 		$return = array();
 
@@ -180,39 +193,41 @@ class Router {
 
 			$params = array();
 			
-			foreach ($actions['params'] as $action) {
+            if (isset($actions['params']) && is_array($actions['params'])) {
+				foreach ($actions['params'] as $action) {
 
-				if (strpos($action, ':')) {
-					list($k_action, $v_action) = explode(':', $action);
+					if (strpos($action, ':')) {
+						list($k_action, $v_action) = explode(':', $action);
 
-					$is_mapped = false;
+						$is_mapped = false;
 
-					foreach ($return[$i]['matches'] as $j => $match) {
-						if (array($k_action => $v_action)  == $match) {
-							$params []= $j;
-							$is_mapped = true;
-							break;
+						foreach ($return[$i]['matches'] as $j => $match) {
+							if (array($k_action => $v_action)  == $match) {
+								$params []= $j;
+								$is_mapped = true;
+								break;
+							}
+						}
+
+						if (!$is_mapped) {
+							throw new Exception('Unable to map parameter '. $action .' to a regex match');
 						}
 					}
+					else {
+						$is_mapped = false;
 
-					if (!$is_mapped) {
-						throw new Exception('Unable to map parameter '. $action .' to a regex match');
-                    }
-				}
-				else {
-					$is_mapped = false;
+						foreach ($return[$i]['matches'] as $j => $match) {
+							if ($action == reset($match) || $action === key($match)) {
+								$params []= $j;
+								$is_mapped = true;
+								break;
+							}
+						}
 
-					foreach ($return[$i]['matches'] as $j => $match) {
-						if ($action == reset($match) || $action === key($match)) {
-							$params []= $j;
-							$is_mapped = true;
-							break;
+						if (!$is_mapped) {
+							throw new Exception('Unable to map parameter '. $action .' to a regex match');
 						}
 					}
-
-					if (!$is_mapped) {
-						throw new Exception('Unable to map parameter '. $action .' to a regex match');
-                    }
 				}
 			}
 

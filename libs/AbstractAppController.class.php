@@ -30,9 +30,11 @@ abstract class AbstractAppController extends AbstractController {
 			$this->method = 'index';
         }
 
-		$this->config = new SiteConfig($request);
+		$this->config = new SiteConfig($request, Config::get('site_config'));
 		$this->data_container = new DataContainer();
 
+        //TODO does this distinction make sense? we can still use template on an
+        //ajax request !?!?
 		if (!$this->config->isAjax()) {
 			$this->ajax = false;
 			$this->smarty = new Smarty();
@@ -124,7 +126,7 @@ abstract class AbstractAppController extends AbstractController {
 		switch ($state) {
 			case Dispatcher::STATE_AUTH:
 				header('HTTP/1.1 403 Forbidden');
-				$this->redirect(new URL(Config::get('site_config.default_page'), array('request_uri' => $this->request->getUrl->__toString())), 1);
+				$this->redirect(new URL(Config::get('router.default'), array('request_uri' => $this->request->getUrl()->__toString())), 1);
 				$template = '403';
 				break;
 

@@ -102,15 +102,17 @@ class DataContainer {
 	 * @param $create boolean if true the requested key will be created
 	 *
 	 * @returns mixed the object requested by the key identifier, or null if not found
+     *
+     * TODO throw exception??
 	 */
 	private function & getReference($key, $create = false) {
 		if (is_string($key))
 			$key = $this->templateKeys($key);
 
-		if (!is_array($key))
-			return null;
-
 		$null = null;
+
+		if (!is_array($key))
+			return $null;
 
 		$obj =& $this->vars;
 		foreach ($key as $k) {
