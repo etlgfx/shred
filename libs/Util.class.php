@@ -80,7 +80,7 @@ class Util {
 	/**
 	 * generate a random hash for a new image
 	 *
-	 * @returns string 36 char hash
+	 * @returns string 48 char hash
 	 */
 	public static function generateHash() {
 		return self::encodePassword(microtime(true) . rand(0, 65535) . self::SALT);
