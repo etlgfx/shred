@@ -15,11 +15,14 @@ class DataContainerTest extends PHPUnit_Framework_TestCase {
     }
 
     public function testAddingData() {
+        $this->assertEquals(array(), $this->dc->getVars());
+
         $this->dc->set('key', 'value');
         $this->assertEquals($this->dc->get('key'), 'value');
 
         $this->dc->append('key', 'value2');
-        $this->assertEquals($this->dc->get('key'), array('value', 'value2'));
+        $this->dc->append('key', 'value3');
+        $this->assertEquals($this->dc->get('key'), array('value', 'value2', 'value3'));
 
         $this->assertEquals($this->dc->get('key.0'), 'value');
         $this->assertEquals($this->dc->get('key.1'), 'value2');
