@@ -25,7 +25,14 @@ class Dispatcher {
             $router = new Router();
         }
 
-        $request = $router->route();
+        try {
+            $request = $router->route();
+        }
+        catch (RedirectException $e) {
+            header('Location: '. $e->getUrl());
+            //TODO grab a default shitty controller, and use that to redirect,
+            //instead of doing it striaght in dispatcher
+        }
 
 		$state = self::STATE_INIT;
 		$controller = null;

@@ -81,25 +81,25 @@ abstract class AbstractAppController extends AbstractController {
 			header('Content-type: text/javascript');
 
 			try {
-				die(json_encode(array(
+				echo json_encode(array(
 							'content' => $this->smarty->fetch($template),
 							'_messages' => Log::inst()->getUserErrorsArray(),
 							'_siteconfig' => array(
 								'site' => $this->config->getSite(),
 								'page' => $this->config->getPage(),
 							),
-				)));
+				));
 			}
 			catch (Exception $e) {
 				Log::raise($e->getMessage(), Log::APP_ERROR);
 
-				die(json_encode(array(
+				echo json_encode(array(
 							'_messages' => Log::inst()->getUserErrorsArray(),
 							'_siteconfig' => array(
 								'site' => $this->config->getSite(),
 								'page' => $this->config->getPage(),
 							),
-				)));
+				));
 			}
 		}
 		else {

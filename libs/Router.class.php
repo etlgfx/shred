@@ -1,6 +1,7 @@
 <?php
 
 require_once PATH_LIBS .'Request.class.php';
+require_once PATH_LIBS .'exception/RedirectException.class.php';
 
 class Router {
     private $routes;
@@ -77,11 +78,21 @@ class Router {
             $request->setController($parts[0]);
         }
         else {
-            $request->setController(
-				Config::get('router.default')
-				? Config::get('router.default')
-				: 'default'
-			);
+            $default = Config::get('router.default');
+
+            if (is_string($default)) {
+                throw new RedirectException($default);
+            }
+            else if (isset($default['controller'], $default['action'])) {
+                $request->setController($default['controller']);
+                $request->setAction($default['action']);
+            }
+            else if (isset($default['controller'])) {
+                $request->setController($default['controller']);
+            }
+            else {
+                $request->setController('default');
+            }
 
             return $request;
         }
