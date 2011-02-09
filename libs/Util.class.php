@@ -18,13 +18,13 @@ class Util {
 	 */
 	public static function encodePassword($password, $salt = null) {
 		if ($salt === null || !is_string($salt))
-			$salt = sprintf('%04x', rand(0, 65535));
-		else if (strlen($salt) > 4)
-			$salt = substr($salt, 0, 4);
-		else if (strlen($salt) < 4)
+			$salt = substr(md5(rand(0, 65535) . rand(0, 65535)), 0, 8);
+		else if (strlen($salt) > 8)
+			$salt = substr($salt, 0, 8);
+		else if (strlen($salt) < 8)
 			return false;
 
-		return $salt . md5($salt . self::SALT . $password);
+		return $salt . sha1($salt . self::SALT . $password);
 	}
 
 	/**
