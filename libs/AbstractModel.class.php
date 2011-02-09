@@ -188,6 +188,9 @@ abstract class AbstractModel {
 		return $this; //TODO should this be this or a boolean?
 	}
 
+    /**
+     * CRUD Read one or more records
+     */
 	public function read(ModelFilter $filter = null) {
 		if (!$filter) {
 
@@ -203,7 +206,12 @@ abstract class AbstractModel {
 		if ($filter->isSingle()) {
 			$row = $db->selectOne(new Query('SELECT * FROM '. $this->_table . $filter->toSql()));
 
-            return $this->setFromArray($row);
+            if ($row) {
+                return $this->setFromArray($row);
+            }
+            else {
+                return null;
+            }
 		}
 		else {
 			$res = $db->query(new Query('SELECT * FROM '. $this->_table . $filter->toSql()));
@@ -220,6 +228,9 @@ abstract class AbstractModel {
 		return $ret;
 	}
 
+    /**
+     * CRUD Update a record
+     */
 	public function update(array $data = null, ModelFilter $filter = null) {
 		if ((!$filter && !isset($this->id)) || !$data) {
             return false;
@@ -264,6 +275,9 @@ abstract class AbstractModel {
         return true;
 	}
 
+    /**
+     * CRUD Delete a record
+     */
 	public function delete(ModelFilter $filter = null) {
 		$db = DB::factory('master');
 
@@ -278,9 +292,18 @@ abstract class AbstractModel {
 		}
 	}
 
+    /**
+     * Set the key value pairs supplied into the instance's properties. Only 
+     * keys starting with alpha characters are accepted, and only keys that are 
+     * already known to the instance in the _fields array.
+     *
+     * @param array $data
+     *
+     * @returns AbstractModel, current instance
+     */
     protected function setFromArray(array $data) {
         foreach ($data as $k => $v) {
-            if ($k[0] == '_') {
+            if (!ctype_alpha($k[0])) {
                 continue;
             }
 
