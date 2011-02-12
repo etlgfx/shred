@@ -289,7 +289,7 @@ abstract class AbstractAppController extends AbstractController {
 	 * Return whether the current request should be handled / rendered as an
 	 * AJAX request (JSON)
 	 *
-	 * @retuns boolean
+	 * @returns boolean
 	 */
 	protected function isAjax() {
 		return $this->ajax;

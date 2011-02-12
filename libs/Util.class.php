@@ -132,7 +132,7 @@ class Util {
 	 *
 	 * @param string $string
 	 *
-	 * @throw Exception on invalid parameter
+	 * @throws Exception on invalid parameter
 	 *
 	 * @returns string
 	 */
@@ -154,7 +154,7 @@ class Util {
 	 *
 	 * @param string $string
 	 *
-	 * @throw Exception on invalid parameter
+	 * @throws Exception on invalid parameter
 	 *
 	 * @returns string
 	 */

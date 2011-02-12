@@ -20,7 +20,7 @@ class DataContainer {
 	 *
 	 * @param string $key path to the requested data variable
 	 *
-	 * @retuns mixed
+	 * @returns mixed
 	 */
 	public function get($key) {
 		return $this->getReference($key);
