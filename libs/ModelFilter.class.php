@@ -78,8 +78,8 @@ class ModelFilter {
     }
 
     /**
-     * @param $limit int
-     * @param $offset int
+     * @param int $limit
+     * @param int $offset
      *
      * @throws Exception on invalid parameer
      *

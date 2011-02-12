@@ -10,8 +10,8 @@ final class DBmysqli extends DB {
 	private $current_db;
 
 	/**
-	 * @param $connection array of connection parameters
-	 * @param $default_db string default database name
+	 * @param array $connection array of connection parameters
+	 * @param string $default_db default database name
 	 */
 	public function __construct($server, $username, $password, $database, $port, $socket) {
 		$this->server   = $server;
@@ -56,7 +56,7 @@ final class DBmysqli extends DB {
 	/**
 	 * select database
 	 *
-	 * @param $db_name string db name
+	 * @param string $db_name db name
 	 *
 	 * @return boolean
 	 */
@@ -94,7 +94,7 @@ final class DBmysqli extends DB {
 	/**
 	 * Execute the query
 	 *
-	 * @param $q Query
+	 * @param Query $q Query
 	 *
 	 * @returns DBResult or false
 	 */
@@ -143,7 +143,7 @@ final class DBmysqli extends DB {
 	}
 
 	/**
-	 * @param string string to escape
+	 * @param string $string string to escape
 	 *
 	 * @returns string
 	 */
@@ -157,7 +157,7 @@ final class DBmysqli extends DB {
 	}
 
 	/**
-	 * @param $filename string to execute as multiquery
+	 * @param string $filename file to execute as multiquery
 	 *
 	 * @returns bool
 	 */

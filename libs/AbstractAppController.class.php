@@ -18,7 +18,7 @@ abstract class AbstractAppController extends AbstractController {
      * Setup the current controller instance with all the defaults. SiteConfig,
      * DataContainer, Smarty
      *
-     * @param $request
+     * @param Request $request
      */
 	public function __construct(Request $request) {
         parent::__construct($request);
@@ -116,7 +116,7 @@ abstract class AbstractAppController extends AbstractController {
 	/**
 	 * Render an error page if possible, if not just spit out a plain text error
 	 *
-	 * @param $state int - Dispatcher state, auth / exec / init
+	 * @param int $state Dispatcher state, auth / exec / init
 	 *
 	 * @see Dispatcher
 	 */
@@ -180,8 +180,8 @@ abstract class AbstractAppController extends AbstractController {
 	 * Redirect to the passed URL, if the current request is in AJAX mode the
 	 * Location header will TODO ????
 	 *
-	 * @param $url URL object to redirect to
-	 * @param $timeout int - number of seconds to wait, this will cause the
+	 * @param URL $url URL object to redirect to
+	 * @param int $timeout number of seconds to wait, this will cause the
 	 *     header to be a refresh header, instead of a location one
 	 */
 	public function redirect(URL $url, $timeout = null) {
@@ -198,8 +198,8 @@ abstract class AbstractAppController extends AbstractController {
 	/**
 	 * sets template variables
 	 *
-	 * @param $key string name of template variable to set
-	 * @param $value mixed
+	 * @param string $key name of template variable to set
+	 * @param mixed $value
 	 *
 	 * @see DataContainer
 	 */
@@ -217,7 +217,7 @@ abstract class AbstractAppController extends AbstractController {
 	 * action (e.g. current action is users, pass in 'index', to request the
 	 * template 'users/index.tpl')
 	 *
-	 * @param $template string template name
+	 * @param string $template template name
 	 *
 	 * @returns bool true if file found and successfully assigned
 	 */
@@ -253,8 +253,8 @@ abstract class AbstractAppController extends AbstractController {
 	/**
 	 * sets template variables
 	 *
-	 * @param $key string - name of variable
-	 * @param $value mixed
+	 * @param string $key name of variable
+	 * @param mixed $value
 	 *
 	 * @see DataContainer.append()
 	 *
@@ -268,7 +268,7 @@ abstract class AbstractAppController extends AbstractController {
 	/**
 	 * return whether the given key is set or not in the template vars
 	 *
-	 * @param $key string - name of variable to check
+	 * @param string $key name of variable to check
 	 *
 	 * @returns boolean
 	 */

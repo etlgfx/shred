@@ -34,7 +34,7 @@ class Validator {
 	}
 
 	/**
-	 * @param $data array
+	 * @param array $data
 	 *
 	 * @returns bool - true on success
 	 */
@@ -83,9 +83,9 @@ class Validator {
 	 * make sure the data passed in is a valid integer (string or proper
 	 * integer)
 	 *
-	 * @param $data mixed, value to validate
-	 * @param $min number or null, null means skip the minimum test
-	 * @param $max number or null, null means skip the maximum test
+	 * @param mixed $data value to validate
+	 * @param number|null $min null means skip the minimum test
+	 * @param number|null $max null means skip the maximum test
 	 *
 	 * @return boolean
 	 */
@@ -109,9 +109,9 @@ class Validator {
 	 * make sure the data passed in is a valid number, int or float (string or
 	 * proper integer)
 	 *
-	 * @param $data mixed, value to validate
-	 * @param $min number or null, null means skip the minimum test
-	 * @param $max number or null, null means skip the maximum test
+	 * @param mixed $data, value to validate
+	 * @param number|null $min null means skip the minimum test
+	 * @param number|null $max null means skip the maximum test
 	 *
 	 * @return boolean
 	 */
@@ -134,7 +134,7 @@ class Validator {
 	/**
 	 * make sure the string passed in is a valid email address
 	 *
-	 * @param $data mixed, value to validate
+	 * @param mixed $data, value to validate
 	 *
 	 * @return boolean
 	 */
@@ -145,7 +145,7 @@ class Validator {
 	/**
 	 * make sure the string passed in is a valid url
 	 *
-	 * @param $data mixed, value to validate
+	 * @param mixed $data, value to validate
 	 *
 	 * @return boolean
 	 */
@@ -161,9 +161,9 @@ class Validator {
 	/**
 	 * make sure the data passed in is a string, mainly to check strlen
 	 *
-	 * @param $data mixed, value to validate
-	 * @param $min number or null, null means skip the minimum test
-	 * @param $max number or null, null means skip the maximum test
+	 * @param mixed $data, value to validate
+	 * @param number|null $min null means skip the minimum test
+	 * @param number|null $max null means skip the maximum test
 	 *
 	 * @return boolean
 	 */
@@ -188,9 +188,9 @@ class Validator {
 	/**
 	 * make sure the data passed in is an alpha string
 	 *
-	 * @param $data mixed, value to validate
-	 * @param $min number or null, null means skip the minimum test
-	 * @param $max number or null, null means skip the maximum test
+	 * @param mixed $data, value to validate
+	 * @param number|null $min null means skip the minimum test
+	 * @param number|null $max null means skip the maximum test
 	 *
 	 * @return boolean
 	 */
@@ -215,9 +215,9 @@ class Validator {
 	/**
 	 * make sure the data passed in is an alphanumeric string
 	 *
-	 * @param $data mixed, value to validate
-	 * @param $min number or null, null means skip the minimum test
-	 * @param $max number or null, null means skip the maximum test
+	 * @param mixed $data, value to validate
+	 * @param number|null $min null means skip the minimum test
+	 * @param number|null $max null means skip the maximum test
 	 *
 	 * @return boolean
 	 */
@@ -242,9 +242,9 @@ class Validator {
 	/**
 	 * make sure the data passed in is a hexadecimal string
 	 *
-	 * @param $data mixed, value to validate
-	 * @param $min number or null, null means skip the minimum test
-	 * @param $max number or null, null means skip the maximum test
+	 * @param mixed $data, value to validate
+	 * @param number|null $min null means skip the minimum test
+	 * @param number|null $max null means skip the maximum test
 	 *
 	 * @return boolean
 	 */

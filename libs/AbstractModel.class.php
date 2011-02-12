@@ -75,8 +75,9 @@ abstract class AbstractModel {
 	 *
 	 * @throws Exception
 	 *
-	 * @param $where array
-	 * @param $order array
+	 * @param array $where
+	 * @param array $order
+     * @param int $limit
 	 *
 	 * @returns array of Model objects
 	 */
@@ -147,7 +148,7 @@ abstract class AbstractModel {
 	/**
      * CRUD Create a new record, using the $data passed in
      *
-     * @param $data
+     * @param array $data
      *
      * @throws Exception
      *

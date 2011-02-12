@@ -21,7 +21,7 @@ class URL {
 	/**
 	 * constructor
 	 *
-	 * @param $args string URL for now, might be mixed at some point
+	 * @param string $args URL for now, might be mixed at some point
 	 *
 	 * @throws Exception on bad arguments
 	 */
@@ -48,7 +48,7 @@ class URL {
 	 * Take a fully qualified URL as input and turn it into internal URL
 	 * representation with separated out parameters etc.
 	 *
-	 * @param $url string URL to parse
+	 * @param string $url URL to parse
 	 */
 	public function parseURL($url, array $named_params = null) {
 		$this->action = null;
@@ -147,7 +147,7 @@ class URL {
 	/**
 	 * Set the action
 	 *
-	 * @param $action string
+	 * @param string $action
 	 */
 	public function setAction($action) {
 		$this->action = $action;
@@ -156,8 +156,8 @@ class URL {
 	/**
 	 * Get named parameters by range, if no arguments supplied, return all parameters
 	 *
-	 * @param $start int offset to start array slice
-	 * @param $length int number of items to return
+	 * @param int $start offset to start array slice
+	 * @param int $length number of items to return
 	 *
 	 * @returns array
 	 */
@@ -169,7 +169,7 @@ class URL {
 	 * Get a single parameter from either the named parameters or the numeric
 	 * indices
 	 *
-	 * @param $index int or string
+	 * @param int|string $index
 	 *
 	 * @returns string value or null
 	 */

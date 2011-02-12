@@ -11,8 +11,8 @@ class Util {
 	/**
 	 * encode a password using the two string arguments, if no salt given, one is generated
 	 *
-	 * @param[in] password string
-	 * @param[in] salt optional string
+	 * @param string $password
+	 * @param string $salt optional
 	 *
 	 * @return string password or false on bad param
 	 */
@@ -30,8 +30,8 @@ class Util {
 	/**
 	 * verify the given password with the db password (re-encode using salt)
 	 *
-	 * @param[in] userPassword string given by user
-	 * @param[in] dbPassword string stored in DB
+	 * @param string $userPassword string given by user
+	 * @param string $dbPassword string stored in DB
 	 *
 	 * @see encodePassword
 	 *
@@ -44,9 +44,9 @@ class Util {
 	/**
 	 * Recursively Convert an associative array to an XML document
 	 *
-	 * @param $data the associative array to convert
-	 * @param $dom the document you wish to add in to
-	 * @param $node the dom node to use as root
+	 * @param array $data the associative array to convert
+	 * @param DomDocument $dom the document you wish to add in to
+	 * @param DomNode $node the dom node to use as root
 	 *
 	 * @returns DomDocument
 	 */
@@ -90,7 +90,7 @@ class Util {
 	 * attempts to return the default file extension for the given mime type
 	 * TODO convert this to an associative array probably, be easier code
 	 *
-	 * @param $mime string
+	 * @param string $mime
 	 *
 	 * @returns string e.g. ".jpg"
 	 */
@@ -130,7 +130,7 @@ class Util {
 	 * convert a string like "bla_stuff" to "BlaStuff" to be used as a class
 	 * name
 	 *
-	 * @param $string string
+	 * @param string $string
 	 *
 	 * @throw Exception on invalid parameter
 	 *
@@ -152,7 +152,7 @@ class Util {
 	 * convert a string like "_bla_stuff" to "_blaStuff" to be used as a method
 	 * name
 	 *
-	 * @param $string string
+	 * @param string $string
 	 *
 	 * @throw Exception on invalid parameter
 	 *

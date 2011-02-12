@@ -39,7 +39,7 @@ class Config {
 	 *
 	 * @see DataContainer.get()
 	 *
-	 * @param $key
+	 * @param string $key
      *
      * @returns mixed
 	 */
@@ -52,8 +52,8 @@ class Config {
 	 *
 	 * @see DataContainer.set()
 	 *
-	 * @param $key string path to the requested data variable
-	 * @param $value mixed value of variable to set
+	 * @param string $key path to the requested data variable
+	 * @param mixed $value value of variable to set
 	 */
 	public static function set($key, $value = null) {
 		self::instance()->data_container->set($key, $value);
@@ -64,8 +64,8 @@ class Config {
 	 *
 	 * @see DataContainer.append()
 	 *
-	 * @param $key string path to the requested data variable
-	 * @param $value mixed value of variable to set
+	 * @param string $key path to the requested data variable
+	 * @param mixed $value value of variable to set
 	 */
 	public static function append($key, $value) {
 		self::instance()->data_container->append($key, $value);
@@ -76,7 +76,7 @@ class Config {
 	 *
 	 * @see DataContainer.is_set()
 	 *
-	 * @param $key string path to the requested data variable
+	 * @param string $key path to the requested data variable
 	 *
 	 * @returns boolean
 	 */

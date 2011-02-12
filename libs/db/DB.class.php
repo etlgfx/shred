@@ -11,7 +11,7 @@ abstract class DB {
 	/**
 	 * Factory method for the DB classes
 	 *
-	 * @param $db_name name of db handle
+	 * @param string $db_name name of db handle
 	 *
 	 * @returns DB implemented subclass
 	 */
@@ -54,8 +54,8 @@ abstract class DB {
 	}
 
 	/**
-	 * @param $connection array of connection parameters
-	 * @param $default_db string default database name
+	 * @param array $connection array of connection parameters
+	 * @param string $default_db default database name
 	 */
 	abstract public function __construct($server, $username, $password, $database, $port, $socket);
 
@@ -69,7 +69,7 @@ abstract class DB {
 	/**
 	 * select database
 	 *
-	 * @param $db_name string db name
+	 * @param string $db_name db name
 	 *
 	 * @return boolean
 	 */
@@ -83,7 +83,7 @@ abstract class DB {
 	/**
 	 * Execute the query
 	 *
-	 * @param $q Query
+	 * @param Query $q
 	 *
 	 * @returns DBResult or false
 	 */
@@ -93,8 +93,8 @@ abstract class DB {
 	 * Execute the passed query and return the first row as an associative
 	 * array
 	 *
-	 * @param $q Query
-	 * @param $fancy_array boolean, will split query results into arrays using column names separated by dots
+	 * @param Query $q
+	 * @param bool $fancy_array if true, will split query results into arrays using column names separated by dots
 	 *
 	 * @see deepResult()
 	 *
@@ -121,8 +121,8 @@ abstract class DB {
 	 * Execute the passed query and return the entire result set as an array of
 	 * associative arrays
 	 *
-	 * @param $q Query
-	 * @param $fancy_array boolean, will split query results into arrays using column names separated by dots
+	 * @param Query $q
+	 * @param bool $fancy_array if true, will split query results into arrays using column names separated by dots
 	 *
 	 * @see deepResult()
 	 *
@@ -151,7 +151,7 @@ abstract class DB {
 	}
 
 	/**
-	 * @param string string to escape
+	 * @param string $string string to escape
 	 *
 	 * @returns string
 	 */
@@ -168,7 +168,7 @@ abstract class DB {
 	abstract public function insertId();
 
 	/**
-	 * @param $row array
+	 * @param array $row
 	 *
 	 * @returns array
 	 */
@@ -194,7 +194,7 @@ abstract class DB {
 	}
 
 	/**
-	 * @param $filename string to execute as multiquery
+	 * @param string $filename file to execute as multiquery
 	 *
 	 * @returns bool
 	 */

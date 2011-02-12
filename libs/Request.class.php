@@ -29,7 +29,7 @@ class Request {
      * Set HTTP Request Method. This can be one of POST, GET, DELETE, PUT,
      * PATCH, etc.
      *
-     * @param $method string
+     * @param string $method
      *
      * @throws Exception
      */
@@ -49,7 +49,7 @@ class Request {
     /**
      * Set Controller name property.
      *
-     * @param $controller string
+     * @param string $controller
      *
      * @throws Exception
      */
@@ -65,7 +65,7 @@ class Request {
     /**
      * Set Action property. This is the Controller method that will be called.
      *
-     * @param $action string
+     * @param string $action
      *
      * @throws Exception
      */
@@ -81,7 +81,7 @@ class Request {
     /**
      * Append a parameter to the params array
      *
-     * @param $param mixed
+     * @param mixed $param
      */
     public function addParam($param) {
         if ($param) {
@@ -90,7 +90,7 @@ class Request {
     }
 
     /**
-     * @param $index
+     * @param mixed $index
      *
      * @return mixed
      */

@@ -21,7 +21,7 @@ class ShellParams {
 	 * Return a command line argument passed by index, this skips option flags
 	 * etc.
 	 *
-	 * @param $index int
+	 * @param int $index
 	 *
 	 * @returns mixed, string usually, null if nothing found
 	 */
@@ -35,7 +35,7 @@ class ShellParams {
 	/**
 	 * Return the value of the option requested
 	 *
-	 * @param $option mixed. should be string. name of the option to retrieve
+	 * @param mixed $option should be string. name of the option to retrieve
 	 *
 	 * @throws Exception on invalid parameter, or strange values
 	 *
@@ -53,7 +53,7 @@ class ShellParams {
 	 * have something like -o true, 'true' will be returned as a boolean value,
 	 * so you could also have specified 'on', '1' or similar instead.
 	 *
-	 * @param $option mixed. should be string. name of the option to retrieve
+	 * @param mixed $option should be string. name of the option to retrieve
 	 *
 	 * @throws Exception on invalid parameter, or strange values
 	 *
@@ -103,8 +103,8 @@ class ShellParams {
 	/**
 	 * Parses command line parameters $argv and $argc
 	 *
-	 * @param $required - a list of required parameters
-	 * @param $switches - a list of parameters that are switches (i.e. do not
+	 * @param array $required a list of required parameters
+	 * @param array $switches a list of parameters that are switches (i.e. do not
 	 * accept a second parameter `-v` vs `-f filename`)
 	 *
 	 * @throws Exception on badly initialized argv and argc, or missing required param

@@ -19,7 +19,7 @@ class Query {
 	/**
 	 * constructor
 	 *
-	 * @param $query string query string, optionally with variable arguments
+	 * @param string $query query string, optionally with variable arguments
 	 */
 	public function __construct($query) {
 		$this->args = array();
@@ -86,7 +86,7 @@ class Query {
 	 * getQuery converts the current query into a string, appending parts to
 	 * eachother and escaping arguments
 	 *
-	 * @param $db DB
+	 * @param DB $db
 	 *
 	 * @returns string
 	 */

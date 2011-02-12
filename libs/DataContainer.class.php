@@ -18,7 +18,7 @@ class DataContainer {
 	/**
 	 * @see getReference()
 	 *
-	 * @param $key string path to the requested data variable
+	 * @param string $key path to the requested data variable
 	 *
 	 * @retuns mixed
 	 */
@@ -31,8 +31,8 @@ class DataContainer {
 	 *
 	 * @see getReference()
 	 *
-	 * @param $key string path to the requested data variable
-	 * @param $value mixed value of variable to set
+	 * @param string $key path to the requested data variable
+	 * @param mixed $value value of variable to set
 	 */
 	public function set($key, $value = null) {
 		if ($value === null && is_array($key))
@@ -48,8 +48,8 @@ class DataContainer {
 	 *
 	 * @see getReference()
 	 *
-	 * @param $key string path to the requested data variable
-	 * @param $value mixed value of variable to set
+	 * @param string $key path to the requested data variable
+	 * @param mixed $value value of variable to set
 	 */
 	public function append($key, $value) {
 		$obj =& $this->getReference($key, true);
@@ -64,7 +64,7 @@ class DataContainer {
 	 *
 	 * @see getReference()
 	 *
-	 * @param $key string path to the requested data variable
+	 * @param string $key path to the requested data variable
 	 *
 	 * @returns boolean
 	 */
@@ -85,7 +85,7 @@ class DataContainer {
 	/**
 	 * template keys are in the form of bla.sub.subsub
 	 *
-	 * @param $key string
+	 * @param string $key
 	 *
 	 * @returns array
 	 */
@@ -98,8 +98,8 @@ class DataContainer {
 	 *
 	 * @see templateKeys()
 	 *
-	 * @param $key string path to the requested data variable
-	 * @param $create boolean if true the requested key will be created
+	 * @param string $key path to the requested data variable
+	 * @param bool $createean if true the requested key will be created
 	 *
 	 * @returns mixed the object requested by the key identifier, or null if not found
      *

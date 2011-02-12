@@ -16,9 +16,9 @@ class SiteConfig {
 	private $page;
 
     /**
-     * @param $request this is the current request, currently we only use this
+     * @param Request $request this is the current request, currently we only use this
      * to get the controller name i.e. page name used to server the page
-     * @param $config; this is the site config
+     * @param array $config this is the site config
      */
 	public function __construct(Request $request, array $config = null) {
 		$this->data = $config;
@@ -50,7 +50,7 @@ class SiteConfig {
 	/**
 	 * Find out if the page exists
 	 *
-	 * @param $page string or null, if null use the internal page property
+	 * @param string|null $page if null use the internal page property
 	 *
 	 * @returns bool
 	 */
@@ -75,7 +75,7 @@ class SiteConfig {
 	/**
 	 * Return page configuration section
 	 *
-	 * @param $page string or null, if null use the internal page property
+	 * @param string|null $page if null use the internal page property
 	 *
 	 * @returns array
 	 */
@@ -90,7 +90,8 @@ class SiteConfig {
 	/**
 	 * Return the menu
 	 *
-	 * @param $page string or null, if null use the internal page property
+	 * @param string|null $page if null use the internal page property
+     *
 	 * @returns array
 	 */
 	public function getMenu($page = null) {
@@ -128,7 +129,7 @@ class SiteConfig {
 	/**
 	 * return whether the requested page requires login
 	 *
-	 * @param $page string or null, if null use the internal page property
+	 * @param string|null $page if null use the internal page property
 	 *
 	 * @returns bool
 	 */
@@ -144,7 +145,7 @@ class SiteConfig {
 	/**
 	 * return whether the request should be treated as an ajax request
 	 *
-	 * @param $page string or null, if null use the internal page property
+	 * @param string|null $page if null use the internal page property
 	 *
 	 * @returns bool
 	 */
@@ -160,11 +161,11 @@ class SiteConfig {
 	 * this method allows for easy variable substitution and caching of
 	 * variables in css files
 	 *
-	 * @param $stylesheet string, relative path to the css file. relative to the PATH_CSS constant
-	 *
-	 * @returns boolean true on success
+	 * @param string $stylesheet relative path to the css file. relative to the PATH_CSS constant
 	 *
 	 * @throws Exception on failure
+	 *
+	 * @returns boolean true on success
 	 */
 	public function addStyle($stylesheet) {
 		$path = PATH_CSS . $stylesheet;

@@ -69,9 +69,9 @@ class Log {
 	/**
 	 * raise an error message, if it's app type error log it to php log
 	 *
-	 * @param $message string
-	 * @param $level enum of error level constants
-	 * @param $type enum of error type constants
+	 * @param string $message
+	 * @param enum $level enum of error level constants
+	 * @param enum $type enum of error type constants
 	 *
 	 * @return void
 	 */
@@ -218,7 +218,7 @@ class Log {
 	 * Grab a human readable string representation of the type of error we're
 	 * talking about
 	 *
-	 * @param $type int - error type to convert
+	 * @param int $type error type to convert
 	 *
 	 * @returns string
 	 */
@@ -244,7 +244,7 @@ class Log {
 	/**
 	 * Grab a human readable string representation of the level of the error
 	 *
-	 * @param $level int - error level
+	 * @param int $level error level
 	 *
 	 * @returns string
 	 */
