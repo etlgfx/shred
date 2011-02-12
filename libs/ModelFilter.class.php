@@ -27,6 +27,8 @@ class ModelFilter {
      * @param string $op
      *
      * @throws Exception
+     *
+     * @returns ModelFilter $this
      */
     public function filter($column, $value, $op = '=') {
         switch ($op) {
@@ -46,6 +48,8 @@ class ModelFilter {
         }
 
         $this->filter []= array($column, $value, $op);
+
+        return $this;
     }
 
     /**
@@ -55,6 +59,8 @@ class ModelFilter {
      * @param string $direction
      *
      * @throws Exception
+     *
+     * @returns ModelFilter $this
      */
     public function order($column, $direction = 'ASC') {
         switch (strtolower($direction)) {
@@ -75,6 +81,8 @@ class ModelFilter {
         }
 
         $this->order []= array($column, $direction);
+
+        return $this;
     }
 
     /**

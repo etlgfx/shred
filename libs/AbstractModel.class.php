@@ -70,80 +70,6 @@ abstract class AbstractModel {
 		return $res;
 	}
 
-	/**
-	 * Get multiple records.
-	 *
-	 * @throws Exception
-	 *
-	 * @param array $where
-	 * @param array $order
-     * @param int $limit
-	 *
-	 * @returns array of Model objects
-	 */
-	public function getAll(array $where = null, array $order = null, $limit = null) {
-		$db = DB::factory('master');
-
-		$query = 'SELECT * FROM '. $this->_table;
-
-		$i = 0;
-
-		if ($where) {
-			$query .= ' WHERE ';
-
-			$w = array();
-
-			foreach ($where as $key => $value) {
-				if (preg_match('/^[a-z0-9_]+$/', $key)) {
-					$w []= $key .' = $$'. $i++;
-				}
-			}
-
-			$query .= implode(' AND ', $w);
-		}
-
-		if ($order) {
-			$query .= ' ORDER BY ';
-
-			$o = array();
-			foreach ($order as $key => $direction) {
-				if (is_string($key)) {
-					$o []= $key .' '. $direction;
-				}
-			}
-
-			$query .= implode(', ', $o);
-		}
-
-		if ($limit && is_int($limit)) {
-			$query .= ' LIMIT '. $limit;
-		}
-
-		if ($where) {
-			$query = new Query($query, array_values($where));
-		}
-		else {
-			$query = new Query($query);
-		}
-
-		$data = $db->select($query);
-
-		$result = array();
-
-		foreach ($data as $row) {
-			$class = get_class($this);
-			$obj = new $class();
-
-			foreach ($row as $k => $v) {
-				//TODO is this valid?
-				$obj->$k = $v;
-			}
-
-			$result []= array($class => $obj);
-		}
-
-		return $result;
-	}
 
 	/**
      * CRUD Create a new record, using the $data passed in
@@ -283,7 +209,6 @@ abstract class AbstractModel {
 		$db = DB::factory('master');
 
 		if (!$filter) {
-
 			if (isset($this->id)) {
 				$db->query(new Query('DELETE FROM '. $this->_table .' WHERE id = $$0 LIMIT 1', $this->id));
 			}
