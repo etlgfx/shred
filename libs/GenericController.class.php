@@ -2,7 +2,7 @@
 
 require_once PATH_LIBS .'AbstractAppController.class.php';
 
-class ErrorAppController extends AbstractAppController {
+class GenericController extends AbstractController {
 
 	/**
 	 * Override the standard authorize method
@@ -14,6 +14,9 @@ class ErrorAppController extends AbstractAppController {
 	 * action method to call, instead just render the page
 	 */
 	public function execute() { }
+
+    public function render($output) {
+    }
 
 }
 

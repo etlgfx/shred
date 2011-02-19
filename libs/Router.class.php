@@ -56,7 +56,12 @@ class Router {
 					$params []= $matches[$m];
                 }
 
-                return new Request($this->method, $route['actions']['controller'], $route['actions']['action'], $params);
+                return new Request(
+                    $this->method,
+                    $route['actions']['controller'],
+                    $route['actions']['action'],
+                    $params
+                );
 			}
 		}
 
@@ -83,16 +88,9 @@ class Router {
             if (is_string($default)) {
                 throw new RedirectException($default);
             }
-            else if (isset($default['controller'], $default['action'])) {
-                $request->setController($default['controller']);
-                $request->setAction($default['action']);
-            }
-            else if (isset($default['controller'])) {
-                $request->setController($default['controller']);
-            }
-            else {
-                $request->setController('default');
-            }
+
+            $request->setController(isset($default['controller']) ? $default['controller'] : 'default');
+            $request->setAction(isset($default['action']) ? $default['action'] : 'index');
 
             return $request;
         }
@@ -101,6 +99,7 @@ class Router {
             $request->setAction($parts[1]);
         }
         else {
+            $request->setAction('index');
             return $request;
         }
 
@@ -157,34 +156,23 @@ class Router {
 			$return[$i]['matches'] = array();
 
 			foreach ($parts as &$v) {
-				/** TODO
-				 * Allowing REGEX matches as well opens up a whole nother can of
-				 * bitch ass worms, parentheses lists now need to be parsed to
-				 * figure out parameter positions
-				if (preg_match('#^\[re:(.*)\]$#', $v, $matches)) {
-					//echo 'regex token: '. $v . PHP_EOL;
 
-					$v = $matches[1];
-				}
-				else*/
 				if (preg_match('#^\[([a-z_]+:){0,1}(date|slug|id)\]$#', $v, $matches)) {
-					/*
-					echo 'other token: '. $v;
-					var_export($matches);
-					echo PHP_EOL;
-					*/
 
 					switch ($matches[2]) {
+                        case 'string':
+                            $v = '(.+)';
+                            break;
+
 						case 'date':
-							//echo
 							$v = '(\d{4}/\d{1,2}/\d{1,2})';
 							break;
+
 						case 'slug':
-							//echo
 							$v = '([a-z0-9]+[a-z0-9-]*[a-z0-9]*)';
 							break;
+
 						case 'id':
-							//echo
 							$v = '([a-z0-9]+)';
 							break;
 					}
@@ -195,7 +183,6 @@ class Router {
 					else {
 						$return[$i]['matches'][$part++] = array($matches[2]);
 					}
-					//echo PHP_EOL;
 				}
 			}
 

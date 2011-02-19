@@ -118,7 +118,7 @@ abstract class AbstractModel {
     /**
      * CRUD Read one or more records
      */
-	public function read(ModelFilter $filter = null) {
+	public function read(ModelFilter $filter = null, $setCurrentInstance = false) {
 		if (!$filter) {
 
 			$filter = new ModelFilter();
@@ -134,7 +134,16 @@ abstract class AbstractModel {
 			$row = $db->selectOne(new Query('SELECT * FROM '. $this->_table . $filter->toSql()));
 
             if ($row) {
-                return $this->setFromArray($row);
+                if ($setCurrentInstance) {
+                    return $this->setFromArray($row);
+                }
+                else {
+                    $class = get_class($this);
+                    $obj = new $class();
+                    $obj->setFromArray($row);
+
+                    return $obj;
+                }
             }
             else {
                 return null;
@@ -217,6 +226,22 @@ abstract class AbstractModel {
 			$db->query(new Query('DELETE FROM '. $this->_table .' WHERE '. $filter->toSql()));
 		}
 	}
+
+    public function copyProperties(AbstractModel $rhs) {
+        if (!$rhs instanceof $this) {
+            throw new Exception('Incompatible objects');
+        }
+
+        foreach ($rhs as $k => $v) {
+            if (!ctype_alpha($k[0])) {
+                continue;
+            }
+
+            $this->{$k} = $v;
+        }
+
+        return $this;
+    }
 
     /**
      * Set the key value pairs supplied into the instance's properties. Only 

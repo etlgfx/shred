@@ -13,13 +13,13 @@ class UtilShell extends Shell {
         $this->help();
     }
 
-    public function password($password = null) {
+    public function password($password = null, $salt = null) {
         if (!$password) {
             throw new Exception('Please provide a valid password');
         }
 
         echo $password . PHP_EOL;
-        echo Util::encodePassword($password) . PHP_EOL;
+        echo Util::encodePassword($password, $salt) . PHP_EOL;
     }
 
     public function description() {

@@ -1,5 +1,8 @@
 <?php
 
+require_once PATH_LIBS .'exception/RedirectException.class.php';
+require_once PATH_LIBS .'exception/PermissionException.class.php';
+require_once PATH_LIBS .'Request.class.php';
 require_once PATH_LIBS .'Request.class.php';
 require_once PATH_LIBS .'Router.class.php';
 require_once PATH_LIBS .'AbstractController.class.php';
@@ -15,88 +18,154 @@ class Dispatcher {
 	const STATE_EXEC   = 0x04;
 	const STATE_RENDER = 0x08;
 
+    private $state = null;
+    private $controller = null;
+    private $fallbackController = null;
+    private $request = null;
+
 	/**
 	 * Constructor, main program entry point
 	 *
 	 * parse URL, get a controller, authorize, execute, render to stdout
 	 */
-	public function __construct(Router $router = null) {
-        if ($router === null) {
-            $router = new Router();
-        }
-
+	public function __construct(Router $router = null, AbstractController $fallback = null) {
         try {
-            $request = $router->route();
+            $this->init($router);
+            $this->authorize();
+            $this->execute();
+            $this->render();
+        }
+        catch (PermissionException $e) {
+            header('HTTP/1.0 403 Forbidden');
         }
         catch (RedirectException $e) {
             header('Location: '. $e->getUrl());
             //TODO grab a default shitty controller, and use that to redirect,
             //instead of doing it striaght in dispatcher
         }
+        catch (Exception $e) {
 
-		$state = self::STATE_INIT;
-		$controller = null;
-		$continue = true;
+            $controller = $fallback ? $fallback : $this->getGenericController();
 
-		try {
-			$controller = AbstractController::factory($request);
-		}
-		catch (Exception $e) {
-			Log::raise('Page Not Found: '. $request .'; '. $e->getMessage(), Log::APP_ERROR, Log::ERROR_TYPE_CTRL);
-			$continue = false;
-		}
+            switch ($this->state) {
 
-		if ($continue) {
-			$state = self::STATE_AUTH;
+                case self::STATE_INIT:
+                    header('HTTP/1.0 404 Not Found');
 
-			try {
-				if (!$controller->authorize()) {
-					Log::raise('Error Authenticating', Log::USER_ERROR, Log::ERROR_TYPE_CTRL);
-					$continue = false;
-				}
-			}
-			catch (Exception $e) {
-				Log::raise($e, Log::APP_ERROR, Log::ERROR_TYPE_CTRL);
-				$continue = false;
-			}
-		}
+                    $controller->render('_errors/404.tpl');
 
-		if ($continue) {
-			$state = self::STATE_EXEC;
+                    break;
 
-			try {
-				$controller->execute();
-			}
-			catch (Exception $e) {
-				//TODO raise a user friendly message as well?
-				//Log::raise($e->getMessage(), Log::APP_ERROR, Log::ERROR_TYPE_CTRL);
-				Log::raise($e, Log::APP_ERROR, Log::ERROR_TYPE_CTRL);
-				$continue = false;
-			}
-		}
+                case self::STATE_AUTH:
+                    header('HTTP/1.0 403 Forbidden');
 
-		if ($continue) {
-			try {
-				$state = self::STATE_RENDER;
-				$controller->render();
-			}
-			catch (Exception $e) {
-				Log::raise($e, Log::APP_ERROR, Log::ERROR_TYPE_CTRL);
+                    $controller->render('_errors/403.tpl');
 
-				header('content-type: text/plain;');
-				echo Log::inst();
-			}
-		}
-		else {
-			if (!$controller) { //ALL ELSE FAILED grab the generic Error Controller and call the error method on that
-				require_once PATH_LIBS .'ErrorAppController.class.php';
-				$controller = new ErrorAppController(new Request('get'));
-			}
+                    break;
 
-			$controller->error($state);
-		}
-	}
+                case self::STATE_EXEC:
+                    header('HTTP/1.0 400');
 
+                    $controller->render('_errors/400.tpl');
+
+                    break;
+
+                case self::STATE_RENDER:
+                    header('HTTP/1.0 400');
+
+                    $controller->render('_errors/400.tpl');
+
+                    break;
+
+                default:
+                    break;
+            }
+        }
+    }
+
+    /**
+     * initialize request object using the router specified or the default router
+     *
+     * @param Router $router
+     *
+     * @see Router::route()
+     * @see AbstractController::factory()
+     */
+    protected function init(Router $router = null) {
+		$this->state = self::STATE_INIT;
+
+        if ($router === null) {
+            $router = new Router();
+        }
+
+        $this->request = $router->route();
+
+        $this->controller = AbstractController::factory($this->request);
+    }
+
+    /**
+     * Run the authorization method defined in the controller instance
+     *
+     * @throws PermissionException
+     */
+    protected function authorize() {
+        $this->state = self::STATE_AUTH;
+
+        if (!$this->controller->authorize()) {
+            throw new PermissionException('Error Authenticating');
+        }
+    }
+
+    /**
+     * Determine whether we can call the requested action (controller method).
+     * If so call it. If not (it's not public), throw an exception.
+     *
+     * @throws PermissionException
+     */
+    protected function execute() {
+        $this->state = self::STATE_EXEC;
+
+        $method = $this->request->getAction();
+
+        $reflector = new ReflectionMethod($this->controller, $method);
+
+        if ($reflector->isPublic()) {
+            call_user_func_array(array($this->controller, $method), $this->request->getParams());
+        }
+        else {
+            Log::raise('That\'s not a public method, asshole', Log::APP_ERROR, Log::ERROR_TYPE_CTRL);
+            throw new PermissionException('That action is not supported');
+        }
+    }
+
+    /**
+     * Call the controller render method. If it throws an exception try to
+     * recover by just dumping out the errors.
+     *
+     * TODO consider changing this to throw an exception trigger 404 or similar 
+     */
+    protected function render() {
+        $this->state = self::STATE_RENDER;
+
+        try {
+            $this->controller->render();
+        }
+        catch (Exception $e) {
+            Log::raise($e, Log::APP_ERROR, Log::ERROR_TYPE_CTRL);
+
+            header('content-type: text/plain;');
+            echo Log::inst();
+        }
+    }
+
+    /**
+     * Return a very basic, generic controller object. This can be used to
+     * render the simplest pages, if nothing else is available.
+     */
+    protected function getGenericController() {
+        require_once PATH_LIBS .'GenericController.class.php';
+        return new GenericController(new Request('get'));
+    }
 }
 
 ?>

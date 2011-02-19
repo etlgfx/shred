@@ -2,15 +2,13 @@
 
 require_once PATH_LIBS .'AbstractController.class.php';
 require_once PATH_LIBS .'Log.class.php';
-require_once PATH_LIBS .'DataContainer.class.php';
 require_once PATH_LIBS .'SiteConfig.class.php';
 
 require_once PATH_VENDORS .'smarty/Smarty.class.php';
 
 abstract class AbstractAppController extends AbstractController {
-	protected $request;
+
 	protected $smarty;
-	protected $data_container;
 	protected $ajax;
 
 
@@ -22,13 +20,6 @@ abstract class AbstractAppController extends AbstractController {
      */
 	public function __construct(Request $request) {
         parent::__construct($request);
-
-		$this->method = $this->request->getAction();
-
-
-		if (!$this->method) {
-			$this->method = 'index';
-        }
 
 		$this->config = new SiteConfig($request, Config::get('site_config'));
 		$this->data_container = new DataContainer();
@@ -46,23 +37,6 @@ abstract class AbstractAppController extends AbstractController {
 		}
 		else {
 			$this->ajax = true;
-        }
-	}
-
-
-	/**
-	 * Find the requested method using the current URL object and run it
-	 *
-	 * @throws Exception if method not defined
-	 *
-	 * @returns mixed, whatever the method returns
-	 */
-	public function execute() {
-		if (method_exists($this, $this->method)) {
-			return call_user_func_array(array($this, $this->method), $this->request->getParams());
-        }
-		else {
-			throw new Exception("Undefined method requested: ". $this->method);
         }
 	}
 
@@ -177,38 +151,6 @@ abstract class AbstractAppController extends AbstractController {
 
 
 	/**
-	 * Redirect to the passed URL, if the current request is in AJAX mode the
-	 * Location header will TODO ????
-	 *
-	 * @param URL $url URL object to redirect to
-	 * @param int $timeout number of seconds to wait, this will cause the
-	 *     header to be a refresh header, instead of a location one
-	 */
-	public function redirect(URL $url, $timeout = null) {
-		if ($this->request->getUrl() == $url) //TODO hacky, consider changing the interface to the current URL?
-			return;
-
-		if (is_int($timeout))
-			header('Refresh: '. $timeout .'; url='. $url);
-		else
-			header('Location: '. $url);
-	}
-
-
-	/**
-	 * sets template variables
-	 *
-	 * @param string $key name of template variable to set
-	 * @param mixed $value
-	 *
-	 * @see DataContainer
-	 */
-	public function set($key, $value = null) {
-		$this->data_container->set($key, $value);
-	}
-
-
-	/**
 	 * Assign a new template to the current request, this method ensures you're
 	 * using an existing template file or not.
 	 *
@@ -244,36 +186,9 @@ abstract class AbstractAppController extends AbstractController {
 		$template = $this->data_container->get('template');
 
 		if (!$template)
-			$template = $this->request->getController() .'/'. $this->method .'.tpl';
+			$template = $this->request->getController() .'/'. $this->request->getAction() .'.tpl';
 
 		return $template;
-	}
-
-
-	/**
-	 * sets template variables
-	 *
-	 * @param string $key name of variable
-	 * @param mixed $value
-	 *
-	 * @see DataContainer.append()
-	 *
-	 * @returns void
-	 */
-	public function append($key, $value) {
-		return $this->data_container->append($key, $value);
-	}
-
-
-	/**
-	 * return whether the given key is set or not in the template vars
-	 *
-	 * @param string $key name of variable to check
-	 *
-	 * @returns boolean
-	 */
-	public function exists($key) {
-		return $this->data_container->is_set($key);
 	}
 
 
