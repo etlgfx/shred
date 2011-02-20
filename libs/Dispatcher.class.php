@@ -28,7 +28,7 @@ class Dispatcher {
 	 *
 	 * parse URL, get a controller, authorize, execute, render to stdout
 	 */
-	public function __construct(Router $router = null, AbstractController $fallback = null) {
+	public function __construct(Router $router = null, AbstractErrorController $fallback = null) {
         try {
             $this->init($router);
             $this->authorize();
@@ -46,40 +46,29 @@ class Dispatcher {
         catch (Exception $e) {
 
             $controller = $fallback ? $fallback : $this->getGenericController();
+            $status = null;
 
             switch ($this->state) {
 
                 case self::STATE_INIT:
                     header('HTTP/1.0 404 Not Found');
-
-                    $controller->render('_errors/404.tpl');
-
+                    $status = 404;
                     break;
 
                 case self::STATE_AUTH:
                     header('HTTP/1.0 403 Forbidden');
-
-                    $controller->render('_errors/403.tpl');
-
+                    $status = 403;
                     break;
 
                 case self::STATE_EXEC:
-                    header('HTTP/1.0 400');
-
-                    $controller->render('_errors/400.tpl');
-
-                    break;
-
                 case self::STATE_RENDER:
-                    header('HTTP/1.0 400');
-
-                    $controller->render('_errors/400.tpl');
-
-                    break;
-
                 default:
+                    header('HTTP/1.0 400 Bad Request');
+                    $status = 400;
                     break;
             }
+
+            $controller->error($status, $e->getMessage());
         }
     }
 

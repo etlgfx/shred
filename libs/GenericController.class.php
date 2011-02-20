@@ -9,13 +9,12 @@ class GenericController extends AbstractController {
 	 */
 	public function authorize() { return false; }
 
-	/**
-	 * Override the standard execute method which attempts to find an
-	 * action method to call, instead just render the page
-	 */
-	public function execute() { }
+    public function render() { }
 
-    public function render($output) {
+    public function error($status = 404, $message = null) {
+        header('content-type: text/plain');
+
+        printf("%s: %s", $status, $message);
     }
 
 }
