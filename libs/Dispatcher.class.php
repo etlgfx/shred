@@ -37,15 +37,14 @@ class Dispatcher {
         }
         catch (PermissionException $e) {
             header('HTTP/1.0 403 Forbidden');
+
+            $this->getGenericController($fallback)->error(403, $e->getMessage());
         }
         catch (RedirectException $e) {
-            header('Location: '. $e->getUrl());
-            //TODO grab a default shitty controller, and use that to redirect,
-            //instead of doing it striaght in dispatcher
+            $this->getGenericController($fallback)->redirect($e->getUrl());
         }
         catch (Exception $e) {
 
-            $controller = $fallback ? $fallback : $this->getGenericController();
             $status = null;
 
             switch ($this->state) {
@@ -68,7 +67,7 @@ class Dispatcher {
                     break;
             }
 
-            $controller->error($status, $e->getMessage());
+            $this->getGenericController($fallback)->error($status, $e->getMessage());
         }
     }
 
@@ -151,9 +150,14 @@ class Dispatcher {
      * Return a very basic, generic controller object. This can be used to
      * render the simplest pages, if nothing else is available.
      */
-    protected function getGenericController() {
-        require_once PATH_LIBS .'GenericController.class.php';
-        return new GenericController(new Request('get'));
+    protected function getGenericController(AbstractErrorController $fallback = null) {
+        if ($fallback) {
+            return $fallback;
+        }
+        else {
+            require_once PATH_LIBS .'GenericController.class.php';
+            return new GenericController(new Request('get'));
+        }
     }
 }
 
