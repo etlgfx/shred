@@ -7,15 +7,15 @@ define('PATH_APP_TMP', '/dev/null');
 
 class RouterTest extends PHPUnit_Framework_TestCase {
 
-    public function setup() {
-        //$this->config
-    }
+	public function setup() {
+		//$this->config
+	}
 
-    public function testGetUri() {
-        $yea = new Router();
+	public function testGetUri() {
+		$yea = new Router();
 
-        //var_export($_SERVER);
-    }
+		//var_export($_SERVER);
+	}
 }
 
 ?>

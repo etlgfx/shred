@@ -45,17 +45,17 @@ abstract class Shell {
 			throw new Exception("Shell Class not found: ". $class);
 	}
 
-    /**
-     * The default shell method to perform if none was specified
-     */
+	/**
+	 * The default shell method to perform if none was specified
+	 */
 	abstract public function _default();
 
-    /**
-     * The Help shell uses this to display some usage information
-     *
-     * @returns array('name', 'description')
-     */
-    abstract public function description();
+	/**
+	 * The Help shell uses this to display some usage information
+	 *
+	 * @returns array('name', 'description')
+	 */
+	abstract public function description();
 }
 
 ?>

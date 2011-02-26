@@ -27,9 +27,9 @@ class Config {
 	 */
 	public static function & instance() {
 		static $self = null;
-        
-        if ($self === null)
-            $self = new Config();
+		
+		if ($self === null)
+			$self = new Config();
 
 		return $self;
 	}
@@ -40,8 +40,8 @@ class Config {
 	 * @see DataContainer.get()
 	 *
 	 * @param string $key
-     *
-     * @returns mixed
+	 *
+	 * @returns mixed
 	 */
 	public static function get($key) {
 		return self::instance()->data_container->get($key);

@@ -9,13 +9,13 @@ class GenericController extends AbstractController {
 	 */
 	public function authorize() { return false; }
 
-    public function render() { }
+	public function render() { }
 
-    public function error($status = 404, $message = null) {
-        header('content-type: text/plain');
+	public function error($status = 404, $message = null) {
+		header('content-type: text/plain');
 
-        printf("%s: %s", $status, $message);
-    }
+		printf("%s: %s", $status, $message);
+	}
 
 }
 

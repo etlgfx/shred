@@ -80,7 +80,7 @@ abstract class Stream {
 				else if ($c == 'n')
 					$str .= "\n";
 				else if ($c == 'i')
-					$str .= "        ";
+					$str .= "		";
 				else if ($c == $q)
 					$str .= $q;
 				else {

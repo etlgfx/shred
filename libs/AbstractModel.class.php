@@ -65,6 +65,9 @@ abstract class AbstractModel {
 			else if (is_array($v)) {
 				$v = $this->toArray($v);
 			}
+			else {
+				$res[$k] = $v;
+			}
 		}
 
 		return $res;
@@ -72,12 +75,12 @@ abstract class AbstractModel {
 
 
 	/**
-     * CRUD Create a new record, using the $data passed in
-     *
-     * @param array $data
-     *
-     * @throws Exception
-     *
+	 * CRUD Create a new record, using the $data passed in
+	 *
+	 * @param array $data
+	 *
+	 * @throws Exception
+	 *
 	 */
 	public function create(array $data = null) {
 		if (!$this->_validator->validate($data)) {
@@ -107,7 +110,7 @@ abstract class AbstractModel {
 			throw new RuntimeException(var_export($db->error(), true));
 		}
 		else {
-            $this->setFromArray($data);
+			$this->setFromArray($data);
 
 			$this->id = $db->insertId();
 		}
@@ -115,9 +118,9 @@ abstract class AbstractModel {
 		return $this; //TODO should this be this or a boolean?
 	}
 
-    /**
-     * CRUD Read one or more records
-     */
+	/**
+	 * CRUD Read one or more records
+	 */
 	public function read(ModelFilter $filter = null, $setCurrentInstance = false) {
 		if (!$filter) {
 
@@ -133,21 +136,21 @@ abstract class AbstractModel {
 		if ($filter->isSingle()) {
 			$row = $db->selectOne(new Query('SELECT * FROM '. $this->_table . $filter->toSql()));
 
-            if ($row) {
-                if ($setCurrentInstance) {
-                    return $this->setFromArray($row);
-                }
-                else {
-                    $class = get_class($this);
-                    $obj = new $class();
-                    $obj->setFromArray($row);
+			if ($row) {
+				if ($setCurrentInstance) {
+					return $this->setFromArray($row);
+				}
+				else {
+					$class = get_class($this);
+					$obj = new $class();
+					$obj->setFromArray($row);
 
-                    return $obj;
-                }
-            }
-            else {
-                return null;
-            }
+					return $obj;
+				}
+			}
+			else {
+				return null;
+			}
 		}
 		else {
 			$res = $db->query(new Query('SELECT * FROM '. $this->_table . $filter->toSql()));
@@ -157,63 +160,63 @@ abstract class AbstractModel {
 
 			while ($row = $res->nextAssoc()) {
 				$obj = new $class();
-                $ret []= $obj->setFromArray($row);
+				$ret []= $obj->setFromArray($row);
 			}
 		}
 
 		return $ret;
 	}
 
-    /**
-     * CRUD Update a record
-     */
+	/**
+	 * CRUD Update a record
+	 */
 	public function update(array $data = null, ModelFilter $filter = null) {
 		if ((!$filter && !isset($this->id)) || !$data) {
-            return false;
+			return false;
 		}
 
-        if (!$this->_validator->validate($data)) {
-            throw new RuntimeException('Invalid data');
-        }
+		if (!$this->_validator->validate($data)) {
+			throw new RuntimeException('Invalid data');
+		}
 
-        $query = array();
-        $args = array();
-        $index = 0;
+		$query = array();
+		$args = array();
+		$index = 0;
 
-        foreach ($data as $key => $value) {
-            if (isset($this->_fields[$key])) {
-                $query []= $key .' = $$'. $index;
-                $args[$index] = $value;
+		foreach ($data as $key => $value) {
+			if (isset($this->_fields[$key])) {
+				$query []= $key .' = $$'. $index;
+				$args[$index] = $value;
 
-                $index++;
-            }
-        }
+				$index++;
+			}
+		}
 
 		$db = DB::factory('master');
 
-        $query = 'UPDATE '. $this->_table .' SET '. implode(', ', $query);
+		$query = 'UPDATE '. $this->_table .' SET '. implode(', ', $query);
 
-        if ($filter) {
-            echo 'return null';
-            return;
-            //TODO not impl
+		if ($filter) {
+			echo 'return null';
+			return;
+			//TODO not impl
 			$db->query(new Query($query . $filter->toSql()));
-        }
-        else {
-            $index++;
+		}
+		else {
+			$index++;
 
-            $args[$index] = $this->id;
+			$args[$index] = $this->id;
 			$db->query(new Query($query .' WHERE id = $$'. $index, $args));
-        }
+		}
 
-        $this->setFromArray($data);
+		$this->setFromArray($data);
 
-        return true;
+		return true;
 	}
 
-    /**
-     * CRUD Delete a record
-     */
+	/**
+	 * CRUD Delete a record
+	 */
 	public function delete(ModelFilter $filter = null) {
 		$db = DB::factory('master');
 
@@ -227,44 +230,44 @@ abstract class AbstractModel {
 		}
 	}
 
-    public function copyProperties(AbstractModel $rhs) {
-        if (!$rhs instanceof $this) {
-            throw new Exception('Incompatible objects');
-        }
+	public function copyProperties(AbstractModel $rhs) {
+		if (!$rhs instanceof $this) {
+			throw new Exception('Incompatible objects');
+		}
 
-        foreach ($rhs as $k => $v) {
-            if (!ctype_alpha($k[0])) {
-                continue;
-            }
+		foreach ($rhs as $k => $v) {
+			if (!ctype_alpha($k[0])) {
+				continue;
+			}
 
-            $this->{$k} = $v;
-        }
+			$this->{$k} = $v;
+		}
 
-        return $this;
-    }
+		return $this;
+	}
 
-    /**
-     * Set the key value pairs supplied into the instance's properties. Only 
-     * keys starting with alpha characters are accepted, and only keys that are 
-     * already known to the instance in the _fields array.
-     *
-     * @param array $data
-     *
-     * @returns AbstractModel, current instance
-     */
-    protected function setFromArray(array $data) {
-        foreach ($data as $k => $v) {
-            if (!ctype_alpha($k[0])) {
-                continue;
-            }
+	/**
+	 * Set the key value pairs supplied into the instance's properties. Only 
+	 * keys starting with alpha characters are accepted, and only keys that are 
+	 * already known to the instance in the _fields array.
+	 *
+	 * @param array $data
+	 *
+	 * @returns AbstractModel, current instance
+	 */
+	protected function setFromArray(array $data) {
+		foreach ($data as $k => $v) {
+			if (!ctype_alpha($k[0])) {
+				continue;
+			}
 
-            if (isset($this->_fields[$k])) {
-                $this->{$k} = $v;
-            }
-        }
+			if (isset($this->_fields[$k])) {
+				$this->{$k} = $v;
+			}
+		}
 
-        return $this;
-    }
+		return $this;
+	}
 }
 
 ?>

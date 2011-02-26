@@ -7,16 +7,16 @@
  */
 class Log {
 	/* TODO test the new bitmask values!!! */
-	const APP_ERROR       = 0x101;
-	const APP_WARNING     = 0x102;
-	const APP_NOTICE      = 0x104;
-	const APP_SUCCESS     = 0x108;
+	const APP_ERROR	   = 0x101;
+	const APP_WARNING	 = 0x102;
+	const APP_NOTICE	  = 0x104;
+	const APP_SUCCESS	 = 0x108;
 	const APP_ERROR_GROUP = 0x100;
 
-	const USER_ERROR       = 0x201; //user errors (didn't fill out form field etc.)
-	const USER_WARNING     = 0x202; //
-	const USER_NOTICE      = 0x204; //positive feedback messages
-	const USER_SUCCESS     = 0x208; //positive feedback messages
+	const USER_ERROR	   = 0x201; //user errors (didn't fill out form field etc.)
+	const USER_WARNING	 = 0x202; //
+	const USER_NOTICE	  = 0x204; //positive feedback messages
+	const USER_SUCCESS	 = 0x208; //positive feedback messages
 	const USER_ERROR_GROUP = 0x200;
 
 	const LVL_ERROR   = 0x01;
@@ -25,11 +25,11 @@ class Log {
 	const LVL_SUCCESS = 0x08;
 
 	const ERROR_TYPE_GENERIC = 0x00001000;
-	const ERROR_TYPE_DB      = 0x00002000;
-	const ERROR_TYPE_MOD     = 0x00004000; //model / module
-	const ERROR_TYPE_VIEW    = 0x00008000;
-	const ERROR_TYPE_CTRL    = 0x00010000; //controller
-	const ERROR_TYPE_PERM    = 0x00020000; //permissions
+	const ERROR_TYPE_DB	  = 0x00002000;
+	const ERROR_TYPE_MOD	 = 0x00004000; //model / module
+	const ERROR_TYPE_VIEW	= 0x00008000;
+	const ERROR_TYPE_CTRL	= 0x00010000; //controller
+	const ERROR_TYPE_PERM	= 0x00020000; //permissions
 	const ERROR_TYPE_GROUP   = 0xFFFFF000;
 
 	const I_MSG  = 0x01;

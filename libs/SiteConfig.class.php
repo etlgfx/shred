@@ -15,11 +15,11 @@ class SiteConfig {
 	private $data;
 	private $page;
 
-    /**
-     * @param Request $request this is the current request, currently we only use this
-     * to get the controller name i.e. page name used to server the page
-     * @param array $config this is the site config
-     */
+	/**
+	 * @param Request $request this is the current request, currently we only use this
+	 * to get the controller name i.e. page name used to server the page
+	 * @param array $config this is the site config
+	 */
 	public function __construct(Request $request, array $config = null) {
 		$this->data = $config;
 
@@ -27,24 +27,24 @@ class SiteConfig {
 
 		if ($this->pageExists($page)) {
 			$this->page = $page;
-        }
+		}
 
 		if (!isset($this->data['styles'])) {
 			$this->data['styles'] = array();
-        }
-        else if (is_array($this->data['styles'])) {
-            $s = $this->data['styles'];
-            $this->data['styles'] = array();
+		}
+		else if (is_array($this->data['styles'])) {
+			$s = $this->data['styles'];
+			$this->data['styles'] = array();
 
-            foreach ($s as $style) {
-                $this->addStyle($style);
-            }
-        }
+			foreach ($s as $style) {
+				$this->addStyle($style);
+			}
+		}
 
-        if (!isset($this->data['scripts'])) {
-            $this->data['scripts'] = array();
-        }
-    }
+		if (!isset($this->data['scripts'])) {
+			$this->data['scripts'] = array();
+		}
+	}
 
 
 	/**
@@ -91,7 +91,7 @@ class SiteConfig {
 	 * Return the menu
 	 *
 	 * @param string|null $page if null use the internal page property
-     *
+	 *
 	 * @returns array
 	 */
 	public function getMenu($page = null) {
@@ -170,9 +170,9 @@ class SiteConfig {
 	public function addStyle($stylesheet) {
 		$path = PATH_CSS . $stylesheet;
 
-        if (isset($this->data['styles'][$stylesheet])) {
-            return true;
-        }
+		if (isset($this->data['styles'][$stylesheet])) {
+			return true;
+		}
 		if (file_exists($path)) {
 
 			$url = substr(SERVER_URL, 3 + strpos(SERVER_URL, '://'));
@@ -193,14 +193,14 @@ class SiteConfig {
 
 				if (file_put_contents($cache_path, $contents) === false) {
 					throw new Exception("Could not write CSS cache file to: ". PATH_CSS . SUFFIX_CACHE);
-                }
+				}
 			}
 
 			$this->data['styles'][$stylesheet] = SERVER_CSS . SUFFIX_CACHE . $cache;
 		}
 		else {
 			return false;
-        }
+		}
 
 		return true;
 	}
@@ -214,17 +214,17 @@ class SiteConfig {
 	}
 
 
-    /**
-     * TODO refactor this with addStyle() because there's a lot of duplicate
-     * code here
-     */
+	/**
+	 * TODO refactor this with addStyle() because there's a lot of duplicate
+	 * code here
+	 */
 	public function addScript($script, $interpret = false) {
 		$path = PATH_JS . $script;
 
-        if (isset($this->data['scripts'][$script])) {
-            return true;
-        }
-        else if (file_exists($path)) {
+		if (isset($this->data['scripts'][$script])) {
+			return true;
+		}
+		else if (file_exists($path)) {
 
 			if ($interpret === true) {
 				$url = substr(SERVER_URL, 3 + strpos(SERVER_URL, '://'));
@@ -245,18 +245,18 @@ class SiteConfig {
 
 					if (file_put_contents($cache_path, $contents) === false) {
 						throw new Exception("Could not write JS cache file to: ". PATH_JS . SUFFIX_CACHE);
-                    }
+					}
 				}
 
 				$this->data['scripts'][$script] = SERVER_JS . SUFFIX_CACHE . $cache;
 			}
 			else {
 				$this->data['scripts'][$script] = SERVER_JS . $script;
-            }
+			}
 		}
 		else {
 			return false;
-        }
+		}
 
 		return true;
 	}

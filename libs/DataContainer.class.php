@@ -102,8 +102,8 @@ class DataContainer {
 	 * @param bool $createean if true the requested key will be created
 	 *
 	 * @returns mixed the object requested by the key identifier, or null if not found
-     *
-     * TODO throw exception??
+	 *
+	 * TODO throw exception??
 	 */
 	private function & getReference($key, $create = false) {
 		if (is_string($key))

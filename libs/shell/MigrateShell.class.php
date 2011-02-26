@@ -191,7 +191,7 @@ class MigrateShell extends Shell {
 				if ($this->params->getOption('force')) {
 					echo 'Failed Migrations Found!'. PHP_EOL . var_export($errors, true);
 
-					echo '    Forcing migration'. PHP_EOL;
+					echo '	Forcing migration'. PHP_EOL;
 				}
 				else
 					throw new Exception('Failed Migrations Found!'. PHP_EOL . var_export($errors, true));
@@ -281,17 +281,17 @@ class MigrateShell extends Shell {
 		}
 	}
 
-    /**
-     * The Help shell uses this to display some usage information
-     *
-     * @returns array('name', 'description')
-     */
-    public function description() {
-        return array(
-            'Migrations Shell',
-            'Manages Database Migration Versions',
-        );
-    }
+	/**
+	 * The Help shell uses this to display some usage information
+	 *
+	 * @returns array('name', 'description')
+	 */
+	public function description() {
+		return array(
+			'Migrations Shell',
+			'Manages Database Migration Versions',
+		);
+	}
 }
 
 ?>

@@ -7,7 +7,7 @@ require_once PATH_LIBS .'Util.class.php';
 abstract class AbstractController {
 
 	protected $data_container;
-    protected $request;
+	protected $request;
 
 	/**
 	 * @param $request Request object of the current request
@@ -38,9 +38,9 @@ abstract class AbstractController {
 
 			return new $class($request);
 		}
-        else {
-            throw new Exception('Controller not found: '. $class);
-        }
+		else {
+			throw new Exception('Controller not found: '. $class);
+		}
 	}
 
 	/**
@@ -49,7 +49,7 @@ abstract class AbstractController {
 	 *
 	 * @param URL $url URL object to redirect to
 	 * @param int $timeout number of seconds to wait, this will cause the
-	 *     header to be a refresh header, instead of a location one
+	 *	 header to be a refresh header, instead of a location one
 	 */
 	public function redirect(URL $url, $timeout = null) {
 		if ($this->request->getUrl() == $url) //TODO hacky, consider changing the interface to the current URL?

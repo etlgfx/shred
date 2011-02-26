@@ -12,20 +12,20 @@ abstract class AbstractAppController extends AbstractController {
 	protected $ajax;
 
 
-    /**
-     * Setup the current controller instance with all the defaults. SiteConfig,
-     * DataContainer, Smarty
-     *
-     * @param Request $request
-     */
+	/**
+	 * Setup the current controller instance with all the defaults. SiteConfig,
+	 * DataContainer, Smarty
+	 *
+	 * @param Request $request
+	 */
 	public function __construct(Request $request) {
-        parent::__construct($request);
+		parent::__construct($request);
 
 		$this->config = new SiteConfig($request, Config::get('site_config'));
 		$this->data_container = new DataContainer();
 
-        //TODO does this distinction make sense? we can still use template on an
-        //ajax request !?!?
+		//TODO does this distinction make sense? we can still use template on an
+		//ajax request !?!?
 		if (!$this->config->isAjax()) {
 			$this->ajax = false;
 			$this->smarty = new Smarty();
@@ -37,7 +37,7 @@ abstract class AbstractAppController extends AbstractController {
 		}
 		else {
 			$this->ajax = true;
-        }
+		}
 	}
 
 

@@ -5,29 +5,29 @@ require_once PATH_LIBS .'Request.class.php';
 require_once PATH_LIBS .'exception/RedirectException.class.php';
 
 class Router {
-    private $routes;
-    private $uri;
-    private $method;
+	private $routes;
+	private $uri;
+	private $method;
 
-    public function __construct() {
-        if (file_exists(PATH_APP_TMP .'routes.compiled.php')) {
-            $this->routes = require_once PATH_APP_TMP .'routes.compiled.php';
-        }
-        else {
-            $this->routes = $this->compile();
+	public function __construct() {
+		if (file_exists(PATH_APP_TMP .'routes.compiled.php')) {
+			$this->routes = require_once PATH_APP_TMP .'routes.compiled.php';
+		}
+		else {
+			$this->routes = $this->compile();
 
-            if (is_writable(PATH_APP_TMP) && is_dir(PATH_APP_TMP)) {
-                file_put_contents(PATH_APP_TMP .'routes.conf.compiled.php', '<?php return '. var_export($this->routes, true) .'; ?>');
-            }
-        }
-    }
+			if (is_writable(PATH_APP_TMP) && is_dir(PATH_APP_TMP)) {
+				file_put_contents(PATH_APP_TMP .'routes.conf.compiled.php', '<?php return '. var_export($this->routes, true) .'; ?>');
+			}
+		}
+	}
 
-    /**
-     * Get relative path from the base URL. e.g. bla/stuff/1
-     *
-     * @returns string
-     */
-    public function getUri() {
+	/**
+	 * Get relative path from the base URL. e.g. bla/stuff/1
+	 *
+	 * @returns string
+	 */
+	public function getUri() {
 		$uri = substr(REQUEST_URI, strlen(SERVER_URL));
 
 		if (($p = strpos($uri, '?')) === false) {
@@ -36,94 +36,94 @@ class Router {
 		else {
 			return substr($uri, 0, $p);
 		}
-    }
+	}
 
-    /**
-     * @returns Request object
-     */
+	/**
+	 * @returns Request object
+	 */
 	public function route() {
-        $this->method = $_SERVER['REQUEST_METHOD'];
-        $this->uri = $this->getUri();
+		$this->method = $_SERVER['REQUEST_METHOD'];
+		$this->uri = $this->getUri();
 
 		foreach ($this->routes as $route) {
-            if (isset($route['method']) && $this->method != $route['method']) {
-                continue;
-            }
+			if (isset($route['method']) && $this->method != $route['method']) {
+				continue;
+			}
 
 			if (preg_match($route['url'], $this->uri, $matches)) {
 
 				$params = array();
 				foreach ($route['actions']['params'] as $m) {
 					$params []= $matches[$m];
-                }
+				}
 
-                return new Request(
-                    $this->method,
-                    $route['actions']['controller'],
-                    $route['actions']['action'],
-                    $params
-                );
+				return new Request(
+					$this->method,
+					$route['actions']['controller'],
+					$route['actions']['action'],
+					$params
+				);
 			}
 		}
 
-        return $this->defaultRoute();
+		return $this->defaultRoute();
 	}
 
-    /**
-     * We couldn't match a custom route, so fall back to the default routing
-     * scheme: controller/action/param1/param2/...
-     *
-     * @returns Request object
-     */
-    private function defaultRoute() {
-        $parts = explode('/', $this->uri);
+	/**
+	 * We couldn't match a custom route, so fall back to the default routing
+	 * scheme: controller/action/param1/param2/...
+	 *
+	 * @returns Request object
+	 */
+	private function defaultRoute() {
+		$parts = explode('/', $this->uri);
 
-        $request = new Request($this->method);
+		$request = new Request($this->method);
 
-        if (isset($parts[0]) && $parts[0]) {
-            $request->setController($parts[0]);
-        }
-        else {
-            $default = Config::get('router.default');
+		if (isset($parts[0]) && $parts[0]) {
+			$request->setController($parts[0]);
+		}
+		else {
+			$default = Config::get('router.default');
 
-            if (is_string($default)) {
-                throw new RedirectException(new URL($default));
-            }
+			if (is_string($default)) {
+				throw new RedirectException(new URL($default));
+			}
 
-            $request->setController(isset($default['controller']) ? $default['controller'] : 'default');
-            $request->setAction(isset($default['action']) ? $default['action'] : 'index');
+			$request->setController(isset($default['controller']) ? $default['controller'] : 'default');
+			$request->setAction(isset($default['action']) ? $default['action'] : 'index');
 
-            return $request;
-        }
+			return $request;
+		}
 
-        if (isset($parts[1]) && $parts[1]) {
-            $request->setAction($parts[1]);
-        }
-        else {
-            $request->setAction('index');
-            return $request;
-        }
+		if (isset($parts[1]) && $parts[1]) {
+			$request->setAction($parts[1]);
+		}
+		else {
+			$request->setAction('index');
+			return $request;
+		}
 
-        for ($i = 2; $i < count($parts); $i++) {
-            $request->addParam($parts[$i]);
-        }
+		for ($i = 2; $i < count($parts); $i++) {
+			$request->addParam($parts[$i]);
+		}
 
-        return $request;
-    }
+		return $request;
+	}
 
-    /**
-     * Compile pretty routing config format to useful fancy arrays
-     *
-     * @returns array
-     */
+	/**
+	 * Compile pretty routing config format to useful fancy arrays
+	 *
+	 * @returns array
+	 */
 	public function compile() {
 		$routes = Config::get('router.routes'); //require_once 'routes.conf.php';
 
 		$return = array();
 
-        if (!$routes) {
-            return $return;
-        }
+		if (!$routes) {
+			return $return;
+		}
 
 		$i = 0;
 		foreach ($routes as $route => $actions) {
@@ -161,9 +161,9 @@ class Router {
 				if (preg_match('#^\[([a-z_]+:){0,1}(date|slug|id)\]$#', $v, $matches)) {
 
 					switch ($matches[2]) {
-                        case 'string':
-                            $v = '(.+)';
-                            break;
+						case 'string':
+							$v = '(.+)';
+							break;
 
 						case 'date':
 							$v = '(\d{4}/\d{1,2}/\d{1,2})';
@@ -192,7 +192,7 @@ class Router {
 
 			$params = array();
 			
-            if (isset($actions['params']) && is_array($actions['params'])) {
+			if (isset($actions['params']) && is_array($actions['params'])) {
 				foreach ($actions['params'] as $action) {
 
 					if (strpos($action, ':')) {

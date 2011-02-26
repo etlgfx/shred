@@ -41,12 +41,12 @@ class Query {
 	/**
 	 * addArgument several different argument formats
 	 *   - single simple type parameter (int|string|etc) this parameter will be
-	 *     appended to the existing list of parameters, so it will become param
-	 *     0 on first call, then 1, etc.
+	 *	 appended to the existing list of parameters, so it will become param
+	 *	 0 on first call, then 1, etc.
 	 *   - single associative array of arguments, where only number type array
-	 *     keys are used, e.g. array(0 => arg1, 1 => arg2)
+	 *	 keys are used, e.g. array(0 => arg1, 1 => arg2)
 	 *   - multiple arguments, where the position in the argument list
-	 *     determines the position in the argument array
+	 *	 determines the position in the argument array
 	 *
 	 * @returns Query $this so that you can pass this directly into DB->query()
 	 *
