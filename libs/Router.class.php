@@ -28,7 +28,7 @@ class Router {
 	 * @returns string
 	 */
 	public function getUri() {
-		$uri = substr(REQUEST_URI, strlen(SERVER_URL));
+		$uri = urldecode(substr(REQUEST_URI, strlen(SERVER_URL)));
 
 		if (($p = strpos($uri, '?')) === false) {
 			return $uri;
