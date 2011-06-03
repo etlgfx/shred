@@ -18,7 +18,7 @@ class Util {
 	 */
 	public static function encodePassword($password, $salt = null) {
 		if ($salt === null || !is_string($salt))
-			$salt = substr(md5(rand(0, 65535) . rand(0, 65535)), 0, 8);
+			$salt = substr(sha1(rand(0, 65535) . rand(0, 65535)), 0, 8);
 		else if (strlen($salt) > 8)
 			$salt = substr($salt, 0, 8);
 		else if (strlen($salt) < 8)
@@ -42,6 +42,22 @@ class Util {
 	}
 
 	/**
+	 * random UID
+	 */
+	public static function randomUid() {
+		return Util::encodePassword(
+			rand(0, 65535) .
+			rand(0, 65535) .
+			rand(0, 65535) .
+			rand(0, 65535) .
+			rand(0, 65535) .
+			rand(0, 65535) .
+			rand(0, 65535) .
+			rand(0, 65535)
+		);
+	}
+
+	/**
 	 * Recursively Convert an associative array to an XML document
 	 *
 	 * @param array $data the associative array to convert
@@ -49,7 +65,6 @@ class Util {
 	 * @param DomNode $node the dom node to use as root
 	 *
 	 * @returns DomDocument
-	 */
 	public static function arrayToXML(array $data, DomDocument $dom = null, DomNode $node = null) {
 		if (!$dom) {
 			$dom = new DomDocument('1.0', 'UTF-8');
@@ -76,6 +91,7 @@ class Util {
 
 		return $dom;
 	}
+	 */
 
 	/**
 	 * generate a random hash for a new image
@@ -94,9 +110,10 @@ class Util {
 	 *
 	 * @returns string e.g. ".jpg"
 	 */
-	public static function mimeToExtension($mime) {
+	public static function mimeToExtension($mime = null) {
 		switch ($mime) {
 			case 'image/jpeg':
+			case 'image/jpg':
 				return '.jpg';
 
 			case 'image/png':
@@ -182,6 +199,87 @@ class Util {
 		}
 
 		return $method;
+	}
+
+	/**
+	 * Generate a unique & random temporary filename in the requested directory.
+	 * Defaults to /tmp/. You can add custom prefixes and suffixes and specify
+	 * whether to nest the directories or not.
+	 *
+	 * e.g. Util::tempFile('/tmp/', 'pre_', '.jpg', true) returns something
+	 * like: /tmp/abc/def/pre_a1d2f3e4.jpg
+	 *
+	 * @param string $directory
+	 * @param string $prefix
+	 * @param string $suffix
+	 * @param boolean $nest
+	 *
+	 * @throws Exception
+	 *
+	 * @returns string absolute path
+	 */
+	public static function tempFile($directory = null, $prefix = null, $suffix = null, $nest = false) {
+		if (!$directory) {
+			$directory = '/tmp/';
+		}
+
+		if (!is_string($directory) || !is_writable($directory) || !is_dir($directory)) {
+			throw new Exception('Directory is not writable');
+		}
+
+		if ($directory[strlen($directory) - 1] != '/') {
+			$directory .= '/';
+		}
+
+		if ($prefix) {
+			if (!is_string($prefix)) {
+				throw new Exception('Invalid prefix passed, must be a string');
+			}
+		}
+		else {
+			$prefix = '';
+		}
+
+		if ($suffix) {
+			if (!is_string($suffix)) {
+				throw new Exception('Invalid suffix passed, must be a string');
+			}
+		}
+		else {
+			$suffix = '';
+		}
+
+		$fh = false;
+		$path = false;
+
+		while (!$fh) {
+			if ($nest) {
+				$str = self::randomUid();
+
+				$path = substr($str, 0, 3) .'/'. substr($str, 3, 3) .'/'. substr($str, 6) . $suffix;
+
+				if ($prefix) {
+					$path = $prefix .'/'. $path;
+				}
+
+				$path = $directory . $path;
+
+				$dir = dirname($path);
+
+				if (!is_dir($dir)) {
+					mkdir($dir, 0755, true);
+				}
+			}
+			else {
+				$path = $directory . $prefix . self::randomUid() . $suffix;
+			}
+
+			$fh = fopen($path, 'x');
+		}
+
+		fclose($fh);
+
+		return $path;
 	}
 }
 

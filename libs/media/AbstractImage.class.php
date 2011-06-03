@@ -19,8 +19,8 @@ abstract class AbstractImage {
 	 * @see factory()
 	 */
 	private static $types = array(
-		'imagick' => 'ImageMagick',
-		'gmagick' => 'GraphicsMagick',
+		'imagick' => 'IMagick',
+		'gmagick' => 'GMagick',
 		'gd' => 'GD',
 		);
 

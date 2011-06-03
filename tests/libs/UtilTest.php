@@ -23,7 +23,7 @@ class UtilTest extends PHPUnit_Framework_TestCase {
 	}
 
 	public function testGenerateHash() {
-		$this->assertType(PHPUnit_Framework_Constraint_IsType::TYPE_STRING, Util::generateHash());
+		$this->assertInternalType(PHPUnit_Framework_Constraint_IsType::TYPE_STRING, Util::generateHash());
 
 		$hash = array();
 		$pass = true;
@@ -54,6 +54,70 @@ class UtilTest extends PHPUnit_Framework_TestCase {
 		$this->assertEquals('getObject', Util::toMethodName('get_object'));
 		$this->assertEquals('_getObject', Util::toMethodName('_get_object'));
 		$this->assertEquals('getObjectYea', Util::toMethodName('get_object_yea'));
+	}
+
+	public function testMimeToExtension() {
+		$this->assertEquals(Util::mimeToExtension('image/jpeg'), '.jpg');
+		$this->assertEquals(Util::mimeToExtension('image/jpg'), '.jpg');
+
+		$this->assertEquals(Util::mimeToExtension('image/png'), '.png');
+
+		$this->assertEquals(Util::mimeToExtension('image/gif'), '.gif');
+
+		$this->assertEquals(Util::mimeToExtension('image/tiff'), '.tiff');
+
+		$this->assertEquals(Util::mimeToExtension('audio/ogg'), '.ogg');
+
+		$this->assertEquals(Util::mimeToExtension('audio/mpeg'), '.mp3');
+
+		$this->assertEquals(Util::mimeToExtension('image/x-icon'), '.ico');
+
+		$this->assertEquals(Util::mimeToExtension('application/pdf'), '.pdf');
+
+		$this->assertNull(Util::mimeToExtension());
+	}
+
+	/**
+	 * @expectedException Exception
+	 */
+	public function testInvalidTempFileCall() {
+		Util::tempFile('/does/not/exist');
+	}
+
+	/**
+	 * @expectedException Exception
+	 */
+	public function testInvalidTempFileCallInvalidPathString() {
+		Util::tempFile(2309);
+	}
+
+	/**
+	 * @expectedException Exception
+	 */
+	public function testInvalidTempFileCallInvalidPrefix() {
+		Util::tempFile(null, 2332);
+	}
+
+	/**
+	 * @expectedException Exception
+	 */
+	public function testInvalidTempFileCallInvalidSuffix() {
+		Util::tempFile(null, null, array('boo'));
+	}
+
+	public function testTempFile() {
+		$testNormal = '#^/tmp/[0-9a-f]+$#i';
+		$ret = Util::tempFile();
+
+		$this->assertTrue(1 == preg_match($testNormal, $ret));
+		$this->assertTrue(is_writable($ret));
+
+		$ret = Util::tempFile('/tmp', 'pre_', '.jpg');
+		$this->assertTrue(1 == preg_match('#^/tmp/pre_[0-9a-f]+.jpg$#i', $ret));
+		$this->assertTrue(is_writable($ret));
+
+		$ret = Util::tempFile('/tmp', 'pre', '.jpg', true);
+        $this->assertTrue(is_writable($ret));
 	}
 }
 

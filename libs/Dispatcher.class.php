@@ -2,7 +2,7 @@
 
 require_once PATH_LIBS .'exception/RedirectException.class.php';
 require_once PATH_LIBS .'exception/PermissionException.class.php';
-require_once PATH_LIBS .'Request.class.php';
+require_once PATH_LIBS .'exception/NotFoundException.class.php';
 require_once PATH_LIBS .'Request.class.php';
 require_once PATH_LIBS .'Router.class.php';
 require_once PATH_LIBS .'AbstractController.class.php';
@@ -20,7 +20,6 @@ class Dispatcher {
 
 	private $state = null;
 	private $controller = null;
-	private $fallbackController = null;
 	private $request = null;
 
 	/**
@@ -34,6 +33,11 @@ class Dispatcher {
 			$this->authorize();
 			$this->execute();
 			$this->render();
+		}
+		catch (NotFoundException $e) {
+			header('HTTP/1.0 404 Not Found');
+
+			$this->getGenericController($fallback)->error(404, $e->getMessage());
 		}
 		catch (PermissionException $e) {
 			header('HTTP/1.0 403 Forbidden');

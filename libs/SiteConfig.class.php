@@ -20,7 +20,7 @@ class SiteConfig {
 	 * to get the controller name i.e. page name used to server the page
 	 * @param array $config this is the site config
 	 */
-	public function __construct(Request $request, array $config = null) {
+	public function __construct(Request $request, array $config) {
 		$this->data = $config;
 
 		$page = $request->getController();

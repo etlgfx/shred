@@ -5,7 +5,7 @@ if (PHP_VERSION < '5.3')
 	die('Unable to initialize, your PHP version must be 5.3 or higher. You currently have: '. PHP_VERSION);
 	*/
 
-define('PATH_SHRED', dirname(__FILE__) .'/');
+define('PATH_SHRED', __DIR__ .'/');
 define('PATH_CODE', dirname(PATH_SHRED) .'/');
 
 define('PATH_LIBS', PATH_SHRED .'libs/');

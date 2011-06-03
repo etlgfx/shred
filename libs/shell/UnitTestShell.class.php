@@ -8,7 +8,7 @@
 class UnitTestShell extends Shell {
 
 	public function _default() {
-		$command = "phpunit --colors --verbose ". PATH_SHRED .'tests/';
+		$command = "phpunit --colors --coverage-html ". PATH_SHRED ."coverage/ --verbose ". PATH_SHRED .'tests/';
 
 		$t = $this->params->getOption('t');
 		if ($t) {

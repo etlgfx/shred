@@ -128,6 +128,7 @@ abstract class AbstractModel {
 
 			if (isset($this->id)) {
 				$filter->filter('id', $this->id);
+				$filter->limit(1);
 			}
 		}
 

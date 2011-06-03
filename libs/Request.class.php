@@ -37,7 +37,8 @@ class Request {
 		$method = strtolower($method);
 
 		switch ($method) {
-			case 'get': case 'post': case 'put': case 'delete': case 'patch':
+			case 'get': case 'post': case 'put': case 'delete':
+			case 'patch': case 'upgrade': case 'options':
 				$this->method = $method;
 				break;
 

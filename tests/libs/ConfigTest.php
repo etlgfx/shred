@@ -7,7 +7,7 @@ class ConfigTest extends PHPUnit_Framework_TestCase {
 
 	public function testInstance() {
 		$inst = Config::instance();
-		$this->assertType('Config', $inst);
+		$this->assertInstanceOf('Config', $inst);
 		$this->assertSame($inst, Config::instance());
 	}
 

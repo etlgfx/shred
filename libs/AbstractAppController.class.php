@@ -52,7 +52,7 @@ abstract class AbstractAppController extends AbstractController {
 		$template = $this->getTemplate();
 
 		if ($this->isAjax()) {
-			header('Content-type: text/javascript');
+			header('Content-type: application/json');
 
 			try {
 				echo json_encode(array(
