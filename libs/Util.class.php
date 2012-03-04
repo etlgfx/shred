@@ -149,13 +149,13 @@ class Util {
 	 *
 	 * @param string $string
 	 *
-	 * @throws Exception on invalid parameter
+	 * @throws InvalidArgumentException on invalid parameter
 	 *
 	 * @returns string
 	 */
 	public static function toClassName($string) {
 		if (!is_string($string))
-			throw new Exception('Invalid parameter passed string: '. $string);
+			throw new InvalidArgumentException('Invalid parameter passed string: '. $string);
 
 		$class = '';
 		
@@ -171,13 +171,13 @@ class Util {
 	 *
 	 * @param string $string
 	 *
-	 * @throws Exception on invalid parameter
+	 * @throws InvalidArgumentException on invalid parameter
 	 *
 	 * @returns string
 	 */
 	public static function toMethodName($string) {
 		if (!is_string($string))
-			return null;
+			throw new InvalidArgumentException('Invalid parameter passed string: '. $string);
 
 		$method = '';
 		
@@ -214,7 +214,7 @@ class Util {
 	 * @param string $suffix
 	 * @param boolean $nest
 	 *
-	 * @throws Exception
+	 * @throws InvalidArgumentException
 	 *
 	 * @returns string absolute path
 	 */
@@ -224,7 +224,7 @@ class Util {
 		}
 
 		if (!is_string($directory) || !is_writable($directory) || !is_dir($directory)) {
-			throw new Exception('Directory is not writable');
+			throw new InvalidArgumentException('Directory is not writable');
 		}
 
 		if ($directory[strlen($directory) - 1] != '/') {
@@ -233,7 +233,7 @@ class Util {
 
 		if ($prefix) {
 			if (!is_string($prefix)) {
-				throw new Exception('Invalid prefix passed, must be a string');
+				throw new InvalidArgumentException('Invalid prefix passed, must be a string');
 			}
 		}
 		else {
@@ -242,7 +242,7 @@ class Util {
 
 		if ($suffix) {
 			if (!is_string($suffix)) {
-				throw new Exception('Invalid suffix passed, must be a string');
+				throw new InvalidArgumentException('Invalid suffix passed, must be a string');
 			}
 		}
 		else {
