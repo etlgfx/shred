@@ -220,18 +220,32 @@ class Util {
 		if (!is_string($string))
 			throw new InvalidArgumentException('Invalid parameter passed string: '. $string);
 
-		$i = 0;
 		$str = '';
-		foreach (preg_split('/([A-Z])/', $string, null, PREG_SPLIT_NO_EMPTY | PREG_SPLIT_DELIM_CAPTURE) as $chunk) {
-			if ($i % 2 == 0)
-				$str .= '_'. strtolower($chunk);
-			else
-				$str .= $chunk;
+		$last_upper = true;
 
-			$i++;
+		for ($i = 0; $i < strlen($string); $i++) {
+			$c = $string[$i];
+
+			if (ctype_upper($c)) {
+				if ($last_upper) {
+					$str .= strtolower($c);
+				}
+				else {
+					$str .= '_'. strtolower($c);
+					$last_upper = true;
+				}
+			}
+			else if ($c == '_') {
+				$str .= $c;
+				$last_upper = true;
+			}
+			else {
+				$str .= $c;
+				$last_upper = false;
+			}
 		}
 
-		return trim($str, '_');
+		return $str;
 	}
 
 	/**
