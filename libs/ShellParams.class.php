@@ -9,12 +9,19 @@ class ShellParams {
 	}
 
 	/**
-	 * Get all arguments that aren't the class and action name
+	 * Get all arguments that aren't the script name
+	 *
+	 * @param int $offset
+	 *
+	 * @throw InvalidArgumentException on error
 	 *
 	 * @returns array
 	 */
-	public function getArguments() {
-		return array_slice($this->args, 2);
+	public function getArguments($offset = 1) {
+		if (!$offset < 0)
+			throw new InvalidArgumentException("Offset must be greater than 0");
+
+		return array_slice($this->args, $offset);
 	}
 
 	/**
@@ -23,11 +30,13 @@ class ShellParams {
 	 *
 	 * @param int $index
 	 *
+	 * @throw InvalidArgumentException on error
+	 *
 	 * @returns mixed, string usually, null if nothing found
 	 */
 	public function getArgument($index) {
 		if (!is_int($index))
-			throw new Exception('Invalid parameter index: '. $index);
+			throw new InvalidArgumentException('Invalid parameter index: '. $index);
 
 		return isset($this->args[$index]) ? $this->args[$index] : null;
 	}
@@ -37,13 +46,13 @@ class ShellParams {
 	 *
 	 * @param mixed $option should be string. name of the option to retrieve
 	 *
-	 * @throws Exception on invalid parameter, or strange values
+	 * @throw InvalidArgumentException on invalid parameter, or strange values
 	 *
 	 * @returns mixed, string usually
 	 */
 	public function getOption($option) {
 		if (!$option)
-			throw new Exception('Invalid parameter option: '. $option);
+			throw new InvalidArgumentException('Invalid parameter option: '. $option);
 
 		return isset($this->options[$option]) ? $this->options[$option] : null;
 	}
@@ -55,13 +64,13 @@ class ShellParams {
 	 *
 	 * @param mixed $option should be string. name of the option to retrieve
 	 *
-	 * @throws Exception on invalid parameter, or strange values
+	 * @throws InvalidArgumentException on invalid parameter, or strange values
 	 *
 	 * @returns boolean on success, null on error
 	 */
 	public function getOptionBoolean($option) {
 		if (!$option)
-			throw new Exception('Invalid parameter option: '. $option);
+			throw new InvalidArgumentException('Invalid parameter option: '. $option);
 
 		if (!isset($this->options[$option]))
 			return null;
@@ -107,13 +116,13 @@ class ShellParams {
 	 * @param array $switches a list of parameters that are switches (i.e. do not
 	 * accept a second parameter `-v` vs `-f filename`)
 	 *
-	 * @throws Exception on badly initialized argv and argc, or missing required param
+	 * @throw InvalidArgumentException on badly initialized argv and argc, or missing required param
 	 */
-	private function parseParams(array $required = array(), array $switches = array()) {
+	protected function parseParams(array $required = array(), array $switches = array()) {
 		global $argv, $argc;
 
 		if (!isset($argv, $argc))
-			throw new Exception('Badly initialized parameters');
+			throw new InvalidArgumentException('Badly initialized parameters');
 
 		$switches = array_flip($switches);
 

@@ -25,9 +25,9 @@ abstract class AbstractShell implements IShell {
 		$method = Util::toMethodName($this->params->getArgument(1));
 
 		if (!$method)
-			call_user_func_array(array($this, '_default'), $this->params->getArguments());
+			call_user_func_array(array($this, '_default'), $this->params->getArguments(2));
 		else if (method_exists($this, $method))
-			call_user_func_array(array($this, $method), $this->params->getArguments());
+			call_user_func_array(array($this, $method), $this->params->getArguments(2));
 		else
 			throw new Exception('Unable to execute, method does not exist: '. $method);
 	}
