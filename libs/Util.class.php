@@ -162,7 +162,7 @@ class Util {
 
 		$class = '';
 		
-		foreach (preg_split('/[_-]/', $string) as $part)
+		foreach (preg_split('/[_-]/', $string, null, PREG_SPLIT_NO_EMPTY) as $part)
 			$class .= ctype_upper($part[0]) ? $part : ucfirst(strtolower($part));
 
 		return $class;
@@ -222,7 +222,7 @@ class Util {
 
 		$i = 0;
 		$str = '';
-		foreach (preg_split('/([A-Z])/', $string, 0, PREG_SPLIT_NO_EMPTY | PREG_SPLIT_DELIM_CAPTURE) as $chunk) {
+		foreach (preg_split('/([A-Z])/', $string, null, PREG_SPLIT_NO_EMPTY | PREG_SPLIT_DELIM_CAPTURE) as $chunk) {
 			if ($i % 2 == 0)
 				$str .= '_'. strtolower($chunk);
 			else

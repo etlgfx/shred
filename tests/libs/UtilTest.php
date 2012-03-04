@@ -47,13 +47,18 @@ class UtilTest extends PHPUnit_Framework_TestCase {
 		$this->assertEquals('ClassName', Util::toClassName('class_name'));
 		$this->assertEquals('ClassName', Util::toClassName('_class_name_'));
 		$this->assertEquals('Classname', Util::toClassName('classname'));
-		$this->assertEquals('Classname', Util::toClassName('CLassname'));
+		$this->assertEquals('CLassnameXML', Util::toClassName('CLassnameXML'));
 	}
 
 	public function testToMethodName() {
 		$this->assertEquals('getObject', Util::toMethodName('get_object'));
 		$this->assertEquals('_getObject', Util::toMethodName('_get_object'));
 		$this->assertEquals('getObjectYea', Util::toMethodName('get_object_yea'));
+	}
+
+	public function testFromClassName() {
+		$this->assertEquals('class_name', Util::fromClassName('ClassName'));
+		$this->assertEquals('class_xml', Util::fromClassName('Class_XML'));
 	}
 
 	public function testMimeToExtension() {
@@ -78,28 +83,28 @@ class UtilTest extends PHPUnit_Framework_TestCase {
 	}
 
 	/**
-	 * @expectedException Exception
+	 * @expectedException InvalidArgumentException
 	 */
 	public function testInvalidTempFileCall() {
 		Util::tempFile('/does/not/exist');
 	}
 
 	/**
-	 * @expectedException Exception
+	 * @expectedException InvalidArgumentException
 	 */
 	public function testInvalidTempFileCallInvalidPathString() {
 		Util::tempFile(2309);
 	}
 
 	/**
-	 * @expectedException Exception
+	 * @expectedException InvalidArgumentException
 	 */
 	public function testInvalidTempFileCallInvalidPrefix() {
 		Util::tempFile(null, 2332);
 	}
 
 	/**
-	 * @expectedException Exception
+	 * @expectedException InvalidArgumentException
 	 */
 	public function testInvalidTempFileCallInvalidSuffix() {
 		Util::tempFile(null, null, array('boo'));
