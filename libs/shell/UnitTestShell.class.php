@@ -25,7 +25,7 @@ class UnitTestShell extends Shell {
 	 */
 	public function description() {
 		return array(
-			'UnitTest Shell',
+			'Unit Test Shell',
 			'Run unit tests in the tests directory'
 		);
 	}

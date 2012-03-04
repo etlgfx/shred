@@ -24,7 +24,7 @@ class HelpShell extends Shell {
 				if (preg_match('/^(.*)Shell\.class\.php$/', $entry, $matches)) {
 					list($name, $description) = Shell::factory($matches[1])->description();
 
-					printf("	%-16s %-20s %s\n", strtolower($matches[1]), $name, $description);
+					printf("	%-16s %-20s %s\n", Util::fromClassName($matches[1]), $name, $description);
 				}
 			}
 

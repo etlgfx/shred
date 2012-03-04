@@ -53,7 +53,8 @@ else {
 	//or unit tests
 }
 
-//APP constants
+//APP constants, if we're server an http request, does not apply to command 
+//line
 if (!defined('APP_CONFIG') && !isset($argv)) {
 	define('PATH_APP', dirname(dirname($_SERVER['SCRIPT_FILENAME'])) .'/');
 	define('APP_NAME', trim(substr(PATH_APP, strrpos(PATH_APP, '/', -2)), '/'));
@@ -77,12 +78,13 @@ if (!defined('APP_CONFIG') && !isset($argv)) {
 require_once PATH_LIBS .'Config.class.php';
 require_once PATH_LIBS .'Util.class.php';
 require_once PATH_LIBS .'Log.class.php';
-require_once PATH_CONFIG .'global.conf.php';
+//require_once PATH_CONFIG .'global.conf.php';
 
 if (defined('APP_CONFIG') && file_exists(APP_CONFIG)) {
 	require_once APP_CONFIG;
 }
 
+/*
 switch (isset($_SERVER['ENV']) ? $_SERVER['ENV'] : null) {
 	case 'production':
 		require_once PATH_CONFIG .'production.conf.php';
@@ -91,5 +93,6 @@ switch (isset($_SERVER['ENV']) ? $_SERVER['ENV'] : null) {
 	default: 
 		require_once PATH_CONFIG .'dev.conf.php';
 }
+ */
 
 ?>

@@ -153,14 +153,17 @@ class Util {
 	 *
 	 * @returns string
 	 */
-	public static function toClassName($string) {
+	public static function toClassName($string = null) {
+		if ($string === null)
+			return null;
+
 		if (!is_string($string))
 			throw new InvalidArgumentException('Invalid parameter passed string: '. $string);
 
 		$class = '';
 		
-		foreach (explode('_', $string) as $part)
-			$class .= ucfirst(strtolower($part));
+		foreach (preg_split('/[_-]/', $string) as $part)
+			$class .= ctype_upper($part[0]) ? $part : ucfirst(strtolower($part));
 
 		return $class;
 	}
@@ -175,7 +178,10 @@ class Util {
 	 *
 	 * @returns string
 	 */
-	public static function toMethodName($string) {
+	public static function toMethodName($string = null) {
+		if ($string === null)
+			return null;
+
 		if (!is_string($string))
 			throw new InvalidArgumentException('Invalid parameter passed string: '. $string);
 
@@ -183,7 +189,7 @@ class Util {
 		
 		$first = true;
 
-		foreach (explode('_', $string) as $part) {
+		foreach (preg_split('/[_-]/', $string) as $part) {
 			if ($part) {
 				$part = strtolower($part);
 
@@ -199,6 +205,33 @@ class Util {
 		}
 
 		return $method;
+	}
+
+	/**
+	 * convert a CamelCaseClassName to lower_case_underscores
+	 *
+	 * @param string $string
+	 *
+	 * @throw InvalidArgumentException if string is not a string
+	 *
+	 * @return string
+	 */
+	public static function fromClassName($string) {
+		if (!is_string($string))
+			throw new InvalidArgumentException('Invalid parameter passed string: '. $string);
+
+		$i = 0;
+		$str = '';
+		foreach (preg_split('/([A-Z])/', $string, 0, PREG_SPLIT_NO_EMPTY | PREG_SPLIT_DELIM_CAPTURE) as $chunk) {
+			if ($i % 2 == 0)
+				$str .= '_'. strtolower($chunk);
+			else
+				$str .= $chunk;
+
+			$i++;
+		}
+
+		return trim($str, '_');
 	}
 
 	/**
