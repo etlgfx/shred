@@ -64,7 +64,8 @@ class ShellParams {
 	 *
 	 * @param mixed $option should be string. name of the option to retrieve
 	 *
-	 * @throws InvalidArgumentException on invalid parameter, or strange values
+	 * @throw InvalidArgumentException on invalid parameter, or strange values
+	 * @throw RuntimeException on unexpected type
 	 *
 	 * @returns boolean on success, null on error
 	 */
@@ -102,7 +103,7 @@ class ShellParams {
 			}
 		}
 		else
-			throw new Exception('This is a command line argument, other types are basically undefined behavior');
+			throw new RuntimeException('This is a command line argument, other types are basically undefined behavior');
 
 		//NEVER REACHED
 		return null;
