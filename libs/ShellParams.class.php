@@ -17,7 +17,7 @@ class ShellParams {
 	 *
 	 * @returns array
 	 */
-	public function getArguments($offset = 1) {
+	public function getArguments($offset = 0) {
 		if (!$offset < 0)
 			throw new InvalidArgumentException("Offset must be greater than 0");
 
