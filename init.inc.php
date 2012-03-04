@@ -31,14 +31,19 @@ else {
 if (isset($_SERVER['SERVER_NAME'])) {
 	define('SERVER_PATH', dirname($_SERVER['PHP_SELF']) == '/' ? '/' : dirname($_SERVER['PHP_SELF']) .'/');
 
-	switch ($_SERVER['SERVER_PORT']) {
-		case 80:
-			break;
-		case 443:
-			break;
-	}
+	$prefix = 'http://';
+	$port = '';
 
-	define('SERVER_URL', 'http://'. $_SERVER['HTTP_HOST'] . SERVER_PATH); //TODO SSL https etc, take ports into account for this shit, subdomains too
+	if (isset($_SERVER['HTTPS'])) {
+		$prefix = 'https://';
+
+		if ($_SERVER['SERVER_PORT'] != 443)
+			$port = ':'. $_SERVER['SERVER_PORT'];
+	}
+	else if ($_SERVER['SERVER_PORT'] != 80)
+		$port = ':'. $_SERVER['SERVER_PORT'];
+
+	define('SERVER_URL', $prefix . $_SERVER['HTTP_HOST'] . $port . SERVER_PATH); //TODO SSL https etc, take ports into account for this shit, subdomains too
 	define('REQUEST_URI', SERVER_URL . substr($_SERVER['REQUEST_URI'], strlen(SERVER_PATH)));
 }
 else {
