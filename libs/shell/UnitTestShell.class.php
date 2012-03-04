@@ -5,7 +5,7 @@
  *
  * Runs phpunit
  */
-class UnitTestShell extends Shell {
+class UnitTestShell extends AbstractShell {
 
 	public function _default() {
 		$command = "phpunit --colors --coverage-html ". PATH_SHRED ."coverage/ --verbose ". PATH_SHRED .'tests/';

@@ -5,7 +5,7 @@
  *
  * Help shell retrieves a list of available shells
  */
-class HelpShell extends Shell {
+class HelpShell extends AbstractShell {
 
 	/**
 	 * The default shell method to perform
@@ -22,7 +22,7 @@ class HelpShell extends Shell {
 
 			while ($entry = $d->read()) {
 				if (preg_match('/^(.*)Shell\.class\.php$/', $entry, $matches)) {
-					list($name, $description) = Shell::factory($matches[1])->description();
+					list($name, $description) = AbstractShell::factory($matches[1])->description();
 
 					printf("	%-16s %-20s %s\n", Util::fromClassName($matches[1]), $name, $description);
 				}

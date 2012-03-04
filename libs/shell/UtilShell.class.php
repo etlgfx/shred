@@ -2,7 +2,7 @@
 
 require_once PATH_LIBS .'Util.class.php';
 
-class UtilShell extends Shell {
+class UtilShell extends AbstractShell {
 
 	public function help() {
 		echo 'shell util help' . PHP_EOL;

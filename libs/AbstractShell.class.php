@@ -2,8 +2,9 @@
 
 require_once PATH_LIBS .'Util.class.php';
 require_once PATH_LIBS .'ShellParams.class.php';
+require_once PATH_LIBS .'IShell.php';
 
-abstract class Shell {
+abstract class AbstractShell implements IShell {
 	protected $required = array();
 	protected $switches = array();
 	protected $params;
@@ -44,18 +45,6 @@ abstract class Shell {
 		else
 			throw new Exception("Shell Class not found: ". $class);
 	}
-
-	/**
-	 * The default shell method to perform if none was specified
-	 */
-	abstract public function _default();
-
-	/**
-	 * The Help shell uses this to display some usage information
-	 *
-	 * @returns array('name', 'description')
-	 */
-	abstract public function description();
 }
 
 ?>
