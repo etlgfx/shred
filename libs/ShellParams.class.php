@@ -73,15 +73,12 @@ class ShellParams {
 		if (!$option)
 			throw new InvalidArgumentException('Invalid parameter option: '. $option);
 
-		if (!isset($this->options[$option]))
-			return null;
-
 		$value = $this->getOption($option);
 
 		if (is_bool($value))
 			return $value;
 		else if (is_numeric($value))
-			return $value && true;
+			return (int)$value && true;
 		else if (is_string($value)) {
 			switch (strtolower($value)) {
 				case 'true':
@@ -91,6 +88,7 @@ class ShellParams {
 				//case 'enable':
 				//case 'with':
 					return true;
+
 				case 'false':
 				case 'f':
 				case 'off':
@@ -98,8 +96,9 @@ class ShellParams {
 				//case 'disable':
 				//case 'without':
 					return false;
+
 				default:
-					return null;
+					throw new RuntimeException('Unrecognized value for boolean parameter: '. var_export($value, true));
 			}
 		}
 		else
@@ -147,6 +146,7 @@ class ShellParams {
 								case 'enable':
 									$this->options[$key] = true;
 									continue 2;
+
 								case 'without':
 								case 'disable':
 									$this->options[$key] = false;
@@ -172,7 +172,7 @@ class ShellParams {
 
 		foreach ($required as $req)
 			if (!isset($this->options[$req]))
-				throw new Exception('Required parameter: '. $req .'; was not set');
+				throw new InvalidArgumentException('Required parameter: '. $req .'; was not set');
 	}
 
 }
