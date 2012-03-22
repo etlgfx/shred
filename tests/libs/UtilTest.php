@@ -124,6 +124,33 @@ class UtilTest extends PHPUnit_Framework_TestCase {
 		$ret = Util::tempFile('/tmp', 'pre', '.jpg', true);
         $this->assertTrue(is_writable($ret));
 	}
+
+	public function testToSlug() {
+		$preg = '#[a-z0-9]+(-[a-z0-9]+)*#';
+
+		$this->assertEquals(Util::toSlug('string'), 'string');
+		$this->assertEquals(Util::toSlug('@#$%^&*()string '), 'string');
+		$this->assertEquals(Util::toSlug('string '), 'string');
+		$this->assertEquals(Util::toSlug('string bla'), 'string-bla');
+
+		$this->assertTrue(1 == preg_match($preg, Util::toSlug('98vv a2v3 a3lv [fsd[lf\'; \'; ,.\',/;[]h0- 91 817 0g- g9098&@#( *($( #')));
+		$this->assertTrue(1 == preg_match($preg, Util::toSlug(
+			'-a-1-', 2)));
+	}
+
+	/**
+	 * @expectedException InvalidArgumentException
+	 */
+	public function testInvalidToSlug() {
+		Util::toSlug(null);
+	}
+
+	/**
+	 * @expectedException InvalidArgumentException
+	 */
+	public function testInvalidLengthToSlugException() {
+		Util::toSlug('', 'NAN');
+	}
 }
 
 ?>
