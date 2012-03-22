@@ -249,6 +249,39 @@ class Util {
 	}
 
 	/**
+	 * This method converts any string to a slug, optionally taking max_length 
+	 * into account. A slug is of the format: [a-z0-9]+(-[a-z0-9]+)*
+	 *
+	 * e.g does not begin or end with hyphens, only has a single dash between 
+	 * alpha numeric characters
+	 *
+	 * @param string  $string      the string you wish to convert to a slug
+	 * @param int     $max_length  the maximum length you need, if a hyphen 
+	 *                             results as the last character it is also 
+	 *                             trimmed off to meet the format requirement
+	 *
+	 * @return string
+	 *
+	 * @throw InvalidArgumentException
+	 */
+	public static function toSlug($string, $max_length = null) {
+		if (!is_string($string))
+			throw new InvalidArgumentException('Invalid argument string');
+		if ($max_length && !is_numeric($max_length))
+			throw new InvalidArgumentException('Invalid argument max_length');
+		else if ($max_length)
+			$max_length = (int)$max_length;
+
+		$slug = preg_replace('#[^a-z0-9]#', '-', strtolower($string));
+		$slug = implode('-', preg_split('#-#', $slug, null, PREG_SPLIT_NO_EMPTY));
+
+		if ($max_length > 0)
+			return trim(mb_strcut($slug, 0, $max_length), '-');
+		else
+			return $slug;
+	}
+
+	/**
 	 * Generate a unique & random temporary filename in the requested directory.
 	 * Defaults to /tmp/. You can add custom prefixes and suffixes and specify
 	 * whether to nest the directories or not.

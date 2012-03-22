@@ -22,6 +22,11 @@ class UtilShell extends AbstractShell {
 		echo Util::encodePassword($password, $salt) . PHP_EOL;
 	}
 
+	public function slug($string = null, $length = null) {
+		echo $string . PHP_EOL;
+		echo '	'. Util::toSlug($string, $length) . PHP_EOL;
+	}
+
 	public function description() {
 		return array(
 			'Util Shell',
