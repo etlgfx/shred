@@ -23,3 +23,7 @@ like.
 Simply run:
 
 	./shell
+
+If you have PHPUnit installed try:
+
+	./shell unit-test
