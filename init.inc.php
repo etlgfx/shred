@@ -53,7 +53,7 @@ else {
 	//or unit tests
 }
 
-//APP constants, if we're server an http request, does not apply to command 
+//APP constants, if we're serving an http request, does not apply to command 
 //line
 if (!defined('APP_CONFIG') && !isset($argv)) {
 	define('PATH_APP', dirname(dirname($_SERVER['SCRIPT_FILENAME'])) .'/');
