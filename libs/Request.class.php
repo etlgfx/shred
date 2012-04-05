@@ -22,7 +22,7 @@ class Request {
 
 		$this->params = $params ? $params : array();
 
-		$this->url = new URL(REQUEST_URI);
+		$this->url = new URL('' /*REQUEST_URI*/);
 	}
 
 	/**
@@ -34,17 +34,9 @@ class Request {
 	 * @throws Exception
 	 */
 	public function setMethod($method) {
-		$method = strtolower($method);
+		self::validRequestMethod($method);
 
-		switch ($method) {
-			case 'get': case 'post': case 'put': case 'delete':
-			case 'patch': case 'upgrade': case 'options':
-				$this->method = $method;
-				break;
-
-			default:
-				throw new Exception('Invalid parameter: '. $method);
-		}
+		$this->method = $method;
 	}
 
 	/**
@@ -59,7 +51,7 @@ class Request {
 			$this->controller = $controller;
 		}
 		else {
-			throw new Exception('Invalid parameter: '. $controller);
+			throw new InvalidArgumentException('Invalid parameter: '. $controller);
 		}
 	}
 
@@ -75,7 +67,7 @@ class Request {
 			$this->action = $action;
 		}
 		else {
-			throw new Exception('Invalid parameter: '. $action);
+			throw new InvalidArgumentException('Invalid parameter: '. $action);
 		}
 	}
 
@@ -139,6 +131,25 @@ class Request {
 	 */
 	public function __toString() {
 		return $this->url->__toString();
+	}
+
+	/**
+	 * @param string $method
+	 *
+	 * @return string if valid
+	 * @throw InvalidArgumentException if invalid
+	 */
+	public static function validRequestMethod($method) {
+		$method = strtolower($method);
+
+		switch ($method) {
+			case 'get': case 'post': case 'put': case 'delete':
+			case 'patch': case 'upgrade': case 'options':
+				return $method;
+
+			default:
+				throw new InvalidArgumentException('Invalid parameter: '. $method);
+		}
 	}
 }
 

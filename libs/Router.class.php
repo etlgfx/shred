@@ -5,38 +5,46 @@ require_once PATH_LIBS .'Request.class.php';
 require_once PATH_LIBS .'exception/RedirectException.class.php';
 
 class Router {
+
+	const DEFAULT_REQUEST_METHOD = 'get';
+
 	private $routes;
-	private $uri;
-	private $method;
 
 	public function __construct() {
+		$this->routes = $this->compile(Config::get('router.routes'));
+
+		/*
+		 * @TODO untestable, caching should move to a separate class
+		 * @todo smarter caching policy - stat() the file?
+		if (!is_writable(PATH_APP_TMP) || !is_dir(PATH_APP_TMP)) {
+			throw new RuntimeException(PATH_APP_TMP .' Must be a writable directory');
+		}
+
 		if (file_exists(PATH_APP_TMP .'routes.conf.compiled.php')) { //TODO smarter caching policy stat() the file
 			$this->routes = require_once PATH_APP_TMP .'routes.conf.compiled.php';
 		}
 		else {
-			$this->routes = $this->compile();
+			$this->routes = $this->compile(Config::get('router.routes'));
 
-			if (is_writable(PATH_APP_TMP) && is_dir(PATH_APP_TMP)) {
-				file_put_contents(PATH_APP_TMP .'routes.conf.compiled.php', '<?php return '. var_export($this->routes, true) .'; ?>');
-			}
+			file_put_contents(PATH_APP_TMP .'routes.conf.compiled.php', '<?php return '. var_export($this->routes, true) .'; ?>');
 		}
+		 */
 	}
 
 
 	/**
 	 * @returns Request object
 	 */
-	public function route() {
-		$this->method = strtolower($_SERVER['REQUEST_METHOD']);
-		$this->uri = $this->getUri();
+	public function route($method = self::DEFAULT_REQUEST_METHOD, $uri = '') {
+		Request::validRequestMethod($method);
 
 		foreach ($this->routes as $route) {
-			if (isset($route['method']) && $this->method != $route['method']) {
+			if (isset($route['method']) && $method != $route['method']) {
                 //trigger_error('skipping: '. var_export($route, true));
 				continue;
 			}
 
-			if (preg_match($route['url'], $this->uri, $matches)) {
+			if (preg_match($route['url'], $uri, $matches)) {
                 //trigger_error('matches: '. var_export($route, true));
 
 				$params = array();
@@ -45,7 +53,7 @@ class Router {
 				}
 
 				return new Request(
-					$this->method,
+					$method,
 					$route['actions']['controller'],
 					$route['actions']['action'],
 					$params
@@ -56,7 +64,7 @@ class Router {
             }
 		}
 
-		return $this->defaultRoute();
+		return $this->defaultRoute($method, $uri);
 	}
 
 	/**
@@ -64,9 +72,7 @@ class Router {
 	 *
 	 * @returns array
 	 */
-	protected function compile() {
-		$routes = Config::get('router.routes'); //require_once 'routes.conf.php';
-
+	protected function compile(array $routes = null) {
 		$return = array();
 
 		if (!$routes) {
@@ -88,11 +94,11 @@ class Router {
 						$return[$i][$k] = strtolower($v); //TODO verify this
 					}
 					else
-						throw new Exception('Invalid syntax');
+						throw new RuntimeException('Invalid syntax');
 				}
 
 				if (!isset($return[$i]['url'])) {
-					throw new Exception('URL portion not set');
+					throw new RuntimeException('URL portion not set');
 				}
 			}
 			else {
@@ -157,7 +163,7 @@ class Router {
 						}
 
 						if (!$is_mapped) {
-							throw new Exception('Unable to map parameter '. $action .' to a regex match');
+							throw new RuntimeException('Unable to map parameter '. $action .' to a regex match');
 						}
 					}
 					else {
@@ -172,7 +178,7 @@ class Router {
 						}
 
 						if (!$is_mapped) {
-							throw new Exception('Unable to map parameter '. $action .' to a regex match');
+							throw new RuntimeException('Unable to map parameter '. $action .' to a regex match');
 						}
 					}
 				}
@@ -193,10 +199,10 @@ class Router {
 	 *
 	 * @returns Request object
 	 */
-	protected function defaultRoute() {
-		$parts = explode('/', $this->uri);
+	protected function defaultRoute($method, $uri) {
+		$parts = explode('/', $uri);
 
-		$request = new Request($this->method);
+		$request = new Request($method);
 
 		if (isset($parts[0]) && $parts[0]) {
 			$request->setController($parts[0]);
