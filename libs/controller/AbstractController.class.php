@@ -4,20 +4,28 @@ require_once PATH_LIBS .'DataContainer.class.php';
 require_once PATH_LIBS .'Request.class.php';
 require_once PATH_LIBS .'Util.class.php';
 
+require_once PATH_LIBS .'view/AbstractView.class.php';
+
 abstract class AbstractController {
 
 	protected $data_container;
 	protected $request;
+    protected $view;
 
 	/**
 	 * @param $request Request object of the current request
 	 */
 	public function __construct(Request $request) {
 		$this->request = $request;
+		$this->data_container = new DataContainer();
+        $this->view = AbstractView::factory(Config::get('view.class'));
 	}
 
 	abstract public function authorize();
-	abstract public function render();
+
+    public function render() {
+        $this->view->render($this->getTemplate(), $this->data_container->getVars());
+    }
 
 	/**
 	 * Factory method to return the appropriate controller class to execute the
@@ -27,7 +35,7 @@ abstract class AbstractController {
 	 *
 	 * @throws Exception if class cannot be found
 	 *
-	 * @returns AbstractServerController subclass on success
+	 * @returns AbstractController subclass on success
 	 */
 	public static function factory(Request $request) {
 		$class = Util::toClassName($request->getController()) .'Controller';
@@ -99,6 +107,25 @@ abstract class AbstractController {
 	 */
 	public function exists($key) {
 		return $this->data_container->is_set($key);
+	}
+
+
+	public function setTemplate($template, $controller = true) {
+		return $this->view->setTemplate($template, $controller ? $this->request->getController() : '');
+	}
+
+	/**
+	 * get the current page's template
+	 *
+	 * @returns string - relative path to template directory
+	 */
+	public function getTemplate() {
+		$template = $this->data_container->get('template');
+
+		if (!$template)
+			$template = $this->request->getController() .'/'. $this->request->getAction() . $this->ext;
+
+		return $template;
 	}
 
 }

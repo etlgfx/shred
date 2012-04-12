@@ -12,6 +12,8 @@ class SmartyView extends AbstractView {
 		$this->smarty->setCacheDir(PATH_APP .'tmp/smarty_cache/');
 		$this->smarty->setConfigDir(PATH_APP .'config/');
 		$this->smarty->setPluginsDir(PATH_APP .'vendors/smarty_plugins/');
+
+		$this->ext = '.tpl';
 	}
 
 	public function render($template, array $data) {

@@ -14,6 +14,8 @@ class TwigView extends AbstractView {
 		$this->twig = new Twig_Environment($this->loader, array(
 			'cache' => PATH_APP .'tmp/',
 		));
+
+		$this->ext = '.php';
 	}
 
 	public function render($template, array $data) {
