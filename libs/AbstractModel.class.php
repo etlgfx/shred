@@ -1,10 +1,5 @@
 <?php
 
-require_once PATH_LIBS .'Validator.class.php';
-require_once PATH_LIBS .'ModelFilter.class.php';
-require_once PATH_DB .'DB.class.php';
-require_once PATH_DB .'Query.class.php';
-
 abstract class AbstractModel {
 
 	protected $_validator;

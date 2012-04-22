@@ -1,11 +1,5 @@
 <?php
 
-require_once PATH_LIBS .'AbstractController.class.php';
-require_once PATH_LIBS .'Log.class.php';
-require_once PATH_LIBS .'SiteConfig.class.php';
-
-require_once PATH_VENDORS .'smarty/Smarty.class.php';
-
 abstract class AbstractAppController extends AbstractController {
 
 	protected $smarty;

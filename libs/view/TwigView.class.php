@@ -1,8 +1,5 @@
 <?php
 
-require_once PATH_VENDORS .'twig/lib/Twig/Autoloader.php';
-
-
 class TwigView extends AbstractView {
 	protected $loader;
 	protected $twig;

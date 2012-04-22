@@ -1,10 +1,5 @@
 <?php
 
-require_once PATH_LIBS .'stream/StreamTokenizer.class.php';
-require_once PATH_LIBS .'stream/FileStream.class.php';
-require_once PATH_DB .'DB.class.php';
-require_once PATH_DB .'Query.class.php';
-
 class MigrateShell extends AbstractShell {
 	const DIRECTION_UP = 0x01;
 	const DIRECTION_DOWN = 0x02;

@@ -1,9 +1,5 @@
 <?php
 
-require_once PATH_LIBS .'Util.class.php';
-require_once PATH_LIBS .'ShellParams.class.php';
-require_once PATH_LIBS .'IShell.php';
-
 abstract class AbstractShell implements IShell {
 	protected $required = array();
 	protected $switches = array();

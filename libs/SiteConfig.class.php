@@ -1,8 +1,5 @@
 <?php
 
-require_once PATH_LIBS .'URL.class.php';
-require_once PATH_LIBS .'Request.class.php';
-
 /**
  * @class SiteConfig stores top level site configuration options, like which
  * pages are available, which style sheets to include, which scripts to include.

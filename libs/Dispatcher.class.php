@@ -1,12 +1,5 @@
 <?php
 
-require_once PATH_LIBS .'exception/RedirectException.class.php';
-require_once PATH_LIBS .'exception/PermissionException.class.php';
-require_once PATH_LIBS .'exception/NotFoundException.class.php';
-require_once PATH_LIBS .'Request.class.php';
-require_once PATH_LIBS .'Router.class.php';
-require_once PATH_LIBS .'AbstractController.class.php';
-
 /** @class Dispatcher
  *
  * This class is the entry point for SHRED

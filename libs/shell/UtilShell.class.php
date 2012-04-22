@@ -1,7 +1,5 @@
 <?php
 
-require_once PATH_LIBS .'Util.class.php';
-
 class UtilShell extends AbstractShell {
 
 	public function help() {

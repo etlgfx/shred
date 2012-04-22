@@ -1,11 +1,5 @@
 <?php
 
-require_once PATH_API .'image/AbstractImage.class.php';
-require_once PATH_API .'tag/TagAPI.class.php';
-require_once PATH_API .'Form.class.php';
-require_once PATH_API .'image/Image.class.php';
-require_once PATH_API .'gallery/GalleryAPI.class.php';
-
 /**
  * @class ImageAPI defines an interface between controllers and the Image
  * classes and the DB

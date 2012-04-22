@@ -1,7 +1,5 @@
 <?php
 
-require_once PATH_VENDORS .'smarty/Smarty.class.php';
-
 class SmartyView extends AbstractView {
 	protected $smarty;
 

@@ -1,11 +1,5 @@
 <?php
 
-require_once PATH_LIBS .'DataContainer.class.php';
-require_once PATH_LIBS .'Request.class.php';
-require_once PATH_LIBS .'Util.class.php';
-
-require_once PATH_LIBS .'view/AbstractView.class.php';
-
 abstract class AbstractController {
 
 	protected $data_container;

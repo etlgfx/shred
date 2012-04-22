@@ -1,7 +1,5 @@
 <?php
 
-require_once PATH_DB .'Query.class.php';
-
 /** @class DB
  *
  * Abstract class defining a common interface for database drivers

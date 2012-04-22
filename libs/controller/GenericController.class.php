@@ -1,7 +1,5 @@
 <?php
 
-require_once PATH_LIBS .'AbstractAppController.class.php';
-
 class GenericController extends AbstractController {
 
 	/**

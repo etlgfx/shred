@@ -1,7 +1,5 @@
 <?php
 
-require_once PATH_LIBS .'stream/Stream.class.php';
-
 class StreamTokenizer {
 
 	private $literals = array('"', '`', "'");

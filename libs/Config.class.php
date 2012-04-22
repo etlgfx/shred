@@ -1,7 +1,5 @@
 <?php
 
-require_once PATH_LIBS .'DataContainer.class.php';
-
 /**
  * @class Config
  * @brief Config class is a singleton container for configuration options

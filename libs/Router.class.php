@@ -1,9 +1,5 @@
 <?php
 
-require_once PATH_LIBS .'URL.class.php';
-require_once PATH_LIBS .'Request.class.php';
-require_once PATH_LIBS .'exception/RedirectException.class.php';
-
 class Router {
 
 	const DEFAULT_REQUEST_METHOD = 'get';

@@ -1,7 +1,5 @@
 <?php
 
-require_once PATH_LIBS .'Log.class.php';
-
 class Validator {
 
 	protected $required;
