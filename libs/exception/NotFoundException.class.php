@@ -1,5 +1,1 @@
-<?php
-
-class NotFoundException extends RunTimeException { }
-
-?>
+<?php class NotFoundException extends RunTimeException { } ?>

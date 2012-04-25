@@ -12,13 +12,12 @@ abstract class AbstractController {
 	public function __construct(Request $request) {
 		$this->request = $request;
 		$this->data_container = new DataContainer();
-        $this->view = AbstractView::factory(Config::get('view.class'));
 	}
 
 	abstract public function authorize();
 
     public function render() {
-        $this->view->render($this->getTemplate(), $this->data_container->getVars());
+        echo self::viewInstance()->render($this->getTemplate(), $this->data_container->getVars());
     }
 
 	/**
@@ -105,10 +104,15 @@ abstract class AbstractController {
 
 
 	public function setTemplate($template, $controller = true) {
-		return $this->view->setTemplate($template, $controller ? $this->request->getController() : '');
+		return self::viewInstance()->setTemplate(
+			$template,
+			$controller ? $this->request->getController() : ''
+		);
 	}
 
 	/**
+	 * @TODO rethink this a bit, coupling with view classes, and local data
+	 *
 	 * get the current page's template
 	 *
 	 * @returns string - relative path to template directory
@@ -117,11 +121,27 @@ abstract class AbstractController {
 		$template = $this->data_container->get('template');
 
 		if (!$template)
-			$template = $this->request->getController() .'/'. $this->request->getAction() . $this->ext;
+			$template = $this->request->getController() .'/'. $this->request->getAction();
 
 		return $template;
 	}
 
+	/**
+	 * Construct the view object on first use, so that a user could modify the 
+	 * defaut view.class config setting before it is created
+	 *
+	 * @TODO consider adding a parameter to manually override view.class
+	 *
+	 * @return View
+	 */
+	protected static function viewInstance() {
+		static $view = null;
+
+		if ($view === null)
+			$view = AbstractView::factory(Config::get('view.class'));
+
+		return $view;
+	}
 }
 
 ?>
