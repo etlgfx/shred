@@ -116,11 +116,15 @@ class DataContainer {
 
 		$obj =& $this->vars;
 		foreach ($key as $k) {
-			if (isset($obj[$k]))
-				$obj =& $obj[$k];
-			else if ($create) {
-				$obj[$k] = array();
-				$obj =& $obj[$k];
+			if (is_array($obj)) {
+				if (isset($obj[$k]))
+					$obj =& $obj[$k];
+				else if ($create) {
+					$obj[$k] = array();
+					$obj =& $obj[$k];
+				}
+				else
+					return $null;
 			}
 			else
 				return $null;

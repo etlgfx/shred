@@ -14,6 +14,11 @@ class DataContainerTest extends PHPUnit_Framework_TestCase {
 		$this->assertNull($this->dc->get('does not exist'));
 	}
 
+	public function testBadKey() {
+		$this->dc->set('one', 'val');
+		$this->assertNull($this->dc->get('one.nokey'));
+	}
+
 	public function testAddingData() {
 		$this->assertEquals(array(), $this->dc->getVars());
 
