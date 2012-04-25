@@ -10,8 +10,6 @@ class GenericController extends AbstractController {
 	public function render() { }
 
 	public function error($status = 404, $message = null) {
-        $this->redirect(new URL('/login'), 1);
-
 		header('content-type: text/plain');
 
 		printf("%s: %s", $status, $message);
