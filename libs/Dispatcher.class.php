@@ -132,15 +132,16 @@ class Dispatcher {
 	protected function render() {
 		$this->state = self::STATE_RENDER;
 
-		try {
+		//try {
 			$this->controller->render();
-		}
+		/*}
 		catch (Exception $e) {
 			Log::raise($e, Log::APP_ERROR, Log::ERROR_TYPE_CTRL);
 
 			header('content-type: text/plain;');
 			echo Log::inst();
 		}
+		 */
 	}
 
 	/**

@@ -27,7 +27,7 @@ abstract class AbstractView {
 			return new $class();
 		}
 		else {
-			throw new Exception('View Class `'. $class .'` not found in: '. $path);
+			throw new RuntimeException('View Class `'. $class .'` not found in: '. $path);
 		}
 	}
 
