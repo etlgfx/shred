@@ -17,7 +17,7 @@ class TwigView extends AbstractView {
 
 	public function render($template, array $data) {
 		$template = $this->twig->loadTemplate($template);
-		echo $template->render($data);
+		return $template->render($data);
 	}
 
 	public function exists($template) {
