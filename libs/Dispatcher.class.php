@@ -152,7 +152,6 @@ class Dispatcher {
 			return $fallback;
 		}
 		else {
-			require_once PATH_LIBS .'GenericController.class.php';
 			return new GenericController(new Request('get'));
 		}
 	}

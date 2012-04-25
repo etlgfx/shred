@@ -53,6 +53,7 @@ else {
 	//or unit tests
 }
 
+/*
 //APP constants, if we're serving an http request, does not apply to command 
 //line
 if (!defined('APP_CONFIG') && !isset($argv)) {
@@ -75,16 +76,6 @@ if (!defined('APP_CONFIG') && !isset($argv)) {
 	define('SERVER_FONTS', SERVER_URL .'fonts/');
 }
 
-require_once PATH_LIBS .'Config.class.php';
-require_once PATH_LIBS .'Util.class.php';
-require_once PATH_LIBS .'Log.class.php';
-//require_once PATH_CONFIG .'global.conf.php';
-
-if (defined('APP_CONFIG') && file_exists(APP_CONFIG)) {
-	require_once APP_CONFIG;
-}
-
-/*
 switch (isset($_SERVER['ENV']) ? $_SERVER['ENV'] : null) {
 	case 'production':
 		require_once PATH_CONFIG .'production.conf.php';
