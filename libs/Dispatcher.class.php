@@ -28,11 +28,13 @@ class Dispatcher {
 			$this->render();
 		}
 		catch (NotFoundException $e) {
+			Log::raise($e);
 			header('HTTP/1.0 404 Not Found');
 
 			$this->getGenericController($fallback)->error(404, $e->getMessage());
 		}
 		catch (PermissionException $e) {
+			Log::raise($e);
 			header('HTTP/1.0 403 Forbidden');
 
 			$this->getGenericController($fallback)->error(403, $e->getMessage());
@@ -41,6 +43,7 @@ class Dispatcher {
 			$this->getGenericController($fallback)->redirect($e->getUrl());
 		}
 		catch (Exception $e) {
+			Log::raise($e);
 
 			$status = null;
 
@@ -79,11 +82,10 @@ class Dispatcher {
 	protected function init(Router $router = null) {
 		$this->state = self::STATE_INIT;
 
-		if ($router === null) {
+		if ($router === null)
 			$router = new Router();
-		}
 
-		$this->request = $router->route();
+		$this->request = $router->route($_SERVER['REQUEST_METHOD'], trim($_SERVER['REQUEST_URI'], '/'));
 
 		$this->controller = AbstractController::factory($this->request);
 	}
