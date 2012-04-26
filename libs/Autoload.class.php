@@ -13,10 +13,6 @@ class Autoload {
 		if (isset($this->classes[$class])) {
 			require PATH_LIBS . $this->classes[$class];
 		}
-		else {
-			var_export($class);
-			var_export($this->classes);
-		}
 	}
 }
 
