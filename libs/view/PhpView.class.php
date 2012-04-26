@@ -5,6 +5,7 @@ class PhpView extends AbstractView {
 
 	public function __construct() {
 		$this->ext = '.php';
+		$this->prefix = PATH_APP .'views/';
 	}
 
 	public function render($template, array $data) {
@@ -13,13 +14,12 @@ class PhpView extends AbstractView {
 			throw new NotFoundException('Unable to load template `'. $template .'`');
 		}
 
-		die($this->template);
-		//$template = $this->twig->loadTemplate($template);
-		//echo $template->render($data);
+		extract($data);
+		include $this->prefix . $this->template;
 	}
 
 	public function exists($template) {
-		return file_exists($template);
+		return file_exists($this->prefix . $template);
 	}
 }
 
