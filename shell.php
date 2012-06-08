@@ -1,6 +1,10 @@
 <?php
 
 require_once 'init.inc.php';
+require_once PATH_LIBS . 'Autoload.class.php';
+
+new Autoload();
+
 require_once PATH_LIBS .'AbstractShell.class.php';
 
 if (isset($argv[1]) && preg_match('#^[a-z_-]+$#i', $argv[1])) {
