@@ -43,6 +43,9 @@ abstract class DB {
 				}
 			}
 		}
+		else {
+			throw new RuntimeException('Unable to initialize DB object, no config found for db: '. $db_name);
+		}
 
 		if (!$return || !$return instanceof DB) {
 			throw new Exception('Unable to instantiate DB object for - '. $db_name .': '. var_export($descriptor, true));
