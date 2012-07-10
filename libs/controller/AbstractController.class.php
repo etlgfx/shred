@@ -17,7 +17,13 @@ abstract class AbstractController {
 	abstract public function authorize();
 
     public function render() {
-        echo self::viewInstance()->render($this->getTemplate(), $this->data_container->getVars());
+		$view = self::viewInstance();
+
+		if ($mime = $view->getMimeType()) {
+			header('Content-type: '. $mime);
+		}
+
+		echo $view->render($this->getTemplate(), $this->data_container->getVars());
     }
 
 	/**

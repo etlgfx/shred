@@ -4,6 +4,7 @@ abstract class AbstractView {
 
 	protected $template;
 	protected $ext;
+	protected $mimetype;
 
 	abstract public function render($template = null, array $data);
 	abstract public function exists($template);
@@ -18,6 +19,10 @@ abstract class AbstractView {
 	 * @returns AbstractView subclass on success
 	 */
 	public static function factory($class = 'twig') {
+		if (!$class) {
+			throw new InvalidArgumentException('Invalid Argument, no view class specified');
+		}
+
 		$class = Util::toClassName($class) .'View';
 		$path = PATH_LIBS .'view/'. $class .'.class.php';
 
@@ -58,6 +63,14 @@ abstract class AbstractView {
 			return false;
 
 		return true;
+	}
+
+	public function setMimeType($type = null) {
+		$this->mimetype = $type;
+	}
+
+	public function getMimeType() {
+		return $this->mimetype;
 	}
 
 }
