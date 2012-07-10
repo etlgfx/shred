@@ -65,10 +65,21 @@ abstract class AbstractView {
 		return true;
 	}
 
+	/**
+	 * Set the mime type for the current view
+	 *
+	 * @param string|null $type - if no mime type is specified no content type 
+	 * header will be output
+	 */
 	public function setMimeType($type = null) {
 		$this->mimetype = $type;
 	}
 
+	/**
+	 * get the current mimetype
+	 *
+	 * @return string|null
+	 */
 	public function getMimeType() {
 		return $this->mimetype;
 	}
