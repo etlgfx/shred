@@ -23,8 +23,10 @@ abstract class DB {
 			return $dbs[$db_name];
 		}
 
-		if (Config::is_set('db.'. $db_name .'.driver')) {
-			$driver_class = 'DB'. strtolower(Config::get('db.'. $db_name .'.driver'));
+		$dbconfig = Config::get('db.'. $db_name);
+
+		if (isset($dbconfig['driver'])) {
+			$driver_class = 'DB'. strtolower($dbconfig['driver']);
 			$driver_path = PATH_DB . $driver_class .'.class.php';
 
 			if (file_exists($driver_path)) {
@@ -33,12 +35,12 @@ abstract class DB {
 
 				if (class_exists($driver_class)) {
 					$dbs[$db_name] = $return = new $driver_class(
-						Config::get('db.'. $db_name .'.server'),
-						Config::get('db.'. $db_name .'.username'),
-						Config::get('db.'. $db_name .'.password'),
-						Config::get('db.'. $db_name .'.database'),
-						Config::get('db.'. $db_name .'.port'),
-						Config::get('db.'. $db_name .'.socket')
+						isset($dbconfig['server'])   ? $dbconfig['server']   : null,
+						isset($dbconfig['username']) ? $dbconfig['username'] : null,
+						isset($dbconfig['password']) ? $dbconfig['password'] : null,
+						isset($dbconfig['database']) ? $dbconfig['database'] : null,
+						isset($dbconfig['port'])     ? $dbconfig['port']     : null,
+						isset($dbconfig['socket'])   ? $dbconfig['socket']   : null
 					);
 				}
 			}
