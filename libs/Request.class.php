@@ -76,7 +76,7 @@ class Request {
 	 */
 	public function addParam($param) {
 		if ($param) {
-			$this->params []= $param;
+			$this->params []= urldecode($param);
 		}
 	}
 
