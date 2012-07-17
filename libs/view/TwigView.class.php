@@ -10,13 +10,14 @@ class TwigView extends AbstractView {
 		$this->loader = new Twig_Loader_Filesystem(PATH_APP .'views/');
 		$this->twig = new Twig_Environment($this->loader, array(
 			'cache' => PATH_APP .'tmp/',
+			'auto_reload' => true,
 		));
 
-		$this->ext = '.php';
+		$this->ext = '.twig';
 	}
 
 	public function render($template, array $data) {
-		$template = $this->twig->loadTemplate($template);
+		$template = $this->twig->loadTemplate($template . $this->ext);
 		return $template->render($data);
 	}
 
