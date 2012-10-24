@@ -5,11 +5,13 @@ abstract class AbstractController {
 	protected $data_container;
 	protected $request;
     protected $view;
+	protected $auto_render;
 
 	/**
 	 * @param $request Request object of the current request
 	 */
 	public function __construct(Request $request) {
+		$this->auto_render = true;
 		$this->request = $request;
 		$this->data_container = new DataContainer();
 	}
@@ -21,6 +23,10 @@ abstract class AbstractController {
 
 		if ($mime = $view->getMimeType()) {
 			header('Content-type: '. $mime);
+		}
+
+		if ($this->auto_render) {
+			$this->setTemplate($this->getTemplate());
 		}
 
 		echo $view->render($this->data_container->getVars());
@@ -110,6 +116,8 @@ abstract class AbstractController {
 
 
 	public function setTemplate($template, $controller = true) {
+		$this->auto_render = false;
+
 		return self::viewInstance()->setTemplate(
 			$template,
 			$controller ? $this->request->getController() : ''
