@@ -6,7 +6,7 @@ abstract class AbstractView {
 	protected $ext;
 	protected $mimetype;
 
-	abstract public function render($template = null, array $data);
+	abstract public function render(array $data);
 	abstract public function exists($template);
 
 	/**

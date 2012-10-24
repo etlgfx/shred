@@ -23,7 +23,7 @@ abstract class AbstractController {
 			header('Content-type: '. $mime);
 		}
 
-		echo $view->render($this->getTemplate(), $this->data_container->getVars());
+		echo $view->render($this->data_container->getVars());
     }
 
 	/**

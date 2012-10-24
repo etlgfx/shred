@@ -3,27 +3,28 @@
 class TwigView extends AbstractView {
 	protected $loader;
 	protected $twig;
+	protected $prefix;
 
 	public function __construct() {
 		Twig_Autoloader::register();
 
-		$this->loader = new Twig_Loader_Filesystem(PATH_APP .'views/');
+		$this->prefix = PATH_APP .'views/';
+		$this->loader = new Twig_Loader_Filesystem($this->prefix);
 		$this->twig = new Twig_Environment($this->loader, array(
-			'cache' => PATH_APP .'tmp/',
+			'cache' => PATH_APP .'tmp',
 			'auto_reload' => true,
 		));
 
 		$this->ext = '.twig';
 	}
 
-	public function render($template, array $data) {
-		$template = $this->twig->loadTemplate($template . $this->ext);
+	public function render(array $data) {
+		$template = $this->twig->loadTemplate($this->template);
 		return $template->render($data);
 	}
 
 	public function exists($template) {
-		//TODO not impl
-		return true;
+		return file_exists($this->prefix . $template);
 	}
 }
 
