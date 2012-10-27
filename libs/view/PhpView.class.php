@@ -5,7 +5,7 @@ class PhpView extends AbstractView {
 
 	public function __construct() {
 		$this->ext = '.php';
-		$this->prefix = PATH_APP .'views/';
+		$this->prefix = PATH_APP .'view/';
 	}
 
 	public function render($template, array $data) {

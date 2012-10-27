@@ -44,7 +44,7 @@ abstract class AbstractController {
 	 */
 	public static function factory(Request $request) {
 		$class = Util::toClassName($request->getController()) .'Controller';
-		$path = PATH_APP .'controllers/'. $class .'.class.php';
+		$path = PATH_APP .'controller/'. $class .'.class.php';
 
 		if (file_exists($path)) {
 			require_once $path;

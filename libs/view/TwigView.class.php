@@ -8,7 +8,7 @@ class TwigView extends AbstractView {
 	public function __construct() {
 		Twig_Autoloader::register();
 
-		$this->prefix = PATH_APP .'views/';
+		$this->prefix = PATH_APP .'view/';
 		$this->loader = new Twig_Loader_Filesystem($this->prefix);
 		$this->twig = new Twig_Environment($this->loader, array(
 			'cache' => PATH_APP .'tmp',
