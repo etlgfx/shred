@@ -119,10 +119,7 @@ class Dispatcher {
 	 */
 	protected function authorize() {
 		$this->state = self::STATE_AUTH;
-
-		if (!$this->controller->authorize()) {
-			throw new PermissionException('Error Authenticating');
-		}
+		$this->controller->authorize();
 	}
 
 	/**

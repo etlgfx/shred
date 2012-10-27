@@ -21,12 +21,14 @@ abstract class AbstractController {
     public function render() {
 		$view = self::viewInstance();
 
-		if ($mime = $view->getMimeType()) {
+		if ($mime = $view->getMimeType())
 			header('Content-type: '. $mime);
-		}
 
 		if ($this->auto_render) {
-			$this->setTemplate($this->getTemplate());
+			$template = $this->getTemplate();
+
+			if (!$this->setTemplate($template))
+				throw new NotFoundException('Unable to load template: '. $template);
 		}
 
 		echo $view->render($this->data_container->getVars());
