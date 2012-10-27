@@ -11,18 +11,45 @@ class Dispatcher {
 	const STATE_EXEC   = 0x04;
 	const STATE_RENDER = 0x08;
 
-	private $state = null;
-	private $controller = null;
-	private $request = null;
+	protected $state = null;
+	protected $controller = null;
+	protected $request = null;
+	protected $router = null;
+	protected $permissionHandler = null;
+	protected $notFoundHandler = null;
 
 	/**
 	 * Constructor, main program entry point
 	 *
 	 * parse URL, get a controller, authorize, execute, render to stdout
 	 */
-	public function __construct(Router $router = null, AbstractErrorController $fallback = null) {
+	public function __construct() {
+	}
+
+	public function router(Router $router = null) {
+		if ($router)
+			$this->router = $router;
+
+		return $this->router ? $this->router : new Router();
+	}
+
+	public function permissionExceptionHandler(AbstractErrorController $controller = null) {
+		if ($controller)
+			$this->permissionHandler = $controller;
+
+		return $this->permissionHandler;// ? $this->permissionHandler : ;
+	}
+
+	public function notFoundExceptionHandler(AbstractErrorController $controller = null) {
+		if ($controller)
+			$this->notFoundHandler = $controller;
+
+		return $this->notFoundHandler;
+	}
+
+	public function dispatch() {
 		try {
-			$this->init($router);
+			$this->init();
 			$this->authorize();
 			$this->execute();
 			$this->render();
@@ -74,18 +101,13 @@ class Dispatcher {
 	/**
 	 * initialize request object using the router specified or the default router
 	 *
-	 * @param Router $router
-	 *
 	 * @see Router::route()
 	 * @see AbstractController::factory()
 	 */
-	protected function init(Router $router = null) {
+	protected function init() {
 		$this->state = self::STATE_INIT;
 
-		if ($router === null)
-			$router = new Router();
-
-		$this->request = $router->route($_SERVER['REQUEST_METHOD'], trim($_SERVER['REQUEST_URI'], '/'));
+		$this->request = $this->router()->route($_SERVER['REQUEST_METHOD'], trim($_SERVER['REQUEST_URI'], '/'));
 
 		$this->controller = AbstractController::factory($this->request);
 	}
