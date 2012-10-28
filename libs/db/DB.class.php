@@ -50,7 +50,7 @@ abstract class DB {
 		}
 
 		if (!$return || !$return instanceof DB) {
-			throw new Exception('Unable to instantiate DB object for - '. $db_name .': '. var_export($descriptor, true));
+			throw new Exception('Unable to instantiate DB object for - '. $db_name .': '. var_export($dbconfig, true));
 		}
 
 		return $return;
