@@ -1,6 +1,14 @@
 <?php
 
 class Request {
+	const METHOD_POST = 'post';
+	const METHOD_GET = 'get';
+	const METHOD_PUT = 'put';
+	const METHOD_DELETE = 'delete';
+	const METHOD_PATCH = 'patch';
+	const METHOD_UPGRADE = 'upgrade';
+	const METHOD_OPTIONS = 'options';
+
 	protected $controller;
 	protected $action;
 	protected $params;
@@ -32,9 +40,7 @@ class Request {
 	 * @throws Exception
 	 */
 	public function setMethod($method) {
-		self::validRequestMethod($method);
-
-		$this->method = $method;
+		$this->method = self::validRequestMethod($method);
 	}
 
 	/**
@@ -141,8 +147,8 @@ class Request {
 		$method = strtolower($method);
 
 		switch ($method) {
-			case 'get': case 'post': case 'put': case 'delete':
-			case 'patch': case 'upgrade': case 'options':
+			case self::METHOD_GET: case self::METHOD_POST: case self::METHOD_PUT: case self::METHOD_DELETE:
+			case self::METHOD_PATCH: case self::METHOD_UPGRADE: case self::METHOD_OPTIONS:
 				return $method;
 
 			default:
