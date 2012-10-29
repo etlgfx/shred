@@ -66,9 +66,14 @@ abstract class AbstractController {
 	 * @param int $timeout number of seconds to wait, this will cause the
 	 *	 header to be a refresh header, instead of a location one
 	 */
-	public function redirect(URL $url, $timeout = null) {
+	public function redirect(/*URL*/ $url, $timeout = null) { //TODO URL init in request class is broken
+		/*
+		var_export($this->request->getUrl());
+		var_export($url);
+		die();
 		if ($this->request->getUrl() == $url) //TODO hacky, consider changing the interface to the current URL?
 			return;
+		 */
 
 		if (is_int($timeout))
 			header('Refresh: '. $timeout .'; url='. $url);
