@@ -1,5 +1,5 @@
 autoload: 
-	grep --exclude=Autoload.class.php -or "^\(abstract class\|class\|interface\) \w\+" libs | cut -c 6- | sed 's/\(.*\):\(abstract class\|class\|interface\) \(.*\)/\3=\1/' | php scripts/generator.php > /tmp/config.ini
+	grep --exclude=Autoload.class.php -or "^\(<?\(php\)\? \)\?\(abstract class\|class\|interface\) \w\+" libs | cut -c 6- | sed 's/\(.*\):\(<?\(php\)\? \)\?\(abstract class\|class\|interface\) \(.*\)/\5=\1/' | php scripts/generator.php > /tmp/config.ini
 	cp /tmp/config.ini autoload.ini
 
 test: autoload output-dirs

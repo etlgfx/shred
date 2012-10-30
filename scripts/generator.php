@@ -3,7 +3,7 @@
 $autoload = parse_ini_string(file_get_contents('php://stdin'));
 
 if (!$autoload) {
-	die('Error creating autolaod section');
+	die('Error creating autoload section');
 }
 
 $ini['autoload'] = $autoload;
