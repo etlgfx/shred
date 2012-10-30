@@ -14,18 +14,14 @@ define('PATH_CONFIG', PATH_CODE .'config/');
 define('PATH_VENDORS', PATH_CODE .'vendors/');
 
 // init IP Address
-if (isset($_SERVER['HTTP_CLIENT_IP']) && $_SERVER['HTTP_CLIENT_IP']) {
+if (isset($_SERVER['HTTP_CLIENT_IP']) && $_SERVER['HTTP_CLIENT_IP'])
 	define('CLIENT_IP', $_SERVER['HTTP_CLIENT_IP']);
-}
-else if (isset($_SERVER['HTTP_X_FORWARDED_FOR']) && $_SERVER['HTTP_X_FORWARDED_FOR']) {
+else if (isset($_SERVER['HTTP_X_FORWARDED_FOR']) && $_SERVER['HTTP_X_FORWARDED_FOR'])
 	define('CLIENT_IP', $_SERVER['HTTP_X_FORWARDED_FOR']);
-}
-else if (isset($_SERVER['REMOTE_ADDR'])) {
+else if (isset($_SERVER['REMOTE_ADDR']))
 	define('CLIENT_IP', $_SERVER['REMOTE_ADDR']);
-}
-else {
+else
 	define('CLIENT_IP', null);
-}
 
 //SERVER constants
 if (isset($_SERVER['SERVER_NAME'])) {
