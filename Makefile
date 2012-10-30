@@ -3,7 +3,7 @@ autoload:
 	cp /tmp/config.ini autoload.ini
 
 test: autoload output-dirs
-	phpunit --bootstrap tests/unit/bootstrap.php --coverage-html out/reports tests/
+	phpunit -v --debug --bootstrap tests/include.php --coverage-html out/reports tests/
 
 output-dirs:
 	mkdir -p out/reports

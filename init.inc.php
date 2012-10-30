@@ -53,37 +53,4 @@ else {
 	//or unit tests
 }
 
-/*
-//APP constants, if we're serving an http request, does not apply to command 
-//line
-if (!defined('APP_CONFIG') && !isset($argv)) {
-	define('PATH_APP', dirname(dirname($_SERVER['SCRIPT_FILENAME'])) .'/');
-	define('APP_NAME', trim(substr(PATH_APP, strrpos(PATH_APP, '/', -2)), '/'));
-
-	define('APP_CONFIG', PATH_APP .'config/config.php');
-	define('PATH_APP_TMP', PATH_APP .'tmp/');
-
-	define('PATH_VIEWS', PATH_APP .'views/');
-	define('PATH_CONTENT', PATH_APP .'webroot/');
-	define('PATH_CSS', PATH_CONTENT .'css/');
-	define('PATH_JS', PATH_CONTENT .'js/');
-	define('PATH_GFX', PATH_CONTENT .'gfx/');
-	define('PATH_FONTS', PATH_CONTENT .'fonts/');
-
-	define('SERVER_CSS', SERVER_URL .'css/');
-	define('SERVER_JS', SERVER_URL .'js/');
-	define('SERVER_GFX', SERVER_URL .'gfx/');
-	define('SERVER_FONTS', SERVER_URL .'fonts/');
-}
-
-switch (isset($_SERVER['ENV']) ? $_SERVER['ENV'] : null) {
-	case 'production':
-		require_once PATH_CONFIG .'production.conf.php';
-		break;
-
-	default: 
-		require_once PATH_CONFIG .'dev.conf.php';
-}
- */
-
 ?>

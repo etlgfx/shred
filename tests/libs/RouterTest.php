@@ -31,11 +31,16 @@ class RouterTest extends PHPUnit_Framework_TestCase {
 	 * @expectedException RedirectException
 	 */
 	public function testDefaultRouteRedirect() {
-		Config::set('router.default', 'home');
+		try {
+			Config::set('router.default', 'home');
 
-		$router = new Router();
+			$router = new Router();
 
-		$request = $router->route(Router::DEFAULT_REQUEST_METHOD, '');
+			$request = $router->route();
+		}
+		catch (Exception $e) {
+			echo $e;
+		}
 	}
 }
 
