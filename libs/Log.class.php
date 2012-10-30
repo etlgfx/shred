@@ -78,7 +78,11 @@ class Log {
 	public static function raise($message, $level = self::APP_WARNING, $type = self::ERROR_TYPE_GENERIC) {
 		$inst = self::inst();
 
-		$inst->errors []= array(self::I_MSG => $message instanceof Exception ? $message->getMessage() : $message, self::I_LVL => $level, self::I_TYPE => $type);
+		$inst->errors []= array(
+			self::I_MSG => $message instanceof Exception ? $message->getMessage() : $message,
+			self::I_LVL => $level,
+			self::I_TYPE => $type
+		);
 
 		if ($level & self::USER_ERROR_GROUP)
 			$inst->user_errors = true;
@@ -101,7 +105,7 @@ class Log {
 
 			if ($message instanceof Exception) {
 				$trace = $message->getTrace();
-				$message = $message->getMessage() .'; '. $trace[0]['class'] . $trace[0]['type'] . $trace[0]['function'] .' - '. $message->getFile() .'@'. $message->getLine();
+				$message = 'Exception: '. get_class($message) .'; '. $message->getMessage() .'; '. $trace[0]['class'] . $trace[0]['type'] . $trace[0]['function'] .' - '. $message->getFile() .'@'. $message->getLine();
 			}
 			else {
 				$trace = debug_backtrace(false);

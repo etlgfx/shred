@@ -131,7 +131,8 @@ class Dispatcher {
 
 		$method = $this->request->getAction();
 
-		$reflector = new ReflectionMethod($this->controller, $method);
+		$reflector = new ReflectionClass($this->controller);
+		$reflector = $reflector->getMethod($method);
 
 		if ($reflector->isPublic()) {
 			call_user_func_array(array($this->controller, $method), $this->request->getParams());
@@ -172,8 +173,8 @@ class Dispatcher {
 	 * @return IErrorController intsance
 	 */
 	protected function getGenericController(IErrorController $errorController = null) {
-		if ($fallback) {
-			return $fallback;
+		if ($errorController) {
+			return $errorController;
 		}
 		else if ($this->controller && $this->controller instanceof IErrorController) {
 			return $this->controller;
