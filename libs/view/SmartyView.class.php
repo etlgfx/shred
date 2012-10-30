@@ -14,7 +14,7 @@ class SmartyView extends AbstractView {
 		$this->ext = '.tpl';
 	}
 
-	public function render($template, array $data) {
+	public function render(array $data) {
 		$this->smarty->assign($data);
 		return $this->smarty->fetch($template);
 	}

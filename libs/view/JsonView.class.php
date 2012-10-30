@@ -9,7 +9,7 @@ class JsonView extends AbstractView {
 	 * AbstractView. This method will output a JSON string and 
 	 * output the corresponding JSON header
 	 */
-	public function render($template = null, array $data) {
+	public function render(array $data) {
 		return json_encode($data);
 	}
 
