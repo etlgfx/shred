@@ -7,32 +7,7 @@ abstract class AbstractController {
     protected $view;
 	protected $auto_render;
 
-	/**
-	 * @param $request Request object of the current request
-	 */
-	public function __construct(Request $request) {
-		$this->auto_render = true;
-		$this->request = $request;
-		$this->data_container = new DataContainer();
-	}
-
 	abstract public function authorize();
-
-    public function render() {
-		$view = self::viewInstance();
-
-		if ($mime = $view->getMimeType())
-			header('Content-type: '. $mime);
-
-		if ($this->auto_render) {
-			$template = $this->getTemplate();
-
-			if (!$this->setTemplate($template))
-				throw new NotFoundException('Unable to load template: '. $template);
-		}
-
-		echo $view->render($this->data_container->getVars());
-    }
 
 	/**
 	 * Factory method to return the appropriate controller class to execute the
@@ -57,6 +32,53 @@ abstract class AbstractController {
 			throw new Exception('Controller not found: '. $class);
 		}
 	}
+
+	/**
+	 * Construct the view object on first use, so that a user could modify the 
+	 * defaut view.class config setting before it is created
+	 *
+	 * @TODO consider adding a parameter to manually override view.class
+	 *
+	 * @return View
+	 */
+	protected static function viewInstance() {
+		static $view = null;
+
+		if ($view === null)
+			$view = AbstractView::factory(Config::get('view.class'));
+
+		return $view;
+	}
+
+	/**
+	 * @param $request Request object of the current request
+	 */
+	public function __construct(Request $request) {
+		$this->auto_render = true;
+		$this->request = $request;
+		$this->data_container = new DataContainer();
+	}
+
+	/**
+	 * render the response to the current Request
+	 *
+	 * TODO decide whether to output or return the string
+	 */
+    public function render() {
+		$view = self::viewInstance();
+
+		if ($mime = $view->getMimeType())
+			header('Content-type: '. $mime);
+
+		if ($this->auto_render) {
+			$template = $this->getTemplate();
+
+			if (!$this->setTemplate($template))
+				throw new NotFoundException('Unable to load template: '. $template);
+		}
+
+		echo $view->render($this->data_container->getVars());
+    }
 
 	/**
 	 * Redirect to the passed URL, if the current request is in AJAX mode the
@@ -108,8 +130,6 @@ abstract class AbstractController {
 		return $this->data_container->append($key, $value);
 	}
 
-
-
 	/**
 	 * return whether the given key is set or not in the template vars
 	 *
@@ -121,7 +141,16 @@ abstract class AbstractController {
 		return $this->data_container->is_set($key);
 	}
 
-
+	/**
+	 * set template, and disable auto_render
+	 *
+	 * @param string $template
+	 * @param bool $controller
+	 *
+	 * @return boolean true on success
+	 *
+	 * @see AbstractView.setTemplate()
+	 */
 	public function setTemplate($template, $controller = true) {
 		$this->auto_render = false;
 
@@ -134,7 +163,9 @@ abstract class AbstractController {
 	/**
 	 * @TODO rethink this a bit, coupling with view classes, and local data
 	 *
-	 * get the current page's template
+	 * get the current page's default template, this is used 
+	 * when auto_render is left on (no template is overriden by 
+	 * calling setTemplate) 
 	 *
 	 * @returns string - relative path to template directory
 	 */
@@ -145,23 +176,6 @@ abstract class AbstractController {
 			$template = $this->request->getController() .'/'. $this->request->getAction();
 
 		return $template;
-	}
-
-	/**
-	 * Construct the view object on first use, so that a user could modify the 
-	 * defaut view.class config setting before it is created
-	 *
-	 * @TODO consider adding a parameter to manually override view.class
-	 *
-	 * @return View
-	 */
-	protected static function viewInstance() {
-		static $view = null;
-
-		if ($view === null)
-			$view = AbstractView::factory(Config::get('view.class'));
-
-		return $view;
 	}
 }
 
