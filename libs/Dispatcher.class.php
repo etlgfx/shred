@@ -33,21 +33,21 @@ class Dispatcher {
 		return $this->router ? $this->router : new Router();
 	}
 
-	public function permissionExceptionHandler(AbstractErrorController $controller = null) {
+	public function permissionExceptionHandler(IErrorController $controller = null) {
 		if ($controller)
 			$this->permissionHandler = $controller;
 
 		return $this->permissionHandler;// ? $this->permissionHandler : ;
 	}
 
-	public function notFoundExceptionHandler(AbstractErrorController $controller = null) {
+	public function notFoundExceptionHandler(IErrorController $controller = null) {
 		if ($controller)
 			$this->notFoundHandler = $controller;
 
 		return $this->notFoundHandler;
 	}
 
-	public function dispatch() {
+	public function dispatch(IErrorController $errorController = null) {
 		try {
 			$this->init();
 			$this->authorize();
@@ -55,19 +55,17 @@ class Dispatcher {
 			$this->render();
 		}
 		catch (NotFoundException $e) {
-			Log::raise($e);
 			header('HTTP/1.0 404 Not Found');
 
-			$this->getGenericController($fallback)->error(404, $e->getMessage());
+			$this->getGenericController($errorController)->error($e, 404, $e->getMessage());
 		}
 		catch (PermissionException $e) {
-			Log::raise($e);
 			header('HTTP/1.0 403 Forbidden');
 
-			$this->getGenericController($fallback)->error(403, $e->getMessage());
+			$this->getGenericController($errorController)->error($e, 403, $e->getMessage());
 		}
 		catch (RedirectException $e) {
-			$this->getGenericController($fallback)->redirect($e->getUrl());
+			$this->getGenericController($errorController)->redirect($e->getUrl());
 		}
 		catch (Exception $e) {
 			Log::raise($e);
@@ -94,7 +92,7 @@ class Dispatcher {
 					break;
 			}
 
-			$this->getGenericController($fallback)->error($status, $e->getMessage());
+			$this->getGenericController($errorController)->error($e, $status, $e->getMessage());
 		}
 	}
 
@@ -168,10 +166,17 @@ class Dispatcher {
 	/**
 	 * Return a very basic, generic controller object. This can be used to
 	 * render the simplest pages, if nothing else is available.
+	 *
+	 * @param IErrorController $errorController
+	 *
+	 * @return IErrorController intsance
 	 */
-	protected function getGenericController(AbstractErrorController $fallback = null) {
+	protected function getGenericController(IErrorController $errorController = null) {
 		if ($fallback) {
 			return $fallback;
+		}
+		else if ($this->controller && $this->controller instanceof IErrorController) {
+			return $this->controller;
 		}
 		else {
 			return new GenericController(new Request('get'));

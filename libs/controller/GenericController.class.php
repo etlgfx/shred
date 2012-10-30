@@ -1,6 +1,6 @@
 <?php
 
-class GenericController extends AbstractController {
+class GenericController extends AbstractController implements IErrorController {
 
 	/**
 	 * Override the standard authorize method
@@ -9,12 +9,13 @@ class GenericController extends AbstractController {
 
 	public function render() { }
 
-	public function error($status = 404, $message = null) {
+	public function error(Exception $e, $status = 404, $message = null) {
 		header('content-type: text/plain');
 
 		printf("%s: %s", $status, $message);
-	}
 
+		Log::raise($e);
+	}
 }
 
 ?>
