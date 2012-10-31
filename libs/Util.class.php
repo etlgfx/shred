@@ -298,7 +298,7 @@ class Util {
 	 *
 	 * @returns string absolute path
 	 */
-	public static function tempFile($directory = null, $prefix = null, $suffix = null, $nest = false, $touch = true) {
+	public static function tempFile($directory = null, $prefix = null, $suffix = null, $nest = true, $touch = false) {
 		if (!$directory) {
 			$directory = sys_get_temp_dir();
 		}
