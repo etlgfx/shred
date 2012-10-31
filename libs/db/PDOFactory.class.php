@@ -23,13 +23,11 @@ class PDOFactory {
 				)
 			);
 		}
-		else {
+		else
 			throw new RuntimeException('Unable to initialize DB object, no config found for db: '. $db_name);
-		}
 
-		if (!$return || !$return instanceof DB) {
+		if (!$return)
 			throw new Exception('Unable to instantiate DB object for - '. $db_name .': '. var_export($dbconfig, true));
-		}
 
 		return $return;
 	}
