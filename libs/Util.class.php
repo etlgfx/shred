@@ -298,7 +298,7 @@ class Util {
 	 *
 	 * @returns string absolute path
 	 */
-	public static function tempFile($directory = null, $prefix = null, $suffix = null, $nest = false) {
+	public static function tempFile($directory = null, $prefix = null, $suffix = null, $nest = false, $touch = true) {
 		if (!$directory) {
 			$directory = sys_get_temp_dir();
 		}
@@ -354,10 +354,14 @@ class Util {
 				$path = $directory . $prefix . self::randomUid() . $suffix;
 			}
 
-			$fh = fopen($path, 'x');
+			if ($touch)
+				$fh = fopen($path, 'x');
+			else if (!file_exists($path))
+				break;
 		}
 
-		fclose($fh);
+		if ($fh)
+			fclose($fh);
 
 		return $path;
 	}
