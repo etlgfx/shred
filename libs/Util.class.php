@@ -300,7 +300,7 @@ class Util {
 	 */
 	public static function tempFile($directory = null, $prefix = null, $suffix = null, $nest = false) {
 		if (!$directory) {
-			$directory = '/tmp/';
+			$directory = sys_get_temp_dir();
 		}
 
 		if (!is_string($directory) || !is_writable($directory) || !is_dir($directory)) {
