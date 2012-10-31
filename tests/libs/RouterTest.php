@@ -40,6 +40,7 @@ class RouterTest extends PHPUnit_Framework_TestCase {
 		}
 		catch (Exception $e) {
 			echo $e;
+			throw $e;
 		}
 	}
 }
