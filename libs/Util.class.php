@@ -336,7 +336,7 @@ class Util {
 			if ($nest) {
 				$str = self::randomUid();
 
-				$path = substr($str, 0, 3) .'/'. substr($str, 3, 3) .'/'. substr($str, 6) . $suffix;
+				$path = substr($str, 0, 2) .'/'. substr($str, 2, 2) .'/'. substr($str, 4) . $suffix;
 
 				if ($prefix) {
 					$path = $prefix .'/'. $path;
