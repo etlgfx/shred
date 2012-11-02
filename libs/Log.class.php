@@ -61,7 +61,7 @@ class Log {
 	 */
 	private function __construct() {
 		$this->errors = array();
-		$this->phplog = ini_get('error_log');
+		$this->log = Config::get('log.file') ? Config::get('log.file') : ini_get('error_log');
 		$this->phpreporting = ini_get('error_reporting');
 		$this->user_errors = false;
 	}
@@ -112,7 +112,7 @@ class Log {
 				$message = $message .'; '. $trace[1]['class'] .'::'. $trace[1]['function'] .' - '. $trace[0]['file'] .'@'. $trace[0]['line'];
 			}
 
-			$file = $inst->phplog;
+			$file = $inst->log;
 			if (isset(self::$logs[$type]))
 				$file = PATH_CODE .'logs/'. self::$logs[$type];
 
