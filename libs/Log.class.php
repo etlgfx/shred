@@ -109,7 +109,11 @@ class Log {
 			}
 			else {
 				$trace = debug_backtrace(false);
-				$message = $message .'; '. $trace[1]['class'] .'::'. $trace[1]['function'] .' - '. $trace[0]['file'] .'@'. $trace[0]['line'];
+
+				$class = isset($trace[1]['class']) ? $trace[1]['class'] : $trace[0]['class'];
+				$function = isset($trace[1]['function']) ? $trace[1]['function'] : $trace[0]['function'];
+
+				$message = $message .'; '. $class .'::'. $function .' - '. $trace[0]['file'] .'@'. $trace[0]['line'];
 			}
 
 			$file = $inst->log;

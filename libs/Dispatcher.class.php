@@ -68,8 +68,6 @@ class Dispatcher {
 			$this->getGenericController($errorController)->redirect($e->getUrl());
 		}
 		catch (Exception $e) {
-			Log::raise($e);
-
 			$status = null;
 
 			switch ($this->state) {
