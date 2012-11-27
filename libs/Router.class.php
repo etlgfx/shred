@@ -44,8 +44,11 @@ class Router {
                 //trigger_error('matches: '. var_export($route, true));
 
 				$params = array();
-				foreach ($route['actions']['params'] as $m) {
-					$params []= $matches[$m];
+				foreach ($route['matches'] as $m => $p) {
+					if (is_string(key($p)))
+						$params[key($p)] = $matches[$m];
+					else
+						$params []= $matches[$m];
 				}
 
 				return new Request(
@@ -140,6 +143,7 @@ class Router {
 			$return[$i]['url'] = '#^'. implode('/', $parts) .'(/.*)?$#';
 			$return[$i]['actions'] = $actions; 
 
+			/*
 			$params = array();
 			
 			if (isset($actions['params']) && is_array($actions['params'])) {
@@ -181,6 +185,7 @@ class Router {
 			}
 
 			$return[$i]['actions']['params'] = $params; 
+			 */
 
 			$i++;
 		}
