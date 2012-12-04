@@ -2,9 +2,12 @@
 
 abstract class AbstractModel {
 
-	protected $_validator;
-	protected $_table;
-	protected $_fields;
+	protected static $_validator;
+	protected static $_table;
+	protected static $_fields;
+	protected static $_pk = 'id';
+
+	protected $_data;
 
 	/**
 	 * Constructor ensures that table name and validator object have been
@@ -12,62 +15,33 @@ abstract class AbstractModel {
 	 *
 	 * @throws Exception
 	 */
-	public function __construct() {
-		if (!$this->_table) {
-			throw new BadMethodCallException('Table name not configured');
-		}
-
+	protected function __construct(array $data) {
+		/*
 		if (!$this->_validator instanceof Validator) {
 			throw new BadMethodCallException('No validator object configured');
 		}
 
 		$this->_fields = $this->_validator->fields();
+		 */
+		$this->_data = new stdClass();
+
+		foreach ($data as $k => $v)
+			$this->_data->{$k} = $v;
 	}
 
-	/**
-	 * Convert the internal data to arrays
-	 *
-	 * @returns array
-	 */
-	public function toArray() {
-		$res = array();
-
-		foreach ($this as $k => $v) {
-			if ($k[0] == '_') {
-				continue;
-			}
-
-			if ($v instanceof AbstractModel) {
-				$res[$k] = $v->toArray();
-			}
-			else if (strpos($k, '_ts') && is_string($v)) {
-				if ($v == '0000-00-00 00:00:00') {
-					$res[$k] = null;
-				}
-				else {
-					$ts = strtotime($v);
-
-					$res[$k] = array(
-						'rfc822' => date('r', $ts),
-						'timestamp' => $ts,
-						'raw' => $v,
-					);
-				}
-			}
-			else if (($k == 'id' || strpos($k, '_id')) && is_numeric($v)) {
-				$res[$k] = (int)$v;
-			}
-			else if (is_array($v)) {
-				$v = $this->toArray($v);
-			}
-			else {
-				$res[$k] = $v;
-			}
-		}
-
-		return $res;
+	public function __get($k) {
+		if (property_exists($this->_data, $k))
+			return $this->_data->{$k};
+		else
+			throw new RuntimeException('unknown property');
 	}
 
+	public function __set($k, $v) {
+		if (in_array($k, static::$_fields))
+			$this->_data->{$k} = $v;
+		else
+			throw new RuntimeException('unknown property');
+	}
 
 	/**
 	 * CRUD Create a new record, using the $data passed in
@@ -77,96 +51,91 @@ abstract class AbstractModel {
 	 * @throws Exception
 	 *
 	 */
-	public function create(array $data = null) {
-		if (!$this->_validator->validate($data)) {
+	public static function create(array $data = null) {
+		/*
+		if (!$this->_validator->validate($data))
 			throw new InvalidArgumentException('Invalid data');
+		 */
+
+		$fields = array_intersect(array_keys($data), static::$_fields);
+
+		if (!$fields)
+			throw new InvalidArgumentException('no fields to insert');
+
+		$str = 'INSERT INTO `'. static::$_table .'` (`'. implode('`, `', $fields) . '`) VALUES (:'. implode(', :', $fields) .')';
+
+		$db = PDOFactory::factory('main');
+
+		$stmt = $db->prepare($str);
+		foreach ($data as $col => $val) {
+			if (isset(static::$_filters[$col]))
+				$val = call_user_func(static::$_filters[$col], $val);
+
+			$stmt->bindValue(':'. $col, $val);
 		}
 
-		$str = 'INSERT INTO '. $this->_table .' SET ';
-
-		$items = array();
-		$values = array();
-		$i = 0;
-
-		foreach ($this->_fields as $key) {
-			if (!isset($data[$key])) {
-				continue;
-			}
-
-			$items[$i] = $key .' = $$'. $i;
-			$values[$i++] = $data[$key];
-		}
-
-		$query = new Query($str . implode(', ', $items), $values);
-
-		$db = DB::factory('master');
-
-		if (!$db->query($query)) {
-			throw new RuntimeException(var_export($db->error(), true));
-		}
-		else {
-			$this->setFromArray($data);
-
-			$this->id = $db->insertId();
-		}
-
-		return $this; //TODO should this be this or a boolean?
+		$stmt->execute();
 	}
 
 	/**
-	 * CRUD Read one or more records
+	 * Find a single record by primary key
 	 */
-	public function read(ModelFilter $filter = null, $setCurrentInstance = false) {
-		if (!$filter) {
+	public static function find($pk) {
+		if (!$pk)
+			throw new InvalidArgumentException('');
 
-			$filter = new ModelFilter();
+		$pair = null;
 
-			if (isset($this->id)) {
-				$filter->filter('id', $this->id);
-				$filter->limit(1);
+		if (is_array(static::$_pk) && is_array($pk)) {
+			$pair = array();
+
+			foreach (static::$_pk as $k) {
+				if (!isset($pk[$k]))
+					throw new InvalidArgumentException('');
+
+				$pair[$k] = $pk[$k];
 			}
 		}
+		else if (is_string(static::$_pk))
+			$pair = array(static::$_pk => $pk);
 
-		$db = DB::factory('master');
+		if ($pair === null)
+			throw new InvalidArgumentException('unable to query, invalid parameters');
 
-		if ($filter->isSingle()) {
-			$row = $db->selectOne(new Query('SELECT * FROM '. $this->_table . $filter->toSql()));
+		$qstr = 'SELECT * FROM `'. static::$_table .'` WHERE ';
 
-			if ($row) {
-				if ($setCurrentInstance) {
-					return $this->setFromArray($row);
-				}
-				else {
-					$class = get_class($this);
-					$obj = new $class();
-					$obj->setFromArray($row);
+		$parts = array();
+		foreach ($pair as $k => $v)
+			$parts []= '`'. $k .'` = :'. $k;
 
-					return $obj;
-				}
-			}
-			else {
-				return null;
-			}
-		}
-		else {
-			$res = $db->query(new Query('SELECT * FROM '. $this->_table . $filter->toSql()));
+		$qstr .= implode(' AND ', $parts) .' LIMIT 1';
 
-			$ret = array();
-			$class = get_class($this);
+		$db = PDOFactory::factory('main');
+		$stmt = $db->prepare($qstr);
+		foreach ($pair as $k => $v)
+			$stmt->bindValue(':'. $k, $v);
 
-			while ($row = $res->nextAssoc()) {
-				$obj = new $class();
-				$ret []= $obj->setFromArray($row);
-			}
-		}
+		$stmt->execute();
 
-		return $ret;
+		$row = $stmt->fetch(PDO::FETCH_ASSOC);
+
+		return new static($row);
+	}
+
+	/**
+	 * Delete a single record by primary key
+	 */
+	protected static function del($pk) {
+	}
+
+	protected static function validator()
+	{
 	}
 
 	/**
 	 * CRUD Update a record
 	 */
-	public function update(array $data = null, ModelFilter $filter = null) {
+	public function update(array $data = null) {
 		if ((!$filter && !isset($this->id)) || !$data) {
 			return false;
 		}
@@ -210,57 +179,16 @@ abstract class AbstractModel {
 		return true;
 	}
 
-	/**
-	 * CRUD Delete a record
-	 */
-	public function delete(ModelFilter $filter = null) {
-		$db = DB::factory('master');
-
-		if (!$filter) {
-			if (isset($this->id)) {
-				$db->query(new Query('DELETE FROM '. $this->_table .' WHERE id = $$0 LIMIT 1', $this->id));
-			}
-		}
-		else {
-			$db->query(new Query('DELETE FROM '. $this->_table .' WHERE '. $filter->toSql()));
-		}
+	public function delete() {
 	}
+
 
 	public function copyProperties(AbstractModel $rhs) {
-		if (!$rhs instanceof $this) {
+		if (!$rhs instanceof $this)
 			throw new Exception('Incompatible objects');
-		}
 
-		foreach ($rhs as $k => $v) {
-			if (!ctype_alpha($k[0])) {
-				continue;
-			}
-
-			$this->{$k} = $v;
-		}
-
-		return $this;
-	}
-
-	/**
-	 * Set the key value pairs supplied into the instance's properties. Only 
-	 * keys starting with alpha characters are accepted, and only keys that are 
-	 * already known to the instance in the _fields array.
-	 *
-	 * @param array $data
-	 *
-	 * @returns AbstractModel, current instance
-	 */
-	protected function setFromArray(array $data) {
-		foreach ($data as $k => $v) {
-			if (!ctype_alpha($k[0])) {
-				continue;
-			}
-
-			if (isset($this->_fields[$k])) {
-				$this->{$k} = $v;
-			}
-		}
+		foreach ($rhs->_data as $k => $v)
+			$this->_data->{$k} = $v;
 
 		return $this;
 	}
