@@ -5,9 +5,10 @@ abstract class AbstractModel {
 	protected static $_validator;
 	protected static $_table;
 	protected static $_fields;
+	protected static $_has;
 	protected static $_pk = 'id';
 
-	protected $_data;
+	protected $_data, $_relations;
 
 	/**
 	 * Constructor ensures that table name and validator object have been
@@ -23,6 +24,7 @@ abstract class AbstractModel {
 
 		$this->_fields = $this->_validator->fields();
 		 */
+
 		$this->_data = new stdClass();
 
 		foreach ($data as $k => $v)
@@ -67,6 +69,7 @@ abstract class AbstractModel {
 		$db = PDOFactory::factory('main');
 
 		$stmt = $db->prepare($str);
+
 		foreach ($data as $col => $val) {
 			if (isset(static::$_filters[$col]))
 				$val = call_user_func(static::$_filters[$col], $val);
@@ -81,45 +84,25 @@ abstract class AbstractModel {
 	 * Find a single record by primary key
 	 */
 	public static function find($pk) {
-		if (!$pk)
-			throw new InvalidArgumentException('');
-
-		$pair = null;
+		$qb = QBuilder::select()->from(static::$_table);
 
 		if (is_array(static::$_pk) && is_array($pk)) {
-			$pair = array();
-
 			foreach (static::$_pk as $k) {
 				if (!isset($pk[$k]))
 					throw new InvalidArgumentException('');
 
-				$pair[$k] = $pk[$k];
+				$qb->where($k, $pk[$k]);
 			}
 		}
-		else if (is_string(static::$_pk))
-			$pair = array(static::$_pk => $pk);
+		else if (is_string(static::$_pk)) {
+			$qb->where(static::$_pk, $pk);
+		}
 
-		if ($pair === null)
-			throw new InvalidArgumentException('unable to query, invalid parameters');
-
-		$qstr = 'SELECT * FROM `'. static::$_table .'` WHERE ';
-
-		$parts = array();
-		foreach ($pair as $k => $v)
-			$parts []= '`'. $k .'` = :'. $k;
-
-		$qstr .= implode(' AND ', $parts) .' LIMIT 1';
-
-		$db = PDOFactory::factory('main');
-		$stmt = $db->prepare($qstr);
-		foreach ($pair as $k => $v)
-			$stmt->bindValue(':'. $k, $v);
-
-		$stmt->execute();
+		$stmt = $qb->limit(1)->execute(PDOFactory::factory('main'));
 
 		$row = $stmt->fetch(PDO::FETCH_ASSOC);
 
-		return new static($row);
+		return $row ? new static($row) : null;
 	}
 
 	/**
@@ -136,52 +119,10 @@ abstract class AbstractModel {
 	 * CRUD Update a record
 	 */
 	public function update(array $data = null) {
-		if ((!$filter && !isset($this->id)) || !$data) {
-			return false;
-		}
-
-		if (!$this->_validator->validate($data)) {
-			throw new RuntimeException('Invalid data');
-		}
-
-		$query = array();
-		$args = array();
-		$index = 0;
-
-		foreach ($data as $key => $value) {
-			if (isset($this->_fields[$key])) {
-				$query []= $key .' = $$'. $index;
-				$args[$index] = $value;
-
-				$index++;
-			}
-		}
-
-		$db = DB::factory('master');
-
-		$query = 'UPDATE '. $this->_table .' SET '. implode(', ', $query);
-
-		if ($filter) {
-			echo 'return null';
-			return;
-			//TODO not impl
-			$db->query(new Query($query . $filter->toSql()));
-		}
-		else {
-			$index++;
-
-			$args[$index] = $this->id;
-			$db->query(new Query($query .' WHERE id = $$'. $index, $args));
-		}
-
-		$this->setFromArray($data);
-
-		return true;
 	}
 
 	public function delete() {
 	}
-
 
 	public function copyProperties(AbstractModel $rhs) {
 		if (!$rhs instanceof $this)
@@ -192,6 +133,50 @@ abstract class AbstractModel {
 
 		return $this;
 	}
-}
 
-?>
+	public function loadRelated($relation) {
+		if (!isset(static::$_has[$relation]))
+			throw new InvalidArgumentException('Undefined relationship');
+
+		$name = $relation;
+		$relation = static::$_has[$relation];
+
+		/*
+		$relation = array(
+			'foreign_key' => 
+			'foreign_table' =>
+			'through' => array(
+				'table' => 
+				'near' => 
+				'far' => 
+			);
+		 */
+
+		if (isset($relation['through'])) {
+			$stmt = QBuilder::select()
+				->from($relation['foreign_table'])
+				->join($relation['through']['table'])
+				->on($relation['through']['table'] .'.'. $relation['through']['far'], $relation['foreign_table'] .'.'. $relation['foreign_key'])
+				->where($relation['through']['near'], $this->{static::$_pk})
+				->execute(PDOFactory::factory('main'));
+		}
+		else {
+			$stmt = QBuilder::select()
+				->from($relation['foreign_table'])
+				->where($relation['foreign_key'], $this->{static::$_pk})
+				->execute(PDOFactory::factory('main'));
+		}
+
+		$this->_relations[$name] = array();
+
+		while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
+			$this->_relations[$name] []= $row;
+		}
+	}
+
+	/*
+	public function countRelated($relation) {
+
+	}
+	 */
+}
