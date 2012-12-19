@@ -8,7 +8,7 @@ abstract class AbstractModel {
 	protected static $_has;
 	protected static $_pk = 'id';
 
-	protected $_data, $_relations;
+	protected $_data, $_relations, $_dirty;
 
 	/**
 	 * Constructor ensures that table name and validator object have been
@@ -39,8 +39,14 @@ abstract class AbstractModel {
 	}
 
 	public function __set($k, $v) {
-		if (in_array($k, static::$_fields))
+		if (in_array($k, static::$_fields)) {
+			if ($this->_dirty)
+				$this->_dirty[$k] = true;
+			else
+				$this->_dirty = array($k => true);
+
 			$this->_data->{$k} = $v;
+		}
 		else
 			throw new RuntimeException('unknown property');
 	}
@@ -78,6 +84,11 @@ abstract class AbstractModel {
 		}
 
 		$stmt->execute();
+
+		//TODO multiple key
+		$data[static::$_pk] = $db->lastInsertId();
+
+		return new static($data);
 	}
 
 	/**
@@ -119,9 +130,51 @@ abstract class AbstractModel {
 	 * CRUD Update a record
 	 */
 	public function update(array $data = null) {
+		if ($data) {
+			unset($data[static::$_pk]);
+
+			foreach ($data as $k => $v)
+				$this->{$k} = $v;
+
+			$this->save();
+		}
+
+		return $this;
+	}
+
+	public function save() {
+		//TODO run validation
+
+		if (!$this->{static::$_pk}) //TODO should this be merged with create?
+			throw new RuntimeException('trying to update a non-existing row');
+
+		$map = array();
+		foreach ($this->_dirty as $k => $v)
+			$map[$k] = $this->{$k};
+
+		QBuilder::update()->table(static::$_table)
+			->map($map)
+			->where(static::$_pk, $this->{static::$_pk})
+			->limit(1)
+			->execute(PDOFactory::factory('main'));
+
+		$this->_dirty = null;
+
+		return $this;
 	}
 
 	public function delete() {
+		if (!$this->{static::$_pk}) //TODO should this be merged with create?
+			throw new RuntimeException('trying to delete a non-existing row');
+
+		QBuilder::delete()->table(static::$_table)
+			->where(static::$_pk, $this->{static::$_pk})
+			->limit(1)
+			->execute(PDOFactory::factory('main')); //TODO cascading delete???
+
+		$this->_data = $this->_dirty = $this->_relations = null;
+
+		return null;
 	}
 
 	public function copyProperties(AbstractModel $rhs) {

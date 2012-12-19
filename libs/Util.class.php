@@ -265,7 +265,7 @@ class Util {
 	 * @throw InvalidArgumentException
 	 */
 	public static function toSlug($string, $max_length = null) {
-		if (!is_string($string))
+		if (!is_string($string) || !$string)
 			throw new InvalidArgumentException('Invalid argument string');
 		if ($max_length && !is_numeric($max_length))
 			throw new InvalidArgumentException('Invalid argument max_length');

@@ -1,6 +1,6 @@
 <?php
 
-class QBuilder {
+abstract class QBuilder {
 	const TYPE_SELECT = 0x01;
 	const TYPE_UPDATE = 0x02;
 	const TYPE_REPLACE = 0x03;
@@ -29,24 +29,37 @@ class QBuilder {
 	}
 
 	public static function select() {
-		$qb = new QBuilder(self::TYPE_SELECT);
+		$qb = new QBuilderSelect(self::TYPE_SELECT);
 		return call_user_func_array(array($qb, 'columns'), func_get_args());
 	}
 
-	public static function update() {
-		return new QBuilder(self::TYPE_UPDATE);
+	public static function update($table = null) {
+		$qb = new QBuilderUpdate(self::TYPE_UPDATE);
+
+		if ($table)
+			$qb->table($table);
+
+		return $qb;
 	}
 
-	public static function insert() {
-		return new QBuilder(self::TYPE_INSERT);
+	public static function insert($table = null) {
+		$qb = new QBuilderInsert(self::TYPE_INSERT);
+
+		if ($table)
+			$qb->table($table);
+
+		return $qb;
 	}
 
 	public static function delete() {
-		return new QBuilder(self::TYPE_DELETE);
+		return new QBuilderDelete(self::TYPE_DELETE);
 	}
 
 	public function columns() {
 		$cols = func_get_args();
+
+		if (count($cols) == 1 && is_array($cols[0]))
+			$cols = $cols[0];
 
 		if (!$cols)
 			$this->_columns = null;
@@ -56,6 +69,10 @@ class QBuilder {
 			$this->_columns = array_merge($this->_columns, $cols);
 
 		return $this;
+	}
+
+	public function table($table = null) {
+		return $this->from($table);
 	}
 
 	public function from($table = null) {
@@ -149,42 +166,10 @@ class QBuilder {
 		return $this;
 	}
 
-	protected function compile(&$sql, &$params) {
-		$sql = '';
-		$params = array();
+	abstract protected function compile(&$sql, &$params);
 
-		switch ($this->_type) {
-			case self::TYPE_SELECT:
-				$sql .= 'SELECT ';
-				break;
-
-			default:
-				throw new Exception('TBD');
-		}
-
-		if (!$this->_table)
-			throw new RuntimeException('No table to select from, you must call ->from()');
-
-		if (!$this->_columns)
-			$sql .= '* ';
-		else
-			$sql .= '`'. implode('`, `', $this->_columns) .'` ';
-
-		$sql .= "FROM `{$this->_table}` ";
-
-		if ($this->_join) {
-			foreach ($this->_join as $join) {
-				if (!isset($join[3], $join[4]))
-					throw new RuntimeException('undefined join condition');
-
-				$lhs = implode('`.`', explode('.', $join[3]));
-				$rhs = implode('`.`', explode('.', $join[4]));
-
-				$sql .= "JOIN `{$join[0]}` ON (`$lhs` = `$rhs`) ";
-			}
-		}
-
-		$p = 0;
+	protected function compileWhere(&$sql, &$params) {
+		$p = count($params);
 
 		if ($this->_where) {
 			$sql .= 'WHERE ';
@@ -198,17 +183,9 @@ class QBuilder {
 
 			$sql .= implode('AND ', $cond);
 		}
+	}
 
-		if ($this->_order) {
-			$sql .= 'ORDER BY ';
-
-			$ord = array();
-			foreach ($this->_order as $order)
-				$ord []= "`{$order[0]}` {$order[1]} ";
-
-			$sql .= implode(', ', $ord);
-		}
-
+	protected function compileLimit(&$sql, &$params) {
 		if ($this->_limit) {
 			$sql .= "LIMIT {$this->_limit[0]} ";
 
