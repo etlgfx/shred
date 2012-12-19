@@ -102,6 +102,20 @@ class QBuilder {
 		return $this;
 	}
 
+	public function order($col, $dir = 'ASC') {
+		if (!is_string($col) || !is_string($dir))
+			throw new InvalidArgumentException('invalid column, should be string');
+
+		$dir = strtoupper($dir);
+
+		if ($dir != 'ASC' && $dir != 'DESC')
+			throw new InvalidArgumentException('invalid direction, should be ASC or DESC');
+
+		$this->_order []= array($col, $dir);
+
+		return $this;
+	}
+
 	/**
 	 * we're naively assuming that lhs is the column and rhs is the value, 
 	 * potential security threat
@@ -183,6 +197,16 @@ class QBuilder {
 			}
 
 			$sql .= implode('AND ', $cond);
+		}
+
+		if ($this->_order) {
+			$sql .= 'ORDER BY ';
+
+			$ord = array();
+			foreach ($this->_order as $order)
+				$ord []= "`{$order[0]}` {$order[1]} ";
+
+			$sql .= implode(', ', $ord);
 		}
 
 		if ($this->_limit) {

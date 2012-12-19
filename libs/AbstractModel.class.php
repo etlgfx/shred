@@ -141,17 +141,6 @@ abstract class AbstractModel {
 		$name = $relation;
 		$relation = static::$_has[$relation];
 
-		/*
-		$relation = array(
-			'foreign_key' => 
-			'foreign_table' =>
-			'through' => array(
-				'table' => 
-				'near' => 
-				'far' => 
-			);
-		 */
-
 		if (isset($relation['through'])) {
 			$stmt = QBuilder::select()
 				->from($relation['foreign_table'])
@@ -173,6 +162,33 @@ abstract class AbstractModel {
 			$this->_relations[$name] []= $row;
 		}
 	}
+
+	public function asArray($relations = true) {
+		$return = array();
+
+		foreach ($this->_data as $k => $v)
+			$return[$k] = $v;
+
+		if ($relations && $this->_relations)
+			foreach ($this->_relations as $k => $v)
+				$return[$k] = $v instanceof AbstractModel ? $v->asArray($relations) : $v;
+
+		return $return;
+	}
+
+		/*
+	public function attach($relation, AbstractModel $obj) {
+		PDOFactory::factory('main')->prepare('insert ignore into data_objects_images (object_id, field_type_name, image_id) values (?, ?, ?)')
+			->execute(array($this->id, 'image', $att->id));
+	}
+		 */
+
+		/*
+	public function detach($relation, AbstractModel $obj) {
+		PDOFactory::factory('main')->prepare('insert ignore into data_objects_images (object_id, field_type_name, image_id) values (?, ?, ?)')
+			->execute(array($this->id, 'image', $att->id));
+	}
+		 */
 
 	/*
 	public function countRelated($relation) {
