@@ -111,7 +111,7 @@ class Router {
 
 			foreach ($parts as &$v) {
 
-				if (preg_match('#^\[([a-z_]+:){0,1}(date|slug|id|string)\]$#', $v, $matches)) {
+				if (preg_match('#^\[([a-z_]+:){0,1}(date|dateslug|slug|id|string)\]$#', $v, $matches)) {
 
 					switch ($matches[2]) {
 						case 'string':
@@ -120,6 +120,10 @@ class Router {
 
 						case 'date':
 							$v = '(\d{4}/\d{1,2}/\d{1,2})';
+							break;
+
+						case 'dateslug':
+							$v = '(\d{4}/\d{1,2}/([a-z0-9]+[a-z0-9-]*[a-z0-9]*))';
 							break;
 
 						case 'slug':
