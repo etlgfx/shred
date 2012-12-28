@@ -211,10 +211,10 @@ abstract class AbstractModel {
 
 		$this->_relations[$name] = array();
 
-		$modelconstructor = $relation['model'];
+		$modelconstructor = isset($relation['model']) ? $relation['model'] : null;
 
 		while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
-			$this->_relations[$name] []= isset($relation['model']) ? new $modelconstructor($row) : $row;
+			$this->_relations[$name] []= $modelconstructor ? new $modelconstructor($row) : $row;
 		}
 	}
 
