@@ -211,8 +211,10 @@ abstract class AbstractModel {
 
 		$this->_relations[$name] = array();
 
+		$modelconstructor = $relation['model'];
+
 		while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
-			$this->_relations[$name] []= $row;
+			$this->_relations[$name] []= isset($relation['model']) ? new $modelconstructor($row) : $row;
 		}
 	}
 
@@ -222,9 +224,19 @@ abstract class AbstractModel {
 		foreach ($this->_data as $k => $v)
 			$return[$k] = $v;
 
-		if ($relations && $this->_relations)
-			foreach ($this->_relations as $k => $v)
-				$return[$k] = $v instanceof AbstractModel ? $v->asArray($relations) : $v;
+		if ($relations && $this->_relations) {
+			foreach ($this->_relations as $k => $v) {
+				if (is_array($v)) {
+					$return[$k] = array();
+
+					foreach ($v as $c)
+						$return[$k] []= $c instanceof AbstractModel ? $c->asArray($relations) : $c;
+				}
+				else {
+					$return[$k] = $v instanceof AbstractModel ? $v->asArray($relations) : $v;
+				}
+			}
+		}
 
 		return $return;
 	}
