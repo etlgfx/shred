@@ -123,7 +123,7 @@ class Router {
 							break;
 
 						case 'dateslug':
-							$v = '(\d{4}/\d{1,2}/([a-z0-9]+[a-z0-9-]*[a-z0-9]*))';
+							$v = '(\d{4}/\d{1,2}/[a-z0-9]+[a-z0-9-]*[a-z0-9]*)';
 							break;
 
 						case 'slug':
