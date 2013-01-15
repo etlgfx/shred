@@ -34,23 +34,6 @@ abstract class AbstractController {
 	}
 
 	/**
-	 * Construct the view object on first use, so that a user could modify the 
-	 * defaut view.class config setting before it is created
-	 *
-	 * @TODO consider adding a parameter to manually override view.class
-	 *
-	 * @return View
-	 */
-	protected static function viewInstance() {
-		static $view = null;
-
-		if ($view === null)
-			$view = AbstractView::factory(Config::get('view.class'));
-
-		return $view;
-	}
-
-	/**
 	 * @param $request Request object of the current request
 	 */
 	public function __construct(Request $request) {
@@ -65,9 +48,9 @@ abstract class AbstractController {
 	 * TODO decide whether to output or return the string
 	 */
     public function render() {
-		$view = self::viewInstance();
+		$this->initView();
 
-		if ($mime = $view->getMimeType())
+		if ($mime = $this->view->getMimeType())
 			header('Content-type: '. $mime);
 
 		if ($this->auto_render) {
@@ -77,7 +60,7 @@ abstract class AbstractController {
 				throw new NotFoundException('Unable to load template: '. $template);
 		}
 
-		echo $view->render($this->data_container->getVars());
+		echo $this->view->render($this->data_container->getVars());
     }
 
 	/**
@@ -89,6 +72,8 @@ abstract class AbstractController {
 	 *	 header to be a refresh header, instead of a location one
 	 */
 	public function redirect(/*URL*/ $url, $timeout = null) { //TODO URL init in request class is broken
+		$this->initView('blank');
+
 		/*
 		var_export($this->request->getUrl());
 		var_export($url);
@@ -154,7 +139,7 @@ abstract class AbstractController {
 	public function setTemplate($template, $controller = true) {
 		$this->auto_render = false;
 
-		return self::viewInstance()->setTemplate(
+		return $this->initView()->setTemplate(
 			$template,
 			$controller ? $this->request->getController() : ''
 		);
@@ -177,6 +162,20 @@ abstract class AbstractController {
 
 		return $template;
 	}
-}
 
-?>
+	/**
+	 * Construct the view object on first use, so that a user could modify the 
+	 * defaut view.class config setting before it is created
+	 *
+	 * @TODO consider adding a parameter to manually override view.class
+	 *
+	 * @return View
+	 */
+	protected function initView($class = null) {
+		if (!$this->view)
+			$this->view = AbstractView::factory($class ? $class : Config::get('view.class'));
+
+		return $this->view;
+	}
+
+}
