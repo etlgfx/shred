@@ -48,7 +48,7 @@ abstract class AbstractModel {
 			$this->_data->{$k} = $v;
 		}
 		else
-			throw new RuntimeException('unknown property');
+			throw new RuntimeException('unknown property: '. $k);
 	}
 
 	/**
