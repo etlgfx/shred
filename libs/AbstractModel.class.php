@@ -197,7 +197,7 @@ abstract class AbstractModel {
 		$relation = static::$_has[$relation];
 
 		if (isset($relation['through'])) {
-			$stmt = QBuilder::select()
+			$stmt = QBuilder::select($relation['foreign_table'] .'.*')
 				->from($relation['foreign_table'])
 				->join($relation['through']['table'])
 				->on($relation['through']['table'] .'.'. $relation['through']['far'], $relation['foreign_table'] .'.'. $relation['foreign_key'])

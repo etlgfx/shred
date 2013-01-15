@@ -11,8 +11,25 @@ class QBuilderSelect extends QBuilder {
 
 		if (!$this->_columns)
 			$sql .= '* ';
-		else
-			$sql .= '`'. implode('`, `', $this->_columns) .'` ';
+		else {
+			$columns = array();
+
+			foreach ($this->_columns as $column) {
+				if (strpos($column, '.')) {
+					list ($tbl, $col) = explode('.', $column, 2);
+
+					if ($col == '*')
+						$columns []= '`'. $tbl .'`.*';
+					else
+						$columns []= '`'. $tbl .'`.`'. $col .'`';
+				}
+				else {
+					$columns []= '`'. $column .'`';
+				}
+			}
+
+			$sql .= implode(', ', $columns) .' ';
+		}
 
 		$sql .= "FROM `{$this->_table}` ";
 
