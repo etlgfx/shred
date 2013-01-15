@@ -76,7 +76,9 @@ abstract class AbstractModel {
 
 		$stmt = $db->prepare($str);
 
-		foreach ($data as $col => $val) {
+		foreach ($fields as $col) {
+			$val = $data[$col];
+
 			if (isset(static::$_filters[$col]))
 				$val = call_user_func(static::$_filters[$col], $val);
 
