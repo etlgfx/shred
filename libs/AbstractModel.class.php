@@ -35,7 +35,7 @@ abstract class AbstractModel {
 		if (property_exists($this->_data, $k))
 			return $this->_data->{$k};
 		else
-			throw new RuntimeException('unknown property');
+			throw new RuntimeException('unknown property: '. $k);
 	}
 
 	public function __set($k, $v) {
@@ -218,6 +218,8 @@ abstract class AbstractModel {
 		while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
 			$this->_relations[$name] []= $modelconstructor ? new $modelconstructor($row) : $row;
 		}
+
+		return $this;
 	}
 
 	public function asArray($relations = true) {
