@@ -32,8 +32,8 @@ abstract class AbstractModel {
 	}
 
 	public function __get($k) {
-		if (property_exists($this->_data, $k))
-			return $this->_data->{$k};
+		if (in_array($k, static::$_fields))
+			return property_exists($this->_data, $k) ? $this->_data->{$k} : null;
 		else
 			throw new RuntimeException('unknown property: '. $k);
 	}
