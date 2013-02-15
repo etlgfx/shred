@@ -2,10 +2,14 @@
 
 abstract class AbstractModel {
 
+	const REL_HAS = 0x01;
+	const REL_BELONG = 0x02;
+
 	protected static $_validator;
 	protected static $_table;
 	protected static $_fields;
 	protected static $_has;
+	protected static $_belongs_to;
 	protected static $_pk = 'id';
 
 	protected $_data, $_relations, $_dirty;
@@ -35,7 +39,7 @@ abstract class AbstractModel {
 		if (in_array($k, static::$_fields))
 			return property_exists($this->_data, $k) ? $this->_data->{$k} : null;
 		else
-			throw new RuntimeException('unknown property: '. $k);
+			throw new RuntimeException('unknown property: '. var_export($k, true));
 	}
 
 	public function __set($k, $v) {
@@ -190,11 +194,21 @@ abstract class AbstractModel {
 	}
 
 	public function loadRelated($relation) {
-		if (!isset(static::$_has[$relation]))
-			throw new InvalidArgumentException('Undefined relationship');
+		if (!isset(static::$_has[$relation]) && !isset(static::$_belongs_to[$relation]))
+			throw new InvalidArgumentException('Undefined relationship: '. $relation);
 
 		$name = $relation;
-		$relation = static::$_has[$relation];
+		$type = isset(static::$_has[$relation]) ? self::REL_HAS : self::REL_BELONG;
+		switch ($type) {
+			case self::REL_HAS:
+				$relation = static::$_has[$relation];
+				break;
+			case self::REL_BELONG:
+				$relation = static::$_belongs_to[$relation];
+				break;
+			default:
+				throw new RuntimeException('unknown relationship type: '. $type);
+		}
 
 		if (isset($relation['through'])) {
 			$stmt = QBuilder::select($relation['foreign_table'] .'.*')
@@ -204,11 +218,20 @@ abstract class AbstractModel {
 				->where($relation['through']['near'], $this->{static::$_pk})
 				->execute(PDOFactory::factory('main'));
 		}
-		else {
+		else if ($type === self::REL_HAS) {
 			$stmt = QBuilder::select()
 				->from($relation['foreign_table'])
 				->where($relation['foreign_key'], $this->{static::$_pk})
 				->execute(PDOFactory::factory('main'));
+		}
+		else if ($type === self::REL_BELONG) {
+			$stmt = QBuilder::select()
+				->from($relation['foreign_table'])
+				->where('id', $this->{$relation['foreign_key']})
+				->execute(PDOFactory::factory('main'));
+		}
+		else {
+			throw new RuntimeException('unknown relationship type: '. $type);
 		}
 
 		$this->_relations[$name] = array();
