@@ -10,7 +10,7 @@ class JsonView extends AbstractView {
 	 * output the corresponding JSON header
 	 */
 	public function render(array $data) {
-		return json_encode($data);
+		return json_encode(array('meta' => array(), 'data' => $data));
 	}
 
 	/**

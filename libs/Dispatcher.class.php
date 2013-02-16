@@ -127,6 +127,8 @@ class Dispatcher {
 	protected function execute() {
 		$this->state = self::STATE_EXEC;
 
+		$this->controller->before();
+
 		$method = $this->request->getAction();
 
 		$reflector = new ReflectionClass($this->controller);

@@ -43,6 +43,11 @@ abstract class AbstractController {
 	}
 
 	/**
+	 * overridable before method
+	 */
+	public function before() {}
+
+	/**
 	 * render the response to the current Request
 	 *
 	 * TODO decide whether to output or return the string
