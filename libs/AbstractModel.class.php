@@ -228,18 +228,27 @@ abstract class AbstractModel {
 			$stmt = QBuilder::select()
 				->from($relation['foreign_table'])
 				->where('id', $this->{$relation['foreign_key']})
+				->limit(1)
 				->execute(PDOFactory::factory('main'));
 		}
 		else {
 			throw new RuntimeException('unknown relationship type: '. $type);
 		}
 
-		$this->_relations[$name] = array();
+		if ($type === self::REL_HAS) {
+			$this->_relations[$name] = array();
 
-		$modelconstructor = isset($relation['model']) ? $relation['model'] : null;
+			$modelconstructor = isset($relation['model']) ? $relation['model'] : null;
 
-		while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
-			$this->_relations[$name] []= $modelconstructor ? new $modelconstructor($row) : $row;
+			while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
+				$this->_relations[$name] []= $modelconstructor ? new $modelconstructor($row) : $row;
+			}
+		}
+		else {
+			$row = $stmt->fetch(PDO::FETCH_ASSOC);
+
+			$modelconstructor = isset($relation['model']) ? $relation['model'] : null;
+			$this->_relations[$name] = $modelconstructor ? new $modelconstructor($row) : $row;
 		}
 
 		return $this;
@@ -253,7 +262,10 @@ abstract class AbstractModel {
 
 		if ($relations && $this->_relations) {
 			foreach ($this->_relations as $k => $v) {
-				if (is_array($v)) {
+				if (isset(static::$_belongs_to[$k])) {
+					$return[$k] = $v instanceof AbstractModel ? $v->asArray($relations) : $v;
+				}
+				else if (is_array($v)) {
 					$return[$k] = array();
 
 					foreach ($v as $c)
