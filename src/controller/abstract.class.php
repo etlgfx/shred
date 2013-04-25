@@ -22,7 +22,8 @@ abstract class Controller_Abstract {
 	 * @returns Controller_Abstract subclass on success
 	 */
 	public static function factory(Request $request) {
-		$class = Util::toClassName($request->getController()) .'Controller';
+		$ns = $request->getNS();
+		$class = ($ns ? $ns .'\\' : '') . 'Controller_'. Util::toClassName($request->getController());
 		return new $class($request);
 	}
 

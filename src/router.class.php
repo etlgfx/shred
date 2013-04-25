@@ -6,10 +6,13 @@ class Router {
 
 	const DEFAULT_REQUEST_METHOD = 'get';
 
-	private $routes;
+	protected $routes;
+	protected $ns;
 
-	public function __construct() {
+	public function __construct($ns = null) {
 		$this->routes = $this->compile(Config::get('router.routes'));
+
+		$this->ns = $ns;
 
 		/*
 		 * @TODO untestable, caching should move to a separate class
@@ -57,7 +60,8 @@ class Router {
 					$method,
 					$route['actions']['controller'],
 					$route['actions']['action'],
-					$params
+					$params,
+					$this->ns
 				);
 			}
             else {
@@ -214,6 +218,7 @@ class Router {
 		$parts = explode('/', $uri);
 
 		$request = new Request($method);
+		$request->setNS($this->ns);
 
 		if (isset($parts[0]) && $parts[0]) {
 			$request->setController($parts[0]);

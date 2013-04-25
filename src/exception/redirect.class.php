@@ -1,6 +1,8 @@
 <?php
 
-class RedirectException extends Exception {
+namespace Shred;
+
+class Exception_Redirect extends \Exception {
 	protected $url;
 
 	public function __construct(URL $url) {
@@ -14,4 +16,3 @@ class RedirectException extends Exception {
 	}
 }
 
-?>

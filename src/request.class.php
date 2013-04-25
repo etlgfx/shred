@@ -17,8 +17,9 @@ class Request {
 	protected $headers;
 	protected $method;
 	protected $url;
+	protected $ns;
 
-	public function __construct($method, $controller = null, $action = null, array $params = null) {
+	public function __construct($method, $controller = null, $action = null, array $params = null, $ns = null) {
 		$this->setMethod($method);
 
 		if ($controller) {
@@ -29,6 +30,7 @@ class Request {
 		}
 
 		$this->params = $params ? $params : array();
+		$this->ns = $ns;
 
 		$this->url = new URL('' /*REQUEST_URI*/);
 	}
@@ -77,6 +79,15 @@ class Request {
 		}
 	}
 
+	public function setNS($ns) {
+		if (is_string($ns) && $ns) {
+			$this->ns = $ns;
+		}
+		else {
+			throw new \InvalidArgumentException('Invalid parameter: '. $ns);
+		}
+	}
+
 	/**
 	 * Append a parameter to the params array
 	 *
@@ -109,6 +120,15 @@ class Request {
 	 */
 	public function getAction() {
 		return $this->action;
+	}
+
+	/**
+	 * get namespace override
+	 *
+	 * @return string or null
+	 */
+	public function getNS() {
+		return $this->ns;
 	}
 
 	/**
