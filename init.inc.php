@@ -8,7 +8,7 @@ if (PHP_VERSION < '5.3')
 define('PATH_SHRED', __DIR__ .'/');
 define('PATH_CODE', dirname(PATH_SHRED) .'/');
 
-define('PATH_LIBS', PATH_SHRED .'libs/');
+define('PATH_LIBS', PATH_SHRED .'classes/');
 define('PATH_DB', PATH_LIBS .'db/');
 define('PATH_CONFIG', PATH_CODE .'config/');
 define('PATH_VENDORS', PATH_CODE .'vendors/');

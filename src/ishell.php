@@ -1,5 +1,7 @@
 <?php
 
+namespace Shred;
+
 interface IShell {
 
 	/**
@@ -15,4 +17,3 @@ interface IShell {
 	public function description();
 }
 
-?>

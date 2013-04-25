@@ -1,6 +1,8 @@
 <?php
 
-class GenericController extends AbstractController implements IErrorController {
+namespace Shred;
+
+class Controller_Generic extends Controller_Abstract implements Controller_IError {
 
 	/**
 	 * Override the standard authorize method

@@ -1,5 +1,7 @@
 <?php
 
+namespace Shred;
+
 class ShellParams {
 	protected $options = array();
 	protected $args = array();
@@ -177,4 +179,3 @@ class ShellParams {
 
 }
 
-?>

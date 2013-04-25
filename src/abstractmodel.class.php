@@ -1,5 +1,7 @@
 <?php
 
+namespace Shred;
+
 abstract class AbstractModel {
 
 	const REL_HAS = 0x01;

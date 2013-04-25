@@ -29,21 +29,14 @@ abstract class DB {
 			$driver_class = 'DB'. strtolower($dbconfig['driver']);
 			$driver_path = PATH_DB . $driver_class .'.class.php';
 
-			if (file_exists($driver_path)) {
-
-				require_once $driver_path;
-
-				if (class_exists($driver_class)) {
-					$dbs[$db_name] = $return = new $driver_class(
-						isset($dbconfig['server'])   ? $dbconfig['server']   : null,
-						isset($dbconfig['username']) ? $dbconfig['username'] : null,
-						isset($dbconfig['password']) ? $dbconfig['password'] : null,
-						isset($dbconfig['database']) ? $dbconfig['database'] : null,
-						isset($dbconfig['port'])     ? $dbconfig['port']     : null,
-						isset($dbconfig['socket'])   ? $dbconfig['socket']   : null
-					);
-				}
-			}
+			$dbs[$db_name] = $return = new $driver_class(
+				isset($dbconfig['server'])   ? $dbconfig['server']   : null,
+				isset($dbconfig['username']) ? $dbconfig['username'] : null,
+				isset($dbconfig['password']) ? $dbconfig['password'] : null,
+				isset($dbconfig['database']) ? $dbconfig['database'] : null,
+				isset($dbconfig['port'])     ? $dbconfig['port']     : null,
+				isset($dbconfig['socket'])   ? $dbconfig['socket']   : null
+			);
 		}
 		else {
 			throw new RuntimeException('Unable to initialize DB object, no config found for db: '. $db_name);

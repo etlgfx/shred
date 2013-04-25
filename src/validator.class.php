@@ -1,5 +1,7 @@
 <?php
 
+namespace Shred;
+
 class Validator {
 
 	protected $required;
@@ -274,4 +276,3 @@ class Validator {
 	}
 }
 
-?>

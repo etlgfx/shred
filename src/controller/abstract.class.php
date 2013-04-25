@@ -1,6 +1,8 @@
 <?php
 
-abstract class AbstractController {
+namespace Shred;
+
+abstract class Controller_Abstract {
 
 	protected $data_container;
 	protected $request;
@@ -17,20 +19,11 @@ abstract class AbstractController {
 	 *
 	 * @throws Exception if class cannot be found
 	 *
-	 * @returns AbstractController subclass on success
+	 * @returns Controller_Abstract subclass on success
 	 */
 	public static function factory(Request $request) {
 		$class = Util::toClassName($request->getController()) .'Controller';
-		$path = PATH_APP .'controller/'. $class .'.class.php';
-
-		if (file_exists($path)) {
-			require_once $path;
-
-			return new $class($request);
-		}
-		else {
-			throw new Exception('Controller not found: '. $class);
-		}
+		return new $class($request);
 	}
 
 	/**

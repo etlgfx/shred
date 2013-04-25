@@ -1,6 +1,6 @@
 <?php
 
-//require_once PATH_API .'captcha/Captcha.class.php';
+namespace Shred;
 
 if (!defined('RE_URL'))
 	define('RE_URL', '#^(http|ftp|https|svn)://([a-z][-a-z0-9\.]*[a-z0-9]\.)+[a-z]+#i');
@@ -648,4 +648,3 @@ class Form {
 	*/
 }
 
-?>

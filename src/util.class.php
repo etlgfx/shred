@@ -1,5 +1,7 @@
 <?php
 
+namespace Shred;
+
 /** @class Util
  *
  * Collection of static utility methods meant to be used across the
@@ -367,4 +369,3 @@ class Util {
 	}
 }
 
-?>

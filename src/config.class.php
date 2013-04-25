@@ -1,5 +1,7 @@
 <?php
 
+namespace Shred;
+
 /**
  * @class Config
  * @brief Config class is a singleton container for configuration options

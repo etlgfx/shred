@@ -1,5 +1,7 @@
 <?php
 
+namespace Shred;
+
 /**
  * @class DataContainer
  *
@@ -134,4 +136,3 @@ class DataContainer {
 	}
 }
 
-?>

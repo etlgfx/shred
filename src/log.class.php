@@ -1,5 +1,7 @@
 <?php
 
+namespace Shred;
+
 /**
  * @class Log
  *

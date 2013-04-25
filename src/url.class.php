@@ -1,5 +1,7 @@
 <?php
 
+namespace Shred;
+
 //TODO most parameter methods here are subject for deprecation?
 
 /** @class URL
@@ -192,4 +194,3 @@ class URL {
 	}
 }
 
-?>

@@ -1,5 +1,7 @@
 <?php
 
+namespace Shred;
+
 class PDOFactory {
 	public static function factory($db_name) {
 		static $dbs = array();

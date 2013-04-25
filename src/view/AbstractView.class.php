@@ -24,16 +24,8 @@ abstract class AbstractView {
 		}
 
 		$class = Util::toClassName($class) .'View';
-		$path = PATH_LIBS .'view/'. $class .'.class.php';
 
-		if (file_exists($path)) {
-			require_once $path;
-
-			return new $class();
-		}
-		else {
-			throw new RuntimeException('View Class `'. $class .'` not found in: '. $path);
-		}
+		return new $class();
 	}
 
 	/**

@@ -1,5 +1,7 @@
 <?php
 
+namespace Shred;
+
 abstract class AbstractShell implements IShell {
 	protected $required = array();
 	protected $switches = array();
@@ -30,17 +32,8 @@ abstract class AbstractShell implements IShell {
 
 	public static function factory($shell_name) {
 		$class = Util::toClassName($shell_name) .'Shell';
-		
-		if (file_exists(PATH_CODE .'shell/'. $class .'.class.php'))
-			require_once PATH_CODE .'shell/'. $class .'.class.php';
-		else if (file_exists(PATH_LIBS .'shell/'. $class .'.class.php'))
-			require_once PATH_LIBS .'shell/'. $class .'.class.php';
 
-		if (class_exists($class))
-			return new $class();
-		else
-			throw new Exception("Shell Class not found: ". $class);
+		return new $class();
 	}
 }
 
-?>

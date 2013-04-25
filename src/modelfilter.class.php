@@ -1,5 +1,7 @@
 <?php
 
+namespace Shred;
+
 class ModelFilter {
 
 	protected $filter;
@@ -181,4 +183,3 @@ class ModelFilter {
 	}
 }
 
-?>

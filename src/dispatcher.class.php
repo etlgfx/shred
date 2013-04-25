@@ -1,5 +1,7 @@
 <?php
 
+namespace Shred;
+
 /** @class Dispatcher
  *
  * This class is the entry point for SHRED
@@ -98,14 +100,14 @@ class Dispatcher {
 	 * initialize request object using the router specified or the default router
 	 *
 	 * @see Router::route()
-	 * @see AbstractController::factory()
+	 * @see Controller_Abstract::factory()
 	 */
 	protected function init() {
 		$this->state = self::STATE_INIT;
 
 		$this->request = $this->router()->route(strtolower($_SERVER['REQUEST_METHOD']), trim($_SERVER['REQUEST_URI'], '/'));
 
-		$this->controller = AbstractController::factory($this->request);
+		$this->controller = Controller_Abstract::factory($this->request);
 	}
 
 	/**
@@ -185,4 +187,3 @@ class Dispatcher {
 	}
 }
 
-?>

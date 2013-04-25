@@ -1,5 +1,7 @@
 <?php
 
+namespace Shred;
+
 class Router {
 
 	const DEFAULT_REQUEST_METHOD = 'get';
@@ -262,4 +264,3 @@ class Router {
 	}
 }
 
-?>

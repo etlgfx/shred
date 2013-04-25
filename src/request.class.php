@@ -1,5 +1,7 @@
 <?php
 
+namespace Shred;
+
 class Request {
 	const METHOD_POST = 'post';
 	const METHOD_GET = 'get';
@@ -157,4 +159,3 @@ class Request {
 	}
 }
 
-?>
