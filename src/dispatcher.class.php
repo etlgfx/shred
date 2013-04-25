@@ -56,20 +56,20 @@ class Dispatcher {
 			$this->execute();
 			$this->render();
 		}
-		catch (NotFoundException $e) {
+		catch (Exception_NotFound $e) {
 			header('HTTP/1.0 404 Not Found');
 
 			$this->getGenericController($errorController)->error($e, 404, $e->getMessage());
 		}
-		catch (PermissionException $e) {
+		catch (Exception_Permission $e) {
 			header('HTTP/1.0 403 Forbidden');
 
 			$this->getGenericController($errorController)->error($e, 403, $e->getMessage());
 		}
-		catch (RedirectException $e) {
+		catch (Exception_Redirect $e) {
 			$this->getGenericController($errorController)->redirect($e->getUrl());
 		}
-		catch (Exception $e) {
+		catch (\Exception $e) {
 			$status = null;
 
 			switch ($this->state) {
@@ -113,7 +113,7 @@ class Dispatcher {
 	/**
 	 * Run the authorization method defined in the controller instance
 	 *
-	 * @throws PermissionException
+	 * @throws Exception_Permission
 	 */
 	protected function authorize() {
 		$this->state = self::STATE_AUTH;
@@ -133,7 +133,7 @@ class Dispatcher {
 
 		$method = $this->request->getAction();
 
-		$reflector = new ReflectionClass($this->controller);
+		$reflector = new \ReflectionClass($this->controller);
 		$reflector = $reflector->getMethod($method);
 
 		if ($reflector->isPublic()) {
@@ -141,7 +141,7 @@ class Dispatcher {
 		}
 		else {
 			Log::raise('That\'s not a public method, asshole', Log::APP_ERROR, Log::ERROR_TYPE_CTRL);
-			throw new PermissionException('That action is not supported');
+			throw new Exception_Permission('That action is not supported');
 		}
 	}
 
