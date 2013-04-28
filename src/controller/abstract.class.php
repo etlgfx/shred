@@ -172,7 +172,7 @@ abstract class Controller_Abstract {
 	 */
 	protected function initView($class = null) {
 		if (!$this->view)
-			$this->view = AbstractView::factory($class ? $class : Config::get('view.class'));
+			$this->view = View_Abstract::factory($class ? $class : Config::get('view.class'));
 
 		return $this->view;
 	}

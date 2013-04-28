@@ -1,10 +1,12 @@
 <?php
 
-class SmartyView extends AbstractView {
+namespace Shred;
+
+class View_Smarty extends View_Abstract {
 	protected $smarty;
 
 	public function __construct() {
-		$this->smarty = new Smarty();
+		$this->smarty = new \Smarty();
 		$this->smarty->setTemplateDir(PATH_APP .'view/');
 		$this->smarty->setCompileDir(PATH_APP .'tmp/smarty_compile/');
 		$this->smarty->setCacheDir(PATH_APP .'tmp/smarty_cache/');

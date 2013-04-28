@@ -11,7 +11,7 @@ class Controller_Generic extends Controller_Abstract implements Controller_IErro
 
 	public function render() { }
 
-	public function error(Exception $e, $status = 404, $message = null) {
+	public function error(\Exception $e, $status = 404, $message = null) {
 		header('content-type: text/plain');
 
 		printf("%s: %s", $status, $message);

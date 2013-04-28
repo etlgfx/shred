@@ -35,21 +35,21 @@ class Dispatcher {
 		return $this->router ? $this->router : new Router();
 	}
 
-	public function permissionExceptionHandler(IErrorController $controller = null) {
+	public function permissionExceptionHandler(Controller_IError $controller = null) {
 		if ($controller)
 			$this->permissionHandler = $controller;
 
 		return $this->permissionHandler;// ? $this->permissionHandler : ;
 	}
 
-	public function notFoundExceptionHandler(IErrorController $controller = null) {
+	public function notFoundExceptionHandler(Controller_IError $controller = null) {
 		if ($controller)
 			$this->notFoundHandler = $controller;
 
 		return $this->notFoundHandler;
 	}
 
-	public function dispatch(IErrorController $errorController = null) {
+	public function dispatch(Controller_IError $errorController = null) {
 		try {
 			$this->init();
 			$this->authorize();
@@ -174,15 +174,15 @@ class Dispatcher {
 	 *
 	 * @return IErrorController intsance
 	 */
-	protected function getGenericController(IErrorController $errorController = null) {
+	protected function getGenericController(Controller_IError $errorController = null) {
 		if ($errorController) {
 			return $errorController;
 		}
-		else if ($this->controller && $this->controller instanceof IErrorController) {
+		else if ($this->controller && $this->controller instanceof Controller_IError) {
 			return $this->controller;
 		}
 		else {
-			return new GenericController(new Request('get'));
+			return new Controller_Generic(new Request('get'));
 		}
 	}
 }

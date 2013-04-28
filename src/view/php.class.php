@@ -1,6 +1,8 @@
 <?php
 
-class PhpView extends AbstractView {
+namespace Shred;
+
+class View_Php extends View_Abstract {
 	protected $loader;
 
 	public function __construct() {
@@ -11,7 +13,7 @@ class PhpView extends AbstractView {
 	public function render(array $data) {
 		//TODO consider moving this to abstract view for all view classes and doing parent::render() at the beginning of these
 		if (!$this->setTemplate($template)) {
-			throw new NotFoundException('Unable to load template `'. $template .'`');
+			throw new \NotFoundException('Unable to load template `'. $template .'`');
 		}
 
 		extract($data);

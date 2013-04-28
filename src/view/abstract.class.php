@@ -1,6 +1,8 @@
 <?php
 
-abstract class AbstractView {
+namespace Shred;
+
+abstract class View_Abstract {
 
 	protected $template;
 	protected $ext;
@@ -20,10 +22,10 @@ abstract class AbstractView {
 	 */
 	public static function factory($class = 'twig') {
 		if (!$class) {
-			throw new InvalidArgumentException('Invalid Argument, no view class specified');
+			throw new \InvalidArgumentException('Invalid Argument, no view class specified');
 		}
 
-		$class = Util::toClassName($class) .'View';
+		$class = '\Shred\View_'. Util::toClassName($class);
 
 		return new $class();
 	}

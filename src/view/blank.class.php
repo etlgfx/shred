@@ -1,6 +1,8 @@
 <?php
 
-class BlankView extends AbstractView {
+namespace Shred;
+
+class View_Blank extends View_Abstract {
 	public function render(array $data) {
 	}
 

@@ -31,7 +31,7 @@ abstract class AbstractModel {
 		$this->_fields = $this->_validator->fields();
 		 */
 
-		$this->_data = new stdClass();
+		$this->_data = new \stdClass();
 
 		foreach ($data as $k => $v)
 			$this->_data->{$k} = $v;
@@ -41,7 +41,7 @@ abstract class AbstractModel {
 		if (in_array($k, static::$_fields))
 			return property_exists($this->_data, $k) ? $this->_data->{$k} : null;
 		else
-			throw new RuntimeException('unknown property: '. var_export($k, true));
+			throw new \RuntimeException('unknown property: '. var_export($k, true));
 	}
 
 	public function __set($k, $v) {
@@ -54,7 +54,7 @@ abstract class AbstractModel {
 			$this->_data->{$k} = $v;
 		}
 		else
-			throw new RuntimeException('unknown property: '. $k);
+			throw new \RuntimeException('unknown property: '. $k);
 	}
 
 	/**
@@ -74,7 +74,7 @@ abstract class AbstractModel {
 		$fields = array_intersect(array_keys($data), static::$_fields);
 
 		if (!$fields)
-			throw new InvalidArgumentException('no fields to insert');
+			throw new \InvalidArgumentException('no fields to insert');
 
 		$str = 'INSERT INTO `'. static::$_table .'` (`'. implode('`, `', $fields) . '`) VALUES (:'. implode(', :', $fields) .')';
 
@@ -108,7 +108,7 @@ abstract class AbstractModel {
 		if (is_array(static::$_pk) && is_array($pk)) {
 			foreach (static::$_pk as $k) {
 				if (!isset($pk[$k]))
-					throw new InvalidArgumentException('');
+					throw new \InvalidArgumentException('');
 
 				$qb->where($k, $pk[$k]);
 			}
@@ -119,7 +119,7 @@ abstract class AbstractModel {
 
 		$stmt = $qb->limit(1)->execute(PDOFactory::factory('main'));
 
-		$row = $stmt->fetch(PDO::FETCH_ASSOC);
+		$row = $stmt->fetch(\PDO::FETCH_ASSOC);
 
 		return $row ? new static($row) : null;
 	}
@@ -154,7 +154,7 @@ abstract class AbstractModel {
 		//TODO run validation
 
 		if (!$this->{static::$_pk}) //TODO should this be merged with create?
-			throw new RuntimeException('trying to update a non-existing row');
+			throw new \RuntimeException('trying to update a non-existing row');
 
 		$map = array();
 		foreach ($this->_dirty as $k => $v)
@@ -173,7 +173,7 @@ abstract class AbstractModel {
 
 	public function delete() {
 		if (!$this->{static::$_pk}) //TODO should this be merged with create?
-			throw new RuntimeException('trying to delete a non-existing row');
+			throw new \RuntimeException('trying to delete a non-existing row');
 
 		QBuilder::delete()->table(static::$_table)
 			->where(static::$_pk, $this->{static::$_pk})
@@ -187,7 +187,7 @@ abstract class AbstractModel {
 
 	public function copyProperties(AbstractModel $rhs) {
 		if (!$rhs instanceof $this)
-			throw new Exception('Incompatible objects');
+			throw new \Exception('Incompatible objects');
 
 		foreach ($rhs->_data as $k => $v)
 			$this->_data->{$k} = $v;
@@ -197,7 +197,7 @@ abstract class AbstractModel {
 
 	public function loadRelated($relation) {
 		if (!isset(static::$_has[$relation]) && !isset(static::$_belongs_to[$relation]))
-			throw new InvalidArgumentException('Undefined relationship: '. $relation);
+			throw new \InvalidArgumentException('Undefined relationship: '. $relation);
 
 		$name = $relation;
 		$type = isset(static::$_has[$relation]) ? self::REL_HAS : self::REL_BELONG;
@@ -209,7 +209,7 @@ abstract class AbstractModel {
 				$relation = static::$_belongs_to[$relation];
 				break;
 			default:
-				throw new RuntimeException('unknown relationship type: '. $type);
+				throw new \RuntimeException('unknown relationship type: '. $type);
 		}
 
 		if (isset($relation['through'])) {
@@ -234,7 +234,7 @@ abstract class AbstractModel {
 				->execute(PDOFactory::factory('main'));
 		}
 		else {
-			throw new RuntimeException('unknown relationship type: '. $type);
+			throw new \RuntimeException('unknown relationship type: '. $type);
 		}
 
 		if ($type === self::REL_HAS) {
@@ -242,12 +242,12 @@ abstract class AbstractModel {
 
 			$modelconstructor = isset($relation['model']) ? $relation['model'] : null;
 
-			while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
+			while ($row = $stmt->fetch(\PDO::FETCH_ASSOC)) {
 				$this->_relations[$name] []= $modelconstructor ? new $modelconstructor($row) : $row;
 			}
 		}
 		else {
-			$row = $stmt->fetch(PDO::FETCH_ASSOC);
+			$row = $stmt->fetch(\PDO::FETCH_ASSOC);
 
 			$modelconstructor = isset($relation['model']) ? $relation['model'] : null;
 			$this->_relations[$name] = $modelconstructor ? new $modelconstructor($row) : $row;

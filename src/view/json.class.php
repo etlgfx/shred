@@ -1,6 +1,8 @@
 <?php
 
-class JsonView extends AbstractView {
+namespace Shred;
+
+class View_Json extends View_Abstract {
 
 	protected $mimetype = 'application/json';
 
