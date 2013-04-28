@@ -1,6 +1,8 @@
 <?php
 
-class QBuilderUpdate extends QBuilder {
+namespace Shred;
+
+class DB_QBuilder_Update extends DB_QBuilder_Abstract {
 
 	protected $_values = array();
 
@@ -15,7 +17,7 @@ class QBuilderUpdate extends QBuilder {
 		$sql = 'UPDATE ';
 
 		if (!$this->_table || !$this->_values)
-			throw new RuntimeException('No table to select from or on data to update, you must call ->table() and ->map()');
+			throw new \RuntimeException('No table to select from or on data to update, you must call ->table() and ->map()');
 
 		$sql .= "`{$this->_table}` ";
 

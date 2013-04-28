@@ -103,7 +103,7 @@ abstract class AbstractModel {
 	 * Find a single record by primary key
 	 */
 	public static function find($pk) {
-		$qb = QBuilder::select()->from(static::$_table);
+		$qb = Q::select()->from(static::$_table);
 
 		if (is_array(static::$_pk) && is_array($pk)) {
 			foreach (static::$_pk as $k) {
@@ -160,7 +160,7 @@ abstract class AbstractModel {
 		foreach ($this->_dirty as $k => $v)
 			$map[$k] = $this->{$k};
 
-		QBuilder::update()->table(static::$_table)
+		Q::update()->table(static::$_table)
 			->map($map)
 			->where(static::$_pk, $this->{static::$_pk})
 			->limit(1)
@@ -175,7 +175,7 @@ abstract class AbstractModel {
 		if (!$this->{static::$_pk}) //TODO should this be merged with create?
 			throw new \RuntimeException('trying to delete a non-existing row');
 
-		QBuilder::delete()->table(static::$_table)
+		Q::delete()->table(static::$_table)
 			->where(static::$_pk, $this->{static::$_pk})
 			->limit(1)
 			->execute(PDOFactory::factory('main')); //TODO cascading delete???
@@ -213,7 +213,7 @@ abstract class AbstractModel {
 		}
 
 		if (isset($relation['through'])) {
-			$stmt = QBuilder::select($relation['foreign_table'] .'.*')
+			$stmt = Q::select($relation['foreign_table'] .'.*')
 				->from($relation['foreign_table'])
 				->join($relation['through']['table'])
 				->on($relation['through']['table'] .'.'. $relation['through']['far'], $relation['foreign_table'] .'.'. $relation['foreign_key'])
@@ -221,13 +221,13 @@ abstract class AbstractModel {
 				->execute(PDOFactory::factory('main'));
 		}
 		else if ($type === self::REL_HAS) {
-			$stmt = QBuilder::select()
+			$stmt = Q::select()
 				->from($relation['foreign_table'])
 				->where($relation['foreign_key'], $this->{static::$_pk})
 				->execute(PDOFactory::factory('main'));
 		}
 		else if ($type === self::REL_BELONG) {
-			$stmt = QBuilder::select()
+			$stmt = Q::select()
 				->from($relation['foreign_table'])
 				->where('id', $this->{$relation['foreign_key']})
 				->limit(1)

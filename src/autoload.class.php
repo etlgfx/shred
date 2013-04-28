@@ -26,20 +26,9 @@ class Autoload {
 			else if (file_exists($p2 = $this->base . 'vendors/'. $ns[0] .'/src/'. implode(DIRECTORY_SEPARATOR, array_merge(array_slice($ns, 1), $path)) .'.class.php')) {
 				require $p2;
 			}
-			else {
-				echo $class . PHP_EOL;
-				echo $p1 . PHP_EOL;
-				echo $p2 . PHP_EOL;
-				die();
-			}
 		}
 		else if (file_exists($p3 = $this->base . 'classes/' . implode(DIRECTORY_SEPARATOR, $path) .'.class.php')) {
 			require $p3;
-		}
-		else {
-			echo $class . PHP_EOL;
-			echo $p3 . PHP_EOL;
-			die();
 		}
 	}
 }

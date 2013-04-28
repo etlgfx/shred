@@ -1,6 +1,8 @@
 <?php
 
-abstract class QBuilder {
+namespace Shred;
+
+abstract class DB_QBuilder_Abstract {
 	const TYPE_SELECT = 0x01;
 	const TYPE_UPDATE = 0x02;
 	const TYPE_REPLACE = 0x03;
@@ -24,17 +26,17 @@ abstract class QBuilder {
 				break;
 
 			default:
-				throw new InvalidArgumentException('Invalid Query type'. $type);
+				throw new \InvalidArgumentException('Invalid Query type'. $type);
 		}
 	}
 
 	public static function select() {
-		$qb = new QBuilderSelect(self::TYPE_SELECT);
+		$qb = new DB_QBuilder_Select(self::TYPE_SELECT);
 		return call_user_func_array(array($qb, 'columns'), func_get_args());
 	}
 
 	public static function update($table = null) {
-		$qb = new QBuilderUpdate(self::TYPE_UPDATE);
+		$qb = new DB_QBuilder_Update(self::TYPE_UPDATE);
 
 		if ($table)
 			$qb->table($table);
@@ -43,7 +45,7 @@ abstract class QBuilder {
 	}
 
 	public static function insert($table = null) {
-		$qb = new QBuilderInsert(self::TYPE_INSERT);
+		$qb = new DB_QBuilder_Insert(self::TYPE_INSERT);
 
 		if ($table)
 			$qb->table($table);
@@ -52,7 +54,7 @@ abstract class QBuilder {
 	}
 
 	public static function delete() {
-		return new QBuilderDelete(self::TYPE_DELETE);
+		return new DB_QBuilder_Delete(self::TYPE_DELETE);
 	}
 
 	public function columns() {
@@ -103,7 +105,7 @@ abstract class QBuilder {
 		else if (count($args) == 3)
 			return $this->_where3($args[0], $args[1], $args[2]);
 		else
-			throw new InvalidArgumentException('Expected 2 or 3 args to where()');
+			throw new \InvalidArgumentException('Expected 2 or 3 args to where()');
 	}
 
 	public function limit($limit = null, $offset = null) {
@@ -114,19 +116,19 @@ abstract class QBuilder {
 		else if (is_int($limit) && is_int($offset))
 			$this->_limit = array($limit, $offset);
 		else
-			throw new InvalidArgumentException('invalid limit specified');
+			throw new \InvalidArgumentException('invalid limit specified');
 
 		return $this;
 	}
 
 	public function order($col, $dir = 'ASC') {
 		if (!is_string($col) || !is_string($dir))
-			throw new InvalidArgumentException('invalid column, should be string');
+			throw new \InvalidArgumentException('invalid column, should be string');
 
 		$dir = strtoupper($dir);
 
 		if ($dir != 'ASC' && $dir != 'DESC')
-			throw new InvalidArgumentException('invalid direction, should be ASC or DESC');
+			throw new \InvalidArgumentException('invalid direction, should be ASC or DESC');
 
 		$this->_order []= array($col, $dir);
 
@@ -154,11 +156,11 @@ abstract class QBuilder {
 
 			case 'IN': case 'NOT IN':
 				if (!is_array($rhs))
-					throw new InvalidArgumentException('trying to build IN clause with a non array argument');
+					throw new \InvalidArgumentException('trying to build IN clause with a non array argument');
 				break;
 
 			default:
-				throw new InvalidArgumentException('invalid or unknown operator');
+				throw new \InvalidArgumentException('invalid or unknown operator');
 		}
 
 		$this->_where []= array($lhs, $op, $rhs);
@@ -194,7 +196,7 @@ abstract class QBuilder {
 		}
 	}
 
-	public function execute(PDO $db) {
+	public function execute(\PDO $db) {
 		$sql = $params = null;
 
 		$this->compile($sql, $params);
@@ -202,19 +204,19 @@ abstract class QBuilder {
 		$stmt = $db->prepare($sql);
 
 		foreach ($params as $k => $v) {
-			$type = PDO::PARAM_STR;
+			$type = \PDO::PARAM_STR;
 
 			switch (gettype($v)) {
 				case 'integer':
-					$type = PDO::PARAM_INT;
+					$type = \PDO::PARAM_INT;
 					break;
 
 				case 'boolean':
-					$type = PDO::PARAM_BOOL;
+					$type = \PDO::PARAM_BOOL;
 					break;
 
 				case 'NULL':
-					$type = PDO::PARAM_NULL;
+					$type = \PDO::PARAM_NULL;
 					break;
 			}
 

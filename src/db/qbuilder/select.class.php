@@ -1,13 +1,15 @@
 <?php
 
-class QBuilderSelect extends QBuilder {
+namespace Shred;
+
+class DB_QBuilder_Select extends DB_QBuilder_Abstract {
 
 	protected function compile(&$sql, &$params) {
 		$params = array();
 		$sql = 'SELECT ';
 
 		if (!$this->_table)
-			throw new RuntimeException('No table to select from, you must call ->from()');
+			throw new \RuntimeException('No table to select from, you must call ->from()');
 
 		if (!$this->_columns)
 			$sql .= '* ';
@@ -36,7 +38,7 @@ class QBuilderSelect extends QBuilder {
 		if ($this->_join) {
 			foreach ($this->_join as $join) {
 				if (!isset($join[3], $join[4]))
-					throw new RuntimeException('undefined join condition');
+					throw new \RuntimeException('undefined join condition');
 
 				$lhs = implode('`.`', explode('.', $join[3]));
 				$rhs = implode('`.`', explode('.', $join[4]));
