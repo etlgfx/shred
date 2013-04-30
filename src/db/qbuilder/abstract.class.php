@@ -19,7 +19,7 @@ abstract class DB_QBuilder_Abstract {
 		$_group = null,
 		$_having = null;
 
-	public function __construct($type) {
+	protected function __construct($type) {
 		switch ($type) {
 			case self::TYPE_SELECT: case self::TYPE_UPDATE: case self::TYPE_REPLACE: case self::TYPE_DELETE:
 				$this->_type = $type;
@@ -196,10 +196,14 @@ abstract class DB_QBuilder_Abstract {
 		}
 	}
 
-	public function execute(\PDO $db) {
+	public function execute(\PDO $db = null) {
 		$sql = $params = null;
 
 		$this->compile($sql, $params);
+
+		if ($db === null) {
+			$db = PDOFactory::factory();
+		}
 
 		$stmt = $db->prepare($sql);
 

@@ -3,7 +3,9 @@
 namespace Shred;
 
 class PDOFactory {
-	public static function factory($db_name) {
+	const DEFAULT_HANDLE = 'main';
+
+	public static function factory($db_name = self::DEFAULT_HANDLE) {
 		static $dbs = array();
 
 		$return = null;
