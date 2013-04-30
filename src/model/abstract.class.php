@@ -2,7 +2,7 @@
 
 namespace Shred;
 
-abstract class AbstractModel {
+abstract class Model_Abstract {
 
 	const REL_HAS = 0x01;
 	const REL_BELONG = 0x02;
@@ -185,7 +185,7 @@ abstract class AbstractModel {
 		return null;
 	}
 
-	public function copyProperties(AbstractModel $rhs) {
+	public function copyProperties(Model_Abstract $rhs) {
 		if (!$rhs instanceof $this)
 			throw new \Exception('Incompatible objects');
 
@@ -265,16 +265,16 @@ abstract class AbstractModel {
 		if ($relations && $this->_relations) {
 			foreach ($this->_relations as $k => $v) {
 				if (isset(static::$_belongs_to[$k])) {
-					$return[$k] = $v instanceof AbstractModel ? $v->asArray($relations) : $v;
+					$return[$k] = $v instanceof Model_Abstract ? $v->asArray($relations) : $v;
 				}
 				else if (is_array($v)) {
 					$return[$k] = array();
 
 					foreach ($v as $c)
-						$return[$k] []= $c instanceof AbstractModel ? $c->asArray($relations) : $c;
+						$return[$k] []= $c instanceof Model_Abstract ? $c->asArray($relations) : $c;
 				}
 				else {
-					$return[$k] = $v instanceof AbstractModel ? $v->asArray($relations) : $v;
+					$return[$k] = $v instanceof Model_Abstract ? $v->asArray($relations) : $v;
 				}
 			}
 		}
@@ -283,14 +283,14 @@ abstract class AbstractModel {
 	}
 
 		/*
-	public function attach($relation, AbstractModel $obj) {
+	public function attach($relation, Model_Abstract $obj) {
 		PDOFactory::factory('main')->prepare('insert ignore into data_objects_images (object_id, field_type_name, image_id) values (?, ?, ?)')
 			->execute(array($this->id, 'image', $att->id));
 	}
 		 */
 
 		/*
-	public function detach($relation, AbstractModel $obj) {
+	public function detach($relation, Model_Abstract $obj) {
 		PDOFactory::factory('main')->prepare('insert ignore into data_objects_images (object_id, field_type_name, image_id) values (?, ?, ?)')
 			->execute(array($this->id, 'image', $att->id));
 	}
