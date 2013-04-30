@@ -160,7 +160,7 @@ class Util {
 			return null;
 
 		if (!is_string($string))
-			throw new InvalidArgumentException('Invalid parameter passed string: '. $string);
+			throw new \InvalidArgumentException('Invalid parameter passed string: '. $string);
 
 		$class = '';
 		
@@ -185,7 +185,7 @@ class Util {
 			return null;
 
 		if (!is_string($string))
-			throw new InvalidArgumentException('Invalid parameter passed string: '. $string);
+			throw new \InvalidArgumentException('Invalid parameter passed string: '. $string);
 
 		$method = '';
 		
@@ -220,7 +220,7 @@ class Util {
 	 */
 	public static function fromClassName($string) {
 		if (!is_string($string))
-			throw new InvalidArgumentException('Invalid parameter passed string: '. $string);
+			throw new \InvalidArgumentException('Invalid parameter passed string: '. $string);
 
 		$str = '';
 		$last_upper = true;
@@ -268,9 +268,9 @@ class Util {
 	 */
 	public static function toSlug($string, $max_length = null) {
 		if (!is_string($string) || !$string)
-			throw new InvalidArgumentException('Invalid argument string');
+			throw new \InvalidArgumentException('Invalid argument string');
 		if ($max_length && !is_numeric($max_length))
-			throw new InvalidArgumentException('Invalid argument max_length');
+			throw new \InvalidArgumentException('Invalid argument max_length');
 		else if ($max_length)
 			$max_length = (int)$max_length;
 
@@ -306,7 +306,7 @@ class Util {
 		}
 
 		if (!is_string($directory) || !is_writable($directory) || !is_dir($directory)) {
-			throw new InvalidArgumentException('Directory is not writable');
+			throw new \InvalidArgumentException('Directory is not writable');
 		}
 
 		if ($directory[strlen($directory) - 1] != '/') {
@@ -315,7 +315,7 @@ class Util {
 
 		if ($prefix) {
 			if (!is_string($prefix)) {
-				throw new InvalidArgumentException('Invalid prefix passed, must be a string');
+				throw new \InvalidArgumentException('Invalid prefix passed, must be a string');
 			}
 		}
 		else {
@@ -324,7 +324,7 @@ class Util {
 
 		if ($suffix) {
 			if (!is_string($suffix)) {
-				throw new InvalidArgumentException('Invalid suffix passed, must be a string');
+				throw new \InvalidArgumentException('Invalid suffix passed, must be a string');
 			}
 		}
 		else {
