@@ -36,6 +36,17 @@ class Request {
 	}
 
 	/**
+	 * shorthand for this.getParam()
+	 *
+	 * @param string $k
+	 *
+	 * @return mixed
+	 */
+	public function __get($k) {
+		return $this->getParam($k);
+	}
+
+	/**
 	 * Set HTTP Request Method. This can be one of POST, GET, DELETE, PUT,
 	 * PATCH, etc.
 	 *
