@@ -56,7 +56,7 @@ abstract class Controller_Abstract {
 			$template = $this->getTemplate();
 
 			if (!$this->setTemplate($template))
-				throw new NotFoundException('Unable to load template: '. $template);
+				throw new Exception_NotFound('Unable to load template: '. $template);
 		}
 
 		echo $this->view->render($this->data_container->getVars());

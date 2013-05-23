@@ -14,7 +14,7 @@ abstract class Model_Abstract {
 	protected static $_belongs_to;
 	protected static $_pk = 'id';
 
-	protected $_data, $_relations, $_dirty;
+	protected $_data, $_relations, $_dirty, $_qb; /*, $_loaded*/
 
 	/**
 	 * Constructor ensures that table name and validator object have been
@@ -85,7 +85,7 @@ abstract class Model_Abstract {
 		foreach ($fields as $col) {
 			$val = $data[$col];
 
-			if (isset(static::$_filters[$col]))
+			if (isset(static::$_filters, static::$_filters[$col]))
 				$val = call_user_func(static::$_filters[$col], $val);
 
 			$stmt->bindValue(':'. $col, $val);
@@ -132,6 +132,45 @@ abstract class Model_Abstract {
 
 	protected static function validator()
 	{
+	}
+
+	public static function q() {
+		return new static(array());
+	}
+
+	public function where() {
+		call_user_func_array(array($this->qb(), 'where'), func_get_args());
+
+		return $this;
+	}
+
+	public function order() {
+		call_user_func_array(array($this->qb(), 'order'), func_get_args());
+
+		return $this;
+	}
+
+	public function limit() {
+		call_user_func_array(array($this->qb(), 'limit'), func_get_args());
+
+		return $this;
+	}
+
+	public function findOne() {
+		$stmt = $this->qb()->limit(1)->execute();
+
+		return new static($stmt->fetch(\PDO::FETCH_ASSOC));
+	}
+
+	public function findAll() {
+		$stmt = $this->qb()->execute();
+
+		$return = array();
+		while ($row = $stmt->fetch(\PDO::FETCH_ASSOC)) {
+			$return []= new static($row);
+		}
+
+		return $return;
 	}
 
 	/**
@@ -280,6 +319,14 @@ abstract class Model_Abstract {
 		}
 
 		return $return;
+	}
+
+	protected function qb() {
+		if (!$this->_qb) {
+			$this->_qb = Q::select()->table(static::$_table);
+		}
+
+		return $this->_qb;
 	}
 
 		/*
