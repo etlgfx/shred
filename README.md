@@ -34,13 +34,14 @@ Features
 Here are a list of handy features roughly in order of creation:
 
 * easy configuration
-
+<pre>
 	Config::set('key.subkey.subkey', 'value');
 	Config::get('key.subkey.subkey'); // => 'value'
 	Config::get('key); // => array('subkey' => array('subkey' => 'value'))
+</pre>
 
 * flexible routing including specific REST goodies
-
+<pre>
 	Config::set('router.routes', array(
 		'path/edit/[id:num]' => array(
 			'controller' => 'object',
@@ -61,14 +62,16 @@ Here are a list of handy features roughly in order of creation:
 			$this->request->id;
 		}
 	}
+</pre>
 
 * Easy db querying using `\Shred\QBuilder` (and shorthand alias class `Q`) which is basically syntactic sugar around PDO
-
+<pre>
 	Q::select(/* column list */)->from('table')->join('jointable')->on('condition_lhs', 'condition_rhs')->where('column', 'value')->where('column', '>', 'operatorcompared')->order('column', 'asc')->limit(1)->execute();
+</pre>
 
 * Non-Fancy new ORM `\Shred\Model\_Abstract`; basic relational mapping support and CRUD features
 
 * easy querying directly from ORM
-
+<pre>
 	Model_Name::where('column', 'value')->findOne()
-
+</pre>
