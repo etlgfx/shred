@@ -14,7 +14,7 @@ abstract class Model_Abstract {
 	protected static $_belongs_to;
 	protected static $_pk = 'id';
 
-	protected $_data, $_relations, $_dirty, $_qb; /*, $_loaded*/
+	protected $_data, $_relations, $_dirty, $_queryBuilder; /*, $_loaded*/
 
 	/**
 	 * Constructor ensures that table name and validator object have been
@@ -55,6 +55,49 @@ abstract class Model_Abstract {
 		}
 		else
 			throw new \RuntimeException('unknown property: '. $k);
+	}
+
+	/**
+	 * fancy way to make short hands for using QBuilder
+	 *
+	 * @param string $name method you wish to call: where, order, limit ...
+	 * @param array $arguments
+	 *
+	 * @return mixed usually $this
+	 *
+	 * @throw BadMethodCallException
+	 */
+	public function __call($name, $arguments) {
+		switch ($name) {
+			case 'where': case 'order': case 'limit':
+				call_user_func_array(array($this->queryBuilder(), $name), $arguments);
+
+				return $this;
+			default:
+				throw new BadMethodCallException('method does not exist');
+		}
+	}
+
+	/**
+	 * fancy way to make short hands for using QBuilder
+	 *
+	 * @param string $name method you wish to call: where, order, limit ...
+	 * @param array $arguments
+	 *
+	 * @return mixed usually instance of current class
+	 *
+	 * @throw BadMethodCallException
+	 */
+	public static function __callStatic($name, $arguments) {
+		switch ($name) {
+			case 'where': case 'order': case 'limit':
+				$o = new static(array());
+
+				return call_user_func_array(array($o, $name), $arguments);
+
+			default:
+				throw new BadMethodCallException('method does not exist');
+		}
 	}
 
 	/**
@@ -134,36 +177,14 @@ abstract class Model_Abstract {
 	{
 	}
 
-	public static function q() {
-		return new static(array());
-	}
-
-	public function where() {
-		call_user_func_array(array($this->qb(), 'where'), func_get_args());
-
-		return $this;
-	}
-
-	public function order() {
-		call_user_func_array(array($this->qb(), 'order'), func_get_args());
-
-		return $this;
-	}
-
-	public function limit() {
-		call_user_func_array(array($this->qb(), 'limit'), func_get_args());
-
-		return $this;
-	}
-
 	public function findOne() {
-		$stmt = $this->qb()->limit(1)->execute();
+		$stmt = $this->queryBuilder()->limit(1)->execute();
 
 		return new static($stmt->fetch(\PDO::FETCH_ASSOC));
 	}
 
 	public function findAll() {
-		$stmt = $this->qb()->execute();
+		$stmt = $this->queryBuilder()->execute();
 
 		$return = array();
 		while ($row = $stmt->fetch(\PDO::FETCH_ASSOC)) {
@@ -321,12 +342,12 @@ abstract class Model_Abstract {
 		return $return;
 	}
 
-	protected function qb() {
-		if (!$this->_qb) {
-			$this->_qb = Q::select()->table(static::$_table);
+	protected function queryBuilder() {
+		if (!$this->_queryBuilder) {
+			$this->_queryBuilder = Q::select()->table(static::$_table);
 		}
 
-		return $this->_qb;
+		return $this->_queryBuilder;
 	}
 
 		/*
