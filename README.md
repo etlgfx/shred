@@ -27,3 +27,48 @@ Simply run:
 If you have PHPUnit installed try:
 
 	./shell unit-test
+
+
+Features
+---
+Here are a list of handy features roughly in order of creation:
+
+* easy configuration
+
+	Config::set('key.subkey.subkey', 'value');
+	Config::get('key.subkey.subkey'); // => 'value'
+	Config::get('key); // => array('subkey' => array('subkey' => 'value'))
+
+* flexible routing including specific REST goodies
+
+	Config::set('router.routes', array(
+		'path/edit/[id:num]' => array(
+			'controller' => 'object',
+			'action' => 'edit',
+		),
+		'method:delete;url:object/[id:num]' => array(
+			'controller' => 'object',
+			'action' => 'delete',
+		)
+	);
+
+	class Controller_Object extends \Shred\Controller_Abstract {
+		public function edit() {
+			$this->request->id;
+		}
+
+		public function delete() {
+			$this->request->id;
+		}
+	}
+
+* Easy db querying using `\Shred\QBuilder` (and shorthand alias class `Q`) which is basically syntactic sugar around PDO
+
+	Q::select(/* column list */)->from('table')->join('jointable')->on('condition_lhs', 'condition_rhs')->where('column', 'value')->where('column', '>', 'operatorcompared')->order('column', 'asc')->limit(1)->execute();
+
+* Non-Fancy new ORM `\Shred\Model\_Abstract`; basic relational mapping support and CRUD features
+
+* easy querying directly from ORM
+
+	Model_Name::where('column', 'value')->findOne()
+
