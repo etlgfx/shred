@@ -90,9 +90,12 @@ class Request {
 		}
 	}
 
-	public function setNS($ns) {
+	public function setNS($ns = null) {
 		if (is_string($ns) && $ns) {
 			$this->ns = $ns;
+		}
+		else if ($ns === null) {
+			return;
 		}
 		else {
 			throw new \InvalidArgumentException('Invalid parameter: '. $ns);

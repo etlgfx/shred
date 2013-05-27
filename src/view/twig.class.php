@@ -10,10 +10,11 @@ class View_Twig extends View_Abstract {
 	public function __construct() {
 		\Twig_Autoloader::register();
 
-		$this->prefix = PATH_APP .'view/';
+		$path = View_Abstract::getViewPath();
+		$this->prefix = $path;
 		$this->loader = new \Twig_Loader_Filesystem($this->prefix);
 		$this->twig = new \Twig_Environment($this->loader, array(
-			'cache' => PATH_APP .'tmp',
+			'cache' => $path . 'tmp/',
 			'auto_reload' => true,
 		));
 

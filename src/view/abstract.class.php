@@ -4,6 +4,9 @@ namespace Shred;
 
 abstract class View_Abstract {
 
+	const CONFIG_PATH_APP = 'path.app';
+	const CONFIG_PATH_BASE = 'path.base';
+
 	protected $template;
 	protected $ext;
 	protected $mimetype;
@@ -78,6 +81,19 @@ abstract class View_Abstract {
 		return $this->mimetype;
 	}
 
+	/**
+	 * @throw RuntimeException
+	 *
+	 * @return string
+	 */
+	public static function getViewPath() {
+		if (($path = Config::get(self::CONFIG_PATH_APP)) || ($path = Config::get(self::CONFIG_PATH_BASE))) {
+			return $path .'view/';
+		}
+		else {
+			throw new \RuntimeException('paths not set correctly');
+		}
+	}
 }
 
 ?>
