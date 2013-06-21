@@ -2,7 +2,7 @@
 
 namespace Shred;
 
-class Model_Collection implements \Iterator {
+class Model_Collection implements \Iterator, \ArrayAccess, \Countable {
 
 	protected $stmt = null;
 	protected $class = null;
@@ -21,6 +21,28 @@ class Model_Collection implements \Iterator {
 			$inst = new $class();
 			$this->_data []= $inst->load($row);
 		}
+	}
+
+	public function offsetExists($offset) {
+		return isset($this->_data[$offset]);
+	}
+
+	public function offsetGet($offset) {
+		return isset($this->_data[$offset]) ? $this->_data[$offset] : null;
+	}
+
+	public function offsetSet($offset, $value) {
+		$this->_data[$offset] = $value;
+	}
+
+	public function offsetUnset($offset) {
+		if (isset($this->_data[$offset])) {
+			unset($this->_data[$offset]);
+		}
+	}
+
+	public function count() {
+		return count($this->_data);
 	}
 
 	public function current() {
