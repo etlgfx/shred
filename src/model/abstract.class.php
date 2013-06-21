@@ -20,9 +20,14 @@ abstract class Model_Abstract {
 	 * Constructor ensures that table name and validator object have been
 	 * defined.
 	 *
+	 * @param int|mixed $id
+	 *
 	 * @throws Exception
 	 */
-	protected function __construct(array $data) {
+	public function __construct($id = null) {
+		if ($id) {
+			$this->read($id);
+		}
 		/*
 		if (!$this->_validator instanceof Validator) {
 			throw new BadMethodCallException('No validator object configured');
@@ -31,12 +36,24 @@ abstract class Model_Abstract {
 		$this->_fields = $this->_validator->fields();
 		 */
 
-		$this->_data = new \stdClass();
+	}
+
+	/**
+	 * TODO clear properly first
+	 * TODO set new pk property??
+	 */
+	public function load(array $data) {
+		//$this->_data = new \stdClass();
+		$this->clear();
 
 		foreach ($data as $k => $v)
 			$this->_data->{$k} = $v;
+
+		return $this;
 	}
 
+	/**
+	 */
 	public function __get($k) {
 		if (in_array($k, static::$_fields))
 			return property_exists($this->_data, $k) ? $this->_data->{$k} : null;
@@ -74,30 +91,15 @@ abstract class Model_Abstract {
 
 				return $this;
 			default:
-				throw new BadMethodCallException('method does not exist');
+				throw new \BadMethodCallException('method does not exist');
 		}
 	}
 
 	/**
-	 * fancy way to make short hands for using QBuilder
-	 *
-	 * @param string $name method you wish to call: where, order, limit ...
-	 * @param array $arguments
-	 *
-	 * @return mixed usually instance of current class
-	 *
-	 * @throw BadMethodCallException
+	 * TODO naming, reset?
 	 */
-	public static function __callStatic($name, $arguments) {
-		switch ($name) {
-			case 'where': case 'order': case 'limit':
-				$o = new static(array());
-
-				return call_user_func_array(array($o, $name), $arguments);
-
-			default:
-				throw new BadMethodCallException('method does not exist');
-		}
+	public function clear() {
+		$this->_data = new \stdClass();
 	}
 
 	/**
@@ -108,7 +110,7 @@ abstract class Model_Abstract {
 	 * @throws Exception
 	 *
 	 */
-	public static function create(array $data = null) {
+	public function create(array $data = null) {
 		/*
 		if (!$this->_validator->validate($data))
 			throw new InvalidArgumentException('Invalid data');
@@ -143,55 +145,51 @@ abstract class Model_Abstract {
 	}
 
 	/**
-	 * Find a single record by primary key
+	 * read a single record by primary key
 	 */
-	public static function find($pk) {
-		$qb = Q::select()->from(static::$_table);
-
+	public function read($pk) {
 		if (is_array(static::$_pk) && is_array($pk)) {
-			foreach (static::$_pk as $k) {
-				if (!isset($pk[$k]))
-					throw new \InvalidArgumentException('');
+			array_map(function ($a) {
+				if (!isset($pk[$k])) {
+				}
+			}, static::$_pk);
 
-				$qb->where($k, $pk[$k]);
+			$where = array_intersect_keys(array_flip(static::$_pk), $pk);
+
+			if (count($where) != count($pk)) {
+				throw new \InvalidArgumentException('given key does not match configured pk');
 			}
+
+			$this->where($pk);
 		}
-		else if (is_string(static::$_pk)) {
-			$qb->where(static::$_pk, $pk);
+		else if (is_string(static::$_pk)) { //TODO && !is_array $pk
+			$this->where(array(static::$_pk => $pk));
 		}
 
-		$stmt = $qb->limit(1)->execute(PDOFactory::factory('main'));
-
-		$row = $stmt->fetch(\PDO::FETCH_ASSOC);
-
-		return $row ? new static($row) : null;
+		return $this->findOne();
 	}
 
 	/**
 	 * Delete a single record by primary key
-	 */
-	protected static function del($pk) {
+	protected function del($pk) {
 	}
 
-	protected static function validator()
+	protected function validator()
 	{
 	}
+	 */
 
 	public function findOne() {
 		$stmt = $this->queryBuilder()->limit(1)->execute();
 
-		return new static($stmt->fetch(\PDO::FETCH_ASSOC));
+		$inst = new static();
+		return $inst->load($stmt->fetch(\PDO::FETCH_ASSOC));
 	}
 
 	public function findAll() {
 		$stmt = $this->queryBuilder()->execute();
 
-		$return = array();
-		while ($row = $stmt->fetch(\PDO::FETCH_ASSOC)) {
-			$return []= new static($row);
-		}
-
-		return $return;
+		return new Model_Collection($stmt, get_called_class());
 	}
 
 	/**
