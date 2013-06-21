@@ -99,7 +99,10 @@ abstract class Model_Abstract {
 	 * TODO naming, reset?
 	 */
 	public function clear() {
-		$this->_data = new \stdClass();
+		$this->_data = null;
+		$this->_queryBuilder = null;
+		$this->_dirty = null;
+		$this->_relations = null;
 	}
 
 	/**
@@ -163,7 +166,7 @@ abstract class Model_Abstract {
 			$this->where($pk);
 		}
 		else if (is_string(static::$_pk)) { //TODO && !is_array $pk
-			$this->where(array(static::$_pk => $pk));
+			$this->where(static::$_pk, $pk);
 		}
 
 		return $this->findOne();
@@ -182,8 +185,7 @@ abstract class Model_Abstract {
 	public function findOne() {
 		$stmt = $this->queryBuilder()->limit(1)->execute();
 
-		$inst = new static();
-		return $inst->load($stmt->fetch(\PDO::FETCH_ASSOC));
+		return $this->load($stmt->fetch(\PDO::FETCH_ASSOC));
 	}
 
 	public function findAll() {
