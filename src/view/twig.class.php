@@ -14,7 +14,7 @@ class View_Twig extends View_Abstract {
 		$this->prefix = $path;
 		$this->loader = new \Twig_Loader_Filesystem($this->prefix);
 		$this->twig = new \Twig_Environment($this->loader, array(
-			'cache' => $path . 'tmp/',
+			'cache' => $path . '../tmp/',
 			'auto_reload' => true,
 		));
 

@@ -43,11 +43,11 @@ abstract class Model_Abstract {
 	 * TODO set new pk property??
 	 */
 	public function load(array $data) {
-		//$this->_data = new \stdClass();
 		$this->clear();
 
-		foreach ($data as $k => $v)
+		foreach ($data as $k => $v) {
 			$this->_data->{$k} = $v;
+		}
 
 		return $this;
 	}
@@ -99,7 +99,7 @@ abstract class Model_Abstract {
 	 * TODO naming, reset?
 	 */
 	public function clear() {
-		$this->_data = null;
+		$this->_data = new \stdClass();
 		$this->_queryBuilder = null;
 		$this->_dirty = null;
 		$this->_relations = null;
@@ -191,7 +191,7 @@ abstract class Model_Abstract {
 	public function findAll() {
 		$stmt = $this->queryBuilder()->execute();
 
-		return new Model_Collection($stmt, get_called_class());
+		return new Model_Collection($stmt, get_class($this));
 	}
 
 	/**
