@@ -105,7 +105,9 @@ class Dispatcher {
 	protected function init() {
 		$this->state = self::STATE_INIT;
 
-		$this->request = $this->router()->route(strtolower($_SERVER['REQUEST_METHOD']), trim($_SERVER['REQUEST_URI'], '/'));
+		$urlParts = parse_url($_SERVER['REQUEST_URI']);
+
+		$this->request = $this->router()->route(strtolower($_SERVER['REQUEST_METHOD']), trim($urlParts['path'], '/'));
 
 		$this->controller = Controller_Abstract::factory($this->request);
 	}

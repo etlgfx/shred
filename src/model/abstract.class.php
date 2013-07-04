@@ -42,11 +42,15 @@ abstract class Model_Abstract {
 	 * TODO clear properly first
 	 * TODO set new pk property??
 	 */
-	public function load(array $data) {
+	public function load($data) {
 		$this->clear();
 
-		foreach ($data as $k => $v) {
-			$this->_data->{$k} = $v;
+		if (is_array($data)) {
+			foreach ($data as $k => $v) {
+				$this->_data->{$k} = $v;
+			}
+		}
+		else { //TODO throw exception?
 		}
 
 		return $this;
